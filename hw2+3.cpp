@@ -30,14 +30,14 @@ class header {
     public:
         virtual ~header() {}
 
-        SET(setSrcID, unsigned int , srcID, _srcID);
-        SET(setDstID, unsigned int , dstID, _dstID);
-        SET(setPreID, unsigned int , preID, _preID);
-        SET(setNexID, unsigned int , nexID, _nexID);
-        GET(getSrcID, unsigned int , srcID);
-        GET(getDstID, unsigned int , dstID);
-        GET(getPreID, unsigned int , preID);
-        GET(getNexID, unsigned int , nexID);
+        SET(setSrcID, unsigned int , srcID, _srcID)
+        SET(setDstID, unsigned int , dstID, _dstID)
+        SET(setPreID, unsigned int , preID, _preID)
+        SET(setNexID, unsigned int , nexID, _nexID)
+        GET(getSrcID, unsigned int , srcID)
+        GET(getDstID, unsigned int , dstID)
+        GET(getPreID, unsigned int , preID)
+        GET(getNexID, unsigned int , nexID)
         
         virtual string type() = 0;
         
@@ -70,7 +70,7 @@ class header {
             	    for (map<string,header::header_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
             	        cout << it->second->type() << endl;
             	}
-            	virtual ~header_generator(){};
+            	virtual ~header_generator(){}
         };
         
     protected:
@@ -218,8 +218,8 @@ class payload {
         virtual ~payload(){}
         virtual string type() = 0;
         
-        SET(setMsg,string,msg,_msg);
-        GET(getMsg,string,msg);
+        SET(setMsg,string,msg,_msg)
+        GET(getMsg,string,msg)
         
         class payload_generator {
                 // lock the copy constructor
@@ -249,7 +249,7 @@ class payload {
             	    for (map<string,payload::payload_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
             	        cout << it->second->type() << endl;
             	}
-            	virtual ~payload_generator(){};
+            	virtual ~payload_generator(){}
         };
 };
 map<string,payload::payload_generator*> payload::payload_generator::prototypes;
@@ -295,7 +295,7 @@ class IoT_ctrl_payload : public payload {
         ~IoT_ctrl_payload(){}
         
         void increase() { counter ++; } // used to increase the counter
-        GET(getCounter,unsigned int,counter); // used to get the value of counter
+        GET(getCounter,unsigned int,counter) // used to get the value of counter
         
         string type() { return "IoT_ctrl_payload"; }
         
@@ -368,8 +368,8 @@ class DIS_ctrl_payload : public payload {
         ~DIS_ctrl_payload(){}
         
         // void increase() { counter ++; } // used to increase the counter
-        SET(setParent,unsigned int,parent,_parent);
-        GET(getParent,unsigned int,parent); // used to get the value of counter
+        SET(setParent,unsigned int,parent,_parent)
+        GET(getParent,unsigned int,parent) // used to get the value of counter
         
         string type() { return "DIS_ctrl_payload"; }
         
@@ -426,11 +426,11 @@ class packet{
             // cout << "packet destructor end" << endl;
         }
         
-        SET(setHeader,header*,hdr,_hdr);
-        GET(getHeader,header*,hdr);
-        SET(setPayload,payload*,pld,_pld);
-        GET(getPayload,payload*,pld);
-        GET(getPacketID,unsigned int,p_id);
+        SET(setHeader,header*,hdr,_hdr)
+        GET(getHeader,header*,hdr)
+        SET(setPayload,payload*,pld,_pld)
+        GET(getPayload,payload*,pld)
+        GET(getPacketID,unsigned int,p_id)
         
         static void discard ( packet* &p ) {
             // cout << "checking" << endl;
@@ -487,7 +487,7 @@ class packet{
             	    for (map<string,packet::packet_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
             	        cout << it->second->type() << endl;
             	}
-            	virtual ~packet_generator(){};
+            	virtual ~packet_generator(){}
         };
 };
 map<string,packet::packet_generator*> packet::packet_generator::prototypes;
@@ -715,7 +715,7 @@ class node {
         void send_handler(packet *P);
         
         static node * id_to_node (unsigned int _id) { return ((id_node_table.find(_id)!=id_node_table.end()) ? id_node_table[_id]: nullptr) ; }
-        GET(getNodeID,unsigned int,id);
+        GET(getNodeID,unsigned int,id)
         
         static void del_node (unsigned int _id) {
             if (id_node_table.find(_id) != id_node_table.end())
@@ -760,7 +760,7 @@ class node {
             	    for (map<string,node::node_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
             	        cout << it->second->type() << endl;
             	}
-            	virtual ~node_generator(){};
+            	virtual ~node_generator(){}
         };
 };
 map<string,node::node_generator*> node::node_generator::prototypes;
@@ -839,7 +839,7 @@ class event {
         
         static void flush_events (); // only for debug
         
-        GET(getTriggerTime,unsigned int,trigger_time);
+        GET(getTriggerTime,unsigned int,trigger_time)
         
         static void start_simulate( unsigned int _end_time ); // the function is used to start the simulation
         
@@ -1706,7 +1706,7 @@ class link {
             	    for (map<string,link::link_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
             	        cout << it->second->type() << endl;
             	}
-            	virtual ~link_generator(){};
+            	virtual ~link_generator(){}
         };
 };
 map<string,link::link_generator*> link::link_generator::prototypes;
