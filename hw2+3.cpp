@@ -103,12 +103,12 @@ class IoT_data_header : public header{
                 // this constructor is only for sample to register this header type
                 IoT_data_header_generator() { /*cout << "IoT_data_header registered" << endl;*/ register_header_type(&sample); }
             protected:
-                virtual header * generate() override {
+                header * generate() override {
                     // cout << "IoT_data_header generated" << endl;
                     return new IoT_data_header; 
                 }
             public:
-                virtual string type() override { return "IoT_data_header";}
+                string type() override { return "IoT_data_header";}
                 ~IoT_data_header_generator() override {}
         
         };
@@ -133,12 +133,12 @@ class IoT_ctrl_header : public header{
                 // this constructor is only for sample to register this header type
                 IoT_ctrl_header_generator() { /*cout << "IoT_ctrl_header registered" << endl;*/ register_header_type(&sample); }
             protected:
-                virtual header * generate() override {
+                header * generate() override {
                     // cout << "IoT_ctrl_header generated" << endl;
                     return new IoT_ctrl_header; 
                 }
             public:
-                virtual string type() override { return "IoT_ctrl_header";}
+                string type() override { return "IoT_ctrl_header";}
                 ~IoT_ctrl_header_generator() override {}
         
         };
@@ -164,12 +164,12 @@ class AGG_ctrl_header : public header{
                 // this constructor is only for sample to register this header type
                 AGG_ctrl_header_generator() { /*cout << "AGG_ctrl_header registered" << endl;*/ register_header_type(&sample); }
             protected:
-                virtual header * generate() override {
+                header * generate() override {
                     // cout << "AGG_ctrl_header generated" << endl;
                     return new AGG_ctrl_header; 
                 }
             public:
-                virtual string type() override { return "AGG_ctrl_header";}
+                string type() override { return "AGG_ctrl_header";}
                 ~AGG_ctrl_header_generator() override {}
         
         };
@@ -195,12 +195,12 @@ class DIS_ctrl_header : public header{
                 // this constructor is only for sample to register this header type
                 DIS_ctrl_header_generator() { /*cout << "DIS_ctrl_header registered" << endl;*/ register_header_type(&sample); }
             protected:
-                virtual header * generate() override {
+                header * generate() override {
                     // cout << "DIS_ctrl_header generated" << endl;
                     return new DIS_ctrl_header; 
                 }
             public:
-                virtual string type() override { return "DIS_ctrl_header";}
+                string type() override { return "DIS_ctrl_header";}
                 ~DIS_ctrl_header_generator() override {}
         
         };
@@ -273,12 +273,12 @@ class IoT_data_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 IoT_data_payload_generator() { /*cout << "IoT_data_payload registered" << endl;*/ register_payload_type(&sample); }
             protected:
-                virtual payload * generate() override { 
+                payload * generate() override { 
                     // cout << "IoT_data_payload generated" << endl;
                     return new IoT_data_payload; 
                 }
             public:
-                virtual string type() override { return "IoT_data_payload";}
+                string type() override { return "IoT_data_payload";}
                 ~IoT_data_payload_generator() override {}
         };
 };
@@ -308,12 +308,12 @@ class IoT_ctrl_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 IoT_ctrl_payload_generator() { /*cout << "IoT_ctrl_payload registered" << endl;*/ register_payload_type(&sample); }
             protected:
-                virtual payload * generate() override { 
+                payload * generate() override { 
                     // cout << "IoT_ctrl_payload generated" << endl;
                     return new IoT_ctrl_payload; 
                 }
             public:
-                virtual string type() override { return "IoT_ctrl_payload";}
+                string type() override { return "IoT_ctrl_payload";}
                 ~IoT_ctrl_payload_generator() override {}
         };
 };
@@ -344,12 +344,12 @@ class AGG_ctrl_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 AGG_ctrl_payload_generator() { /*cout << "AGG_ctrl_payload registered" << endl;*/ register_payload_type(&sample); }
             protected:
-                virtual payload * generate() override { 
+                payload * generate() override { 
                     // cout << "AGG_ctrl_payload generated" << endl;
                     return new AGG_ctrl_payload; 
                 }
             public:
-                virtual string type() override { return "AGG_ctrl_payload";}
+                string type() override { return "AGG_ctrl_payload";}
                 ~AGG_ctrl_payload_generator() override {}
         };
 };
@@ -382,12 +382,12 @@ class DIS_ctrl_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 DIS_ctrl_payload_generator() { /*cout << "DIS_ctrl_payload registered" << endl;*/ register_payload_type(&sample); }
             protected:
-                virtual payload * generate() override { 
+                payload * generate() override { 
                     // cout << "DIS_ctrl_payload generated" << endl;
                     return new DIS_ctrl_payload; 
                 }
             public:
-                virtual string type() override { return "DIS_ctrl_payload";}
+                string type() override { return "DIS_ctrl_payload";}
                 ~DIS_ctrl_payload_generator() override {}
         };
 };
@@ -510,7 +510,7 @@ class IoT_data_packet: public packet {
         IoT_data_packet(string _h, string _p): packet(_h,_p) {}
         
     public:
-        virtual ~IoT_data_packet() override {}
+        ~IoT_data_packet() override {}
         string type() override { return "IoT_data_packet"; }
         
         class IoT_data_packet_generator;
@@ -521,7 +521,7 @@ class IoT_data_packet: public packet {
                 // this constructor is only for sample to register this packet type
                 IoT_data_packet_generator() { /*cout << "IoT_data_packet registered" << endl;*/ register_packet_type(&sample); }
             protected:
-                virtual packet *generate (packet *p = nullptr) override {
+                packet *generate (packet *p = nullptr) override {
                     // cout << "IoT_data_packet generated" << endl;
                     if ( nullptr == p )
                         return new IoT_data_packet("IoT_data_header","IoT_data_payload"); 
@@ -529,7 +529,7 @@ class IoT_data_packet: public packet {
                         return new IoT_data_packet(p); // duplicate
                 }
             public:
-                virtual string type() override { return "IoT_data_packet";}
+                string type() override { return "IoT_data_packet";}
                 ~IoT_data_packet_generator() override {}
         };
 };
@@ -550,9 +550,9 @@ class IoT_ctrl_packet: public packet {
         IoT_ctrl_packet(string _h, string _p): packet(_h,_p) {}
         
     public:
-        virtual ~IoT_ctrl_packet() override {}
+        ~IoT_ctrl_packet() override {}
         string type() override { return "IoT_ctrl_packet"; }
-        virtual string addition_information() override {
+        string addition_information() override {
             unsigned int counter = (dynamic_cast<IoT_ctrl_payload*>(this->getPayload()))->getCounter();
             // cout << counter << endl;
             return " counter " + to_string(counter);
@@ -566,7 +566,7 @@ class IoT_ctrl_packet: public packet {
                 // this constructor is only for sample to register this packet type
                 IoT_ctrl_packet_generator() { /*cout << "IoT_ctrl_packet registered" << endl;*/ register_packet_type(&sample); }
             protected:
-                virtual packet *generate (packet *p = nullptr) override {
+                packet *generate (packet *p = nullptr) override {
                     // cout << "IoT_ctrl_packet generated" << endl;
                     if ( nullptr == p )
                         return new IoT_ctrl_packet("IoT_ctrl_header","IoT_ctrl_payload"); 
@@ -574,7 +574,7 @@ class IoT_ctrl_packet: public packet {
                         return new IoT_ctrl_packet(p); // duplicate
                 }
             public:
-                virtual string type() override { return "IoT_ctrl_packet";}
+                string type() override { return "IoT_ctrl_packet";}
                 ~IoT_ctrl_packet_generator() override {}
         };
 };
@@ -597,7 +597,7 @@ class AGG_ctrl_packet: public packet {
         AGG_ctrl_packet(string _h, string _p): packet(_h,_p) {}
         
     public:
-        virtual ~AGG_ctrl_packet() override {}
+        ~AGG_ctrl_packet() override {}
         string type() override { return "AGG_ctrl_packet"; }
         
         // virtual string addition_information() {
@@ -613,7 +613,7 @@ class AGG_ctrl_packet: public packet {
                 // this constructor is only for sample to register this packet type
                 AGG_ctrl_packet_generator() { /*cout << "AGG_ctrl_packet registered" << endl;*/ register_packet_type(&sample); }
             protected:
-                virtual packet *generate (packet *p = nullptr) override {
+                packet *generate (packet *p = nullptr) override {
                     // cout << "AGG_ctrl_packet generated" << endl;
                     if ( nullptr == p )
                         return new AGG_ctrl_packet("AGG_ctrl_header","AGG_ctrl_payload"); 
@@ -621,7 +621,7 @@ class AGG_ctrl_packet: public packet {
                         return new AGG_ctrl_packet(p); // duplicate
                 }
             public:
-                virtual string type() override { return "AGG_ctrl_packet";}
+                string type() override { return "AGG_ctrl_packet";}
                 ~AGG_ctrl_packet_generator() override {}
         };
 };
@@ -643,9 +643,9 @@ class DIS_ctrl_packet: public packet {
         DIS_ctrl_packet(string _h, string _p): packet(_h,_p) {}
         
     public:
-        virtual ~DIS_ctrl_packet() override {}
+        ~DIS_ctrl_packet() override {}
         string type() override { return "DIS_ctrl_packet"; }
-        virtual string addition_information() override {
+        string addition_information() override {
             unsigned int parent = (dynamic_cast<DIS_ctrl_payload*>(this->getPayload()))->getParent();
             // cout << counter << endl;
             return " parent " + to_string(parent);
@@ -659,7 +659,7 @@ class DIS_ctrl_packet: public packet {
                 // this constructor is only for sample to register this packet type
                 DIS_ctrl_packet_generator() { /*cout << "DIS_ctrl_packet registered" << endl;*/ register_packet_type(&sample); }
             protected:
-                virtual packet *generate (packet *p = nullptr) override {
+                packet *generate (packet *p = nullptr) override {
                     // cout << "DIS_ctrl_packet generated" << endl;
                     if ( nullptr == p )
                         return new DIS_ctrl_packet("DIS_ctrl_header","DIS_ctrl_payload"); 
@@ -667,7 +667,7 @@ class DIS_ctrl_packet: public packet {
                         return new DIS_ctrl_packet(p); // duplicate
                 }
             public:
-                virtual string type() override { return "DIS_ctrl_packet";}
+                string type() override { return "DIS_ctrl_packet";}
                 ~DIS_ctrl_packet_generator() override {}
         };
 };
@@ -781,7 +781,7 @@ class IoT_device: public node {
         string type() override { return "IoT_device"; }
         
         // please define recv_handler function to deal with the incoming packet
-        virtual void recv_handler (packet *p) override;
+        void recv_handler (packet *p) override;
         
         // void add_one_hop_neighbor (unsigned int n_id) { one_hop_neighbors[n_id] = true; }
         // unsigned int get_one_hop_neighbor_num () { return one_hop_neighbors.size(); }
@@ -794,9 +794,9 @@ class IoT_device: public node {
                 // this constructor is only for sample to register this node type
                 IoT_device_generator() { /*cout << "IoT_device registered" << endl;*/ register_node_type(&sample); }
             protected:
-                virtual node * generate(unsigned int _id) override { /*cout << "IoT_device generated" << endl;*/ return new IoT_device(_id); }
+                node * generate(unsigned int _id) override { /*cout << "IoT_device generated" << endl;*/ return new IoT_device(_id); }
             public:
-                virtual string type() override { return "IoT_device";}
+                string type() override { return "IoT_device";}
                 ~IoT_device_generator() override {}
         };
 };
@@ -970,9 +970,9 @@ class recv_event: public event {
         } 
         
     public:
-        virtual ~recv_event() override {}
+        ~recv_event() override {}
         // recv_event will trigger the recv function
-        virtual void trigger() override;
+        void trigger() override;
         
         unsigned int event_priority() const override;
         
@@ -984,13 +984,13 @@ class recv_event: public event {
                 // this constructor is only for sample to register this event type
                 recv_event_generator() { /*cout << "recv_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                virtual event * generate(unsigned int _trigger_time, void *data) override { 
+                event * generate(unsigned int _trigger_time, void *data) override { 
                     // cout << "recv_event generated" << endl; 
                     return new recv_event(_trigger_time, data); 
                 }
                 
             public:
-                virtual string type() override { return "recv_event";}
+                string type() override { return "recv_event";}
                 ~recv_event_generator() override {}
         };
         // this class is used to initialize the recv_event
@@ -1066,9 +1066,9 @@ class send_event: public event {
         } 
         
     public:
-        virtual ~send_event() override {}
+        ~send_event() override {}
         // send_event will trigger the send function
-        virtual void trigger() override;
+        void trigger() override;
         
         unsigned int event_priority() const override;
         
@@ -1080,13 +1080,13 @@ class send_event: public event {
                 // this constructor is only for sample to register this event type
                 send_event_generator() { /*cout << "send_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                virtual event * generate(unsigned int _trigger_time, void *data) override { 
+                event * generate(unsigned int _trigger_time, void *data) override { 
                     // cout << "send_event generated" << endl; 
                     return new send_event(_trigger_time, data); 
                 }
             
             public:
-                virtual string type() override { return "send_event";}
+                string type() override { return "send_event";}
                 ~send_event_generator() override {}
         };
         // this class is used to initialize the send_event
@@ -1167,9 +1167,9 @@ class IoT_data_pkt_gen_event: public event {
         } 
         
     public:
-        virtual ~IoT_data_pkt_gen_event() override {}
+        ~IoT_data_pkt_gen_event() override {}
         // IoT_data_pkt_gen_event will trigger the packet gen function
-        virtual void trigger() override;
+        void trigger() override;
         
         unsigned int event_priority() const override;
         
@@ -1181,13 +1181,13 @@ class IoT_data_pkt_gen_event: public event {
                 // this constructor is only for sample to register this event type
                 IoT_data_pkt_gen_event_generator() { /*cout << "send_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                virtual event * generate(unsigned int _trigger_time, void *data) override { 
+                event * generate(unsigned int _trigger_time, void *data) override { 
                     // cout << "send_event generated" << endl; 
                     return new IoT_data_pkt_gen_event(_trigger_time, data); 
                 }
             
             public:
-                virtual string type() override { return "IoT_data_pkt_gen_event";}
+                string type() override { return "IoT_data_pkt_gen_event";}
                 ~IoT_data_pkt_gen_event_generator() override {}
         };
         // this class is used to initialize the IoT_data_pkt_gen_event
@@ -1289,9 +1289,9 @@ class IoT_ctrl_pkt_gen_event: public event {
         } 
         
     public:
-        virtual ~IoT_ctrl_pkt_gen_event() override {}
+        ~IoT_ctrl_pkt_gen_event() override {}
         // IoT_ctrl_pkt_gen_event will trigger the packet gen function
-        virtual void trigger() override;
+        void trigger() override;
         
         unsigned int event_priority() const override;
         
@@ -1303,13 +1303,13 @@ class IoT_ctrl_pkt_gen_event: public event {
                 // this constructor is only for sample to register this event type
                 IoT_ctrl_pkt_gen_event_generator() { /*cout << "send_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                virtual event * generate(unsigned int _trigger_time, void *data) override { 
+                event * generate(unsigned int _trigger_time, void *data) override { 
                     // cout << "send_event generated" << endl; 
                     return new IoT_ctrl_pkt_gen_event(_trigger_time, data); 
                 }
             
             public:
-                virtual string type() override { return "IoT_ctrl_pkt_gen_event";}
+                string type() override { return "IoT_ctrl_pkt_gen_event";}
                 ~IoT_ctrl_pkt_gen_event_generator() override {}
         };
         // this class is used to initialize the IoT_ctrl_pkt_gen_event
@@ -1414,9 +1414,9 @@ class AGG_ctrl_pkt_gen_event: public event {
         } 
         
     public:
-        virtual ~AGG_ctrl_pkt_gen_event() override {}
+        ~AGG_ctrl_pkt_gen_event() override {}
         // AGG_ctrl_pkt_gen_event will trigger the packet gen function
-        virtual void trigger() override;
+        void trigger() override;
         
         unsigned int event_priority() const override;
         
@@ -1428,13 +1428,13 @@ class AGG_ctrl_pkt_gen_event: public event {
                 // this constructor is only for sample to register this event type
                 AGG_ctrl_pkt_gen_event_generator() { /*cout << "send_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                virtual event * generate(unsigned int _trigger_time, void *data) override { 
+                event * generate(unsigned int _trigger_time, void *data) override { 
                     // cout << "send_event generated" << endl; 
                     return new AGG_ctrl_pkt_gen_event(_trigger_time, data); 
                 }
             
             public:
-                virtual string type() override { return "AGG_ctrl_pkt_gen_event";}
+                string type() override { return "AGG_ctrl_pkt_gen_event";}
                 ~AGG_ctrl_pkt_gen_event_generator() override {}
         };
         // this class is used to initialize the AGG_ctrl_pkt_gen_event
@@ -1540,9 +1540,9 @@ class DIS_ctrl_pkt_gen_event: public event {
         } 
         
     public:
-        virtual ~DIS_ctrl_pkt_gen_event() override {}
+        ~DIS_ctrl_pkt_gen_event() override {}
         // DIS_ctrl_pkt_gen_event will trigger the packet gen function
-        virtual void trigger() override;
+        void trigger() override;
         
         unsigned int event_priority() const override;
         
@@ -1554,13 +1554,13 @@ class DIS_ctrl_pkt_gen_event: public event {
                 // this constructor is only for sample to register this event type
                 DIS_ctrl_pkt_gen_event_generator() { /*cout << "send_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                virtual event * generate(unsigned int _trigger_time, void *data) override { 
+                event * generate(unsigned int _trigger_time, void *data) override { 
                     // cout << "send_event generated" << endl; 
                     return new DIS_ctrl_pkt_gen_event(_trigger_time, data); 
                 }
             
             public:
-                virtual string type() override { return "DIS_ctrl_pkt_gen_event";}
+                string type() override { return "DIS_ctrl_pkt_gen_event";}
                 ~DIS_ctrl_pkt_gen_event_generator() override {}
         };
         // this class is used to initialize the DIS_ctrl_pkt_gen_event
@@ -1733,8 +1733,8 @@ class simple_link: public link {
         simple_link(unsigned int _id1, unsigned int _id2): link (_id1,_id2){} // this constructor cannot be directly called by users
     
     public:
-        virtual ~simple_link() override {}
-        virtual double getLatency() override { return ONE_HOP_DELAY; } // you can implement your own latency
+        ~simple_link() override {}
+        double getLatency() override { return ONE_HOP_DELAY; } // you can implement your own latency
         
         class simple_link_generator;
         friend class simple_link_generator;
@@ -1744,10 +1744,10 @@ class simple_link: public link {
                 // this constructor is only for sample to register this link type
                 simple_link_generator() { /*cout << "simple_link registered" << endl;*/ register_link_type(&sample); }
             protected:
-                virtual link * generate(unsigned int _id1, unsigned int _id2) override
+                link * generate(unsigned int _id1, unsigned int _id2) override
                 { /*cout << "simple_link generated" << endl;*/ return new simple_link(_id1,_id2); }
             public:
-                virtual string type() override { return "simple_link"; }
+                string type() override { return "simple_link"; }
                 ~simple_link_generator() override {}
         };
 };
