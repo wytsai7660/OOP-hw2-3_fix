@@ -32,7 +32,7 @@ const unsigned int BROCAST_ID = UINT_MAX;
 
 class header {
     public:
-        virtual ~header() {}
+        virtual ~header() = default;
 
         SET(unsigned int, src_ID)
         SET(unsigned int, dst_ID)
@@ -47,12 +47,12 @@ class header {
         // factory concept: generate a header
         class header_generator {
                 // lock the copy constructor
-                header_generator(header_generator &){}
+                header_generator(header_generator &) = default;
                 // store all possible types of header
                 static map<string,header_generator*> prototypes;
             protected:
                 // allow derived class to use it
-                header_generator() {}
+                header_generator() = default;
                 // after you create a new header type, please register the factory of this header type by this function
                 void register_header_type(header_generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your header
@@ -73,7 +73,7 @@ class header {
             	    for (map<string,header::header_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
             	        cout << it->second->type() << endl;
             	}
-            	virtual ~header_generator(){}
+            	virtual ~header_generator() = default;
         };
 
     protected:
@@ -92,10 +92,10 @@ class IoT_data_header : public header{
         IoT_data_header(IoT_data_header&){} // cannot be called by users
 
     protected:
-        IoT_data_header(){} // this constructor cannot be directly called by users
+        IoT_data_header() = default; // this constructor cannot be directly called by users
 
     public:
-        ~IoT_data_header() override {}
+        ~IoT_data_header() override = default;
         string type() override { return "IoT_data_header"; }
 
         class IoT_data_header_generator;
@@ -112,7 +112,7 @@ class IoT_data_header : public header{
                 }
             public:
                 string type() override { return "IoT_data_header";}
-                ~IoT_data_header_generator() override {}
+                ~IoT_data_header_generator() override = default;
 
         };
 };
@@ -122,10 +122,10 @@ class IoT_ctrl_header : public header{
         IoT_ctrl_header(IoT_ctrl_header&){} // cannot be called by users
 
     protected:
-        IoT_ctrl_header(){} // this constructor cannot be directly called by users
+        IoT_ctrl_header() = default; // this constructor cannot be directly called by users
 
     public:
-        ~IoT_ctrl_header() override {}
+        ~IoT_ctrl_header() override = default;
         string type() override { return "IoT_ctrl_header"; }
 
         class IoT_ctrl_header_generator;
@@ -142,7 +142,7 @@ class IoT_ctrl_header : public header{
                 }
             public:
                 string type() override { return "IoT_ctrl_header";}
-                ~IoT_ctrl_header_generator() override {}
+                ~IoT_ctrl_header_generator() override = default;
 
         };
 };
@@ -153,10 +153,10 @@ class AGG_ctrl_header : public header{
         AGG_ctrl_header(AGG_ctrl_header&){} // cannot be called by users
 
     protected:
-        AGG_ctrl_header(){} // this constructor cannot be directly called by users
+        AGG_ctrl_header() = default; // this constructor cannot be directly called by users
 
     public:
-        ~AGG_ctrl_header() override {}
+        ~AGG_ctrl_header() override = default;
         string type() override { return "AGG_ctrl_header"; }
 
         class AGG_ctrl_header_generator;
@@ -173,7 +173,7 @@ class AGG_ctrl_header : public header{
                 }
             public:
                 string type() override { return "AGG_ctrl_header";}
-                ~AGG_ctrl_header_generator() override {}
+                ~AGG_ctrl_header_generator() override = default;
 
         };
 };
@@ -184,10 +184,10 @@ class DIS_ctrl_header : public header{
         DIS_ctrl_header(DIS_ctrl_header&){} // cannot be called by users
 
     protected:
-        DIS_ctrl_header(){} // this constructor cannot be directly called by users
+        DIS_ctrl_header() = default; // this constructor cannot be directly called by users
 
     public:
-        ~DIS_ctrl_header() override {}
+        ~DIS_ctrl_header() override = default;
         string type() override { return "DIS_ctrl_header"; }
 
         class DIS_ctrl_header_generator;
@@ -204,7 +204,7 @@ class DIS_ctrl_header : public header{
                 }
             public:
                 string type() override { return "DIS_ctrl_header";}
-                ~DIS_ctrl_header_generator() override {}
+                ~DIS_ctrl_header_generator() override = default;
 
         };
 };
@@ -216,9 +216,9 @@ class payload {
         string msg;
 
     protected:
-        payload(){}
+        payload() = default;
     public:
-        virtual ~payload(){}
+        virtual ~payload() = default;
         virtual string type() = 0;
 
         SET(string, msg)
@@ -226,12 +226,12 @@ class payload {
 
         class payload_generator {
                 // lock the copy constructor
-                payload_generator(payload_generator &){}
+                payload_generator(payload_generator &) = default;
                 // store all possible types of header
                 static map<string,payload_generator*> prototypes;
             protected:
                 // allow derived class to use it
-                payload_generator() {}
+                payload_generator() = default;
                 // after you create a new payload type, please register the factory of this payload type by this function
                 void register_payload_type(payload_generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your payload
@@ -252,7 +252,7 @@ class payload {
             	    for (map<string,payload::payload_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
             	        cout << it->second->type() << endl;
             	}
-            	virtual ~payload_generator(){}
+            	virtual ~payload_generator() = default;
         };
 };
 map<string,payload::payload_generator*> payload::payload_generator::prototypes;
@@ -262,9 +262,9 @@ class IoT_data_payload : public payload {
         IoT_data_payload(IoT_data_payload&){}
 
     protected:
-        IoT_data_payload(){} // this constructor cannot be directly called by users
+        IoT_data_payload() = default; // this constructor cannot be directly called by users
     public:
-        ~IoT_data_payload() override {}
+        ~IoT_data_payload() override = default;
 
         string type() override { return "IoT_data_payload"; }
 
@@ -282,7 +282,7 @@ class IoT_data_payload : public payload {
                 }
             public:
                 string type() override { return "IoT_data_payload";}
-                ~IoT_data_payload_generator() override {}
+                ~IoT_data_payload_generator() override = default;
         };
 };
 IoT_data_payload::IoT_data_payload_generator IoT_data_payload::IoT_data_payload_generator::sample;
@@ -295,7 +295,7 @@ class IoT_ctrl_payload : public payload {
     protected:
         IoT_ctrl_payload(): counter (0) {} // this constructor cannot be directly called by users
     public:
-        ~IoT_ctrl_payload() override {}
+        ~IoT_ctrl_payload() override = default;
 
         void increase() { counter ++; } // used to increase the counter
         GET(unsigned int, counter) // used to get the value of counter
@@ -317,7 +317,7 @@ class IoT_ctrl_payload : public payload {
                 }
             public:
                 string type() override { return "IoT_ctrl_payload";}
-                ~IoT_ctrl_payload_generator() override {}
+                ~IoT_ctrl_payload_generator() override = default;
         };
 };
 IoT_ctrl_payload::IoT_ctrl_payload_generator IoT_ctrl_payload::IoT_ctrl_payload_generator::sample;
@@ -329,9 +329,9 @@ class AGG_ctrl_payload : public payload {
         // unsigned int counter ;
 
     protected:
-        AGG_ctrl_payload() {} // this constructor cannot be directly called by users
+        AGG_ctrl_payload() = default; // this constructor cannot be directly called by users
     public:
-        ~AGG_ctrl_payload() override {}
+        ~AGG_ctrl_payload() override = default;
 
         // void increase() { counter ++; } // used to increase the counter
         // GET(getCounter,unsigned int,counter); // used to get the value of counter
@@ -353,7 +353,7 @@ class AGG_ctrl_payload : public payload {
                 }
             public:
                 string type() override { return "AGG_ctrl_payload";}
-                ~AGG_ctrl_payload_generator() override {}
+                ~AGG_ctrl_payload_generator() override = default;
         };
 };
 AGG_ctrl_payload::AGG_ctrl_payload_generator AGG_ctrl_payload::AGG_ctrl_payload_generator::sample;
@@ -368,7 +368,7 @@ class DIS_ctrl_payload : public payload {
     protected:
         DIS_ctrl_payload(int _parent=0): parent (_parent) {} // this constructor cannot be directly called by users
     public:
-        ~DIS_ctrl_payload() override {}
+        ~DIS_ctrl_payload() override = default;
 
         // void increase() { counter ++; } // used to increase the counter
         SET(unsigned int, parent)
@@ -391,7 +391,7 @@ class DIS_ctrl_payload : public payload {
                 }
             public:
                 string type() override { return "DIS_ctrl_payload";}
-                ~DIS_ctrl_payload_generator() override {}
+                ~DIS_ctrl_payload_generator() override = default;
         };
 };
 DIS_ctrl_payload::DIS_ctrl_payload_generator DIS_ctrl_payload::DIS_ctrl_payload_generator::sample;
@@ -457,12 +457,12 @@ class packet{
         friend class packet_generator;
         class packet_generator {
                 // lock the copy constructor
-                packet_generator(packet_generator &){}
+                packet_generator(packet_generator &) = default;
                 // store all possible types of packet
                 static map<string,packet_generator*> prototypes;
             protected:
                 // allow derived class to use it
-                packet_generator() {}
+                packet_generator() = default;
                 // after you create a new packet type, please register the factory of this payload type by this function
                 void register_packet_type(packet_generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your payload
@@ -490,7 +490,7 @@ class packet{
             	    for (map<string,packet::packet_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
             	        cout << it->second->type() << endl;
             	}
-            	virtual ~packet_generator(){}
+            	virtual ~packet_generator() = default;
         };
 };
 map<string,packet::packet_generator*> packet::packet_generator::prototypes;
@@ -503,7 +503,7 @@ class IoT_data_packet: public packet {
         IoT_data_packet(IoT_data_packet &) {}
 
     protected:
-        IoT_data_packet(){} // this constructor cannot be directly called by users
+        IoT_data_packet() = default; // this constructor cannot be directly called by users
         IoT_data_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
             *(dynamic_cast<IoT_data_header*>(this->get_header())) = *(dynamic_cast<IoT_data_header*> (p->get_header()));
             *(dynamic_cast<IoT_data_payload*>(this->get_payload())) = *(dynamic_cast<IoT_data_payload*> (p->get_payload()));
@@ -513,7 +513,7 @@ class IoT_data_packet: public packet {
         IoT_data_packet(string _h, string _p): packet(_h,_p) {}
 
     public:
-        ~IoT_data_packet() override {}
+        ~IoT_data_packet() override = default;
         string type() override { return "IoT_data_packet"; }
 
         class IoT_data_packet_generator;
@@ -533,7 +533,7 @@ class IoT_data_packet: public packet {
                 }
             public:
                 string type() override { return "IoT_data_packet";}
-                ~IoT_data_packet_generator() override {}
+                ~IoT_data_packet_generator() override = default;
         };
 };
 IoT_data_packet::IoT_data_packet_generator IoT_data_packet::IoT_data_packet_generator::sample;
@@ -543,7 +543,7 @@ class IoT_ctrl_packet: public packet {
         IoT_ctrl_packet(IoT_ctrl_packet &) {}
 
     protected:
-        IoT_ctrl_packet(){} // this constructor cannot be directly called by users
+        IoT_ctrl_packet() = default; // this constructor cannot be directly called by users
         IoT_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
             *(dynamic_cast<IoT_ctrl_header*>(this->get_header())) = *(dynamic_cast<IoT_ctrl_header*> (p->get_header()));
             *(dynamic_cast<IoT_ctrl_payload*>(this->get_payload())) = *(dynamic_cast<IoT_ctrl_payload*> (p->get_payload()));
@@ -553,7 +553,7 @@ class IoT_ctrl_packet: public packet {
         IoT_ctrl_packet(string _h, string _p): packet(_h,_p) {}
 
     public:
-        ~IoT_ctrl_packet() override {}
+        ~IoT_ctrl_packet() override = default;
         string type() override { return "IoT_ctrl_packet"; }
         string addition_information() override {
             unsigned int counter = (dynamic_cast<IoT_ctrl_payload*>(this->get_payload()))->get_counter();
@@ -578,7 +578,7 @@ class IoT_ctrl_packet: public packet {
                 }
             public:
                 string type() override { return "IoT_ctrl_packet";}
-                ~IoT_ctrl_packet_generator() override {}
+                ~IoT_ctrl_packet_generator() override = default;
         };
 };
 IoT_ctrl_packet::IoT_ctrl_packet_generator IoT_ctrl_packet::IoT_ctrl_packet_generator::sample;
@@ -590,7 +590,7 @@ class AGG_ctrl_packet: public packet {
         AGG_ctrl_packet(AGG_ctrl_packet &) {}
 
     protected:
-        AGG_ctrl_packet(){} // this constructor cannot be directly called by users
+        AGG_ctrl_packet() = default; // this constructor cannot be directly called by users
         AGG_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
             *(dynamic_cast<AGG_ctrl_header*>(this->get_header())) = *(dynamic_cast<AGG_ctrl_header*> (p->get_header()));
             *(dynamic_cast<AGG_ctrl_payload*>(this->get_payload())) = *(dynamic_cast<AGG_ctrl_payload*> (p->get_payload()));
@@ -600,7 +600,7 @@ class AGG_ctrl_packet: public packet {
         AGG_ctrl_packet(string _h, string _p): packet(_h,_p) {}
 
     public:
-        ~AGG_ctrl_packet() override {}
+        ~AGG_ctrl_packet() override = default;
         string type() override { return "AGG_ctrl_packet"; }
 
         // virtual string addition_information() {
@@ -625,7 +625,7 @@ class AGG_ctrl_packet: public packet {
                 }
             public:
                 string type() override { return "AGG_ctrl_packet";}
-                ~AGG_ctrl_packet_generator() override {}
+                ~AGG_ctrl_packet_generator() override = default;
         };
 };
 AGG_ctrl_packet::AGG_ctrl_packet_generator AGG_ctrl_packet::AGG_ctrl_packet_generator::sample;
@@ -636,7 +636,7 @@ class DIS_ctrl_packet: public packet {
         DIS_ctrl_packet(DIS_ctrl_packet &) {}
 
     protected:
-        DIS_ctrl_packet(){} // this constructor cannot be directly called by users
+        DIS_ctrl_packet() = default; // this constructor cannot be directly called by users
         DIS_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
             *(dynamic_cast<DIS_ctrl_header*>(this->get_header())) = *(dynamic_cast<DIS_ctrl_header*> (p->get_header()));
             *(dynamic_cast<DIS_ctrl_payload*>(this->get_payload())) = *(dynamic_cast<DIS_ctrl_payload*> (p->get_payload()));
@@ -646,7 +646,7 @@ class DIS_ctrl_packet: public packet {
         DIS_ctrl_packet(string _h, string _p): packet(_h,_p) {}
 
     public:
-        ~DIS_ctrl_packet() override {}
+        ~DIS_ctrl_packet() override = default;
         string type() override { return "DIS_ctrl_packet"; }
         string addition_information() override {
             unsigned int parent = (dynamic_cast<DIS_ctrl_payload*>(this->get_payload()))->get_parent();
@@ -671,7 +671,7 @@ class DIS_ctrl_packet: public packet {
                 }
             public:
                 string type() override { return "DIS_ctrl_packet";}
-                ~DIS_ctrl_packet_generator() override {}
+                ~DIS_ctrl_packet_generator() override = default;
         };
 };
 DIS_ctrl_packet::DIS_ctrl_packet_generator DIS_ctrl_packet::DIS_ctrl_packet_generator::sample;
@@ -688,7 +688,7 @@ class node {
 
     protected:
         node(node&){} // this constructor should not be used
-        node(){} // this constructor should not be used
+        node() = default; // this constructor should not be used
         node(unsigned int _id): id(_id) { id_node_table[_id] = this; }
     public:
         virtual ~node() { // erase the node
@@ -728,12 +728,12 @@ class node {
 
         class node_generator {
                 // lock the copy constructor
-                node_generator(node_generator &){}
+                node_generator(node_generator &) = default;
                 // store all possible types of node
                 static map<string,node_generator*> prototypes;
             protected:
                 // allow derived class to use it
-                node_generator() {}
+                node_generator() = default;
                 // after you create a new node type, please register the factory of this node type by this function
                 void register_node_type(node_generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your node
@@ -763,7 +763,7 @@ class node {
             	    for (map<string,node::node_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
             	        cout << it->second->type() << endl;
             	}
-            	virtual ~node_generator(){}
+            	virtual ~node_generator() = default;
         };
 };
 map<string,node::node_generator*> node::node_generator::prototypes;
@@ -775,12 +775,12 @@ class IoT_device: public node {
         bool hi; // this is used for example; you can remove it when doing hw2
 
     protected:
-        IoT_device() {} // it should not be used
+        IoT_device() = default; // it should not be used
         IoT_device(IoT_device&) {} // it should not be used
         IoT_device(unsigned int _id): node(_id), hi(false) {} // this constructor cannot be directly called by users
 
     public:
-        ~IoT_device() override {}
+        ~IoT_device() override = default;
         string type() override { return "IoT_device"; }
 
         // please define recv_handler function to deal with the incoming packet
@@ -800,7 +800,7 @@ class IoT_device: public node {
                 node * generate(unsigned int _id) override { /*cout << "IoT_device generated" << endl;*/ return new IoT_device(_id); }
             public:
                 string type() override { return "IoT_device";}
-                ~IoT_device_generator() override {}
+                ~IoT_device_generator() override = default;
         };
 };
 IoT_device::IoT_device_generator IoT_device::IoT_device_generator::sample;
@@ -827,12 +827,12 @@ class event {
     protected:
         unsigned int trigger_time;
 
-        event(){} // it should not be used
+        event() = default; // it should not be used
         event(unsigned int _trigger_time): trigger_time(_trigger_time) {}
 
     public:
         virtual void trigger()=0;
-        virtual ~event(){}
+        virtual ~event() = default;
 
         virtual unsigned int event_priority() const = 0;
         unsigned int get_hash_value(string string_for_hash) const {
@@ -855,12 +855,12 @@ class event {
 
         class event_generator{
                 // lock the copy constructor
-                event_generator(event_generator &){}
+                event_generator(event_generator &) = default;
                 // store all possible types of event
                 static map<string,event_generator*> prototypes;
             protected:
                 // allow derived class to use it
-                event_generator() {}
+                event_generator() = default;
                 // after you create a new event type, please register the factory of this event type by this function
                 void register_event_type(event_generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your event
@@ -883,7 +883,7 @@ class event {
             	    for (map<string,event::event_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
             	        cout << it->second->type() << endl;
             	}
-            	virtual ~event_generator(){}
+            	virtual ~event_generator() = default;
         };
 };
 map<string,event::event_generator*> event::event_generator::prototypes;
@@ -958,7 +958,7 @@ class recv_event: public event {
 
     private:
         recv_event(recv_event&) {} // this constructor cannot be used
-        recv_event() {} // we don't allow users to new a recv_event by themselv
+        recv_event() = default; // we don't allow users to new a recv_event by themselv
         unsigned int senderID; // the sender
         unsigned int receiverID; // the receiver; the packet will be given to the receiver
         packet *pkt; // the packet
@@ -973,7 +973,7 @@ class recv_event: public event {
         }
 
     public:
-        ~recv_event() override {}
+        ~recv_event() override = default;
         // recv_event will trigger the recv function
         void trigger() override;
 
@@ -994,7 +994,7 @@ class recv_event: public event {
 
             public:
                 string type() override { return "recv_event";}
-                ~recv_event_generator() override {}
+                ~recv_event_generator() override = default;
         };
         // this class is used to initialize the recv_event
         class recv_data{
@@ -1054,7 +1054,7 @@ class send_event: public event {
 
     private:
         send_event (send_event &){}
-        send_event (){} // we don't allow users to new a recv_event by themselves
+        send_event () = default; // we don't allow users to new a recv_event by themselves
         // this constructor cannot be directly called by users; only by generator
         unsigned int senderID; // the sender
         unsigned int receiverID; // the receiver
@@ -1069,7 +1069,7 @@ class send_event: public event {
         }
 
     public:
-        ~send_event() override {}
+        ~send_event() override = default;
         // send_event will trigger the send function
         void trigger() override;
 
@@ -1090,7 +1090,7 @@ class send_event: public event {
 
             public:
                 string type() override { return "send_event";}
-                ~send_event_generator() override {}
+                ~send_event_generator() override = default;
         };
         // this class is used to initialize the send_event
         class send_data{
@@ -1153,7 +1153,7 @@ class IoT_data_pkt_gen_event: public event {
 
     private:
         IoT_data_pkt_gen_event (IoT_data_pkt_gen_event &){}
-        IoT_data_pkt_gen_event (){} // we don't allow users to new a IoT_data_pkt_gen_event by themselves
+        IoT_data_pkt_gen_event () = default; // we don't allow users to new a IoT_data_pkt_gen_event by themselves
         // this constructor cannot be directly called by users; only by generator
         unsigned int src; // the src
         unsigned int dst; // the dst
@@ -1170,7 +1170,7 @@ class IoT_data_pkt_gen_event: public event {
         }
 
     public:
-        ~IoT_data_pkt_gen_event() override {}
+        ~IoT_data_pkt_gen_event() override = default;
         // IoT_data_pkt_gen_event will trigger the packet gen function
         void trigger() override;
 
@@ -1191,7 +1191,7 @@ class IoT_data_pkt_gen_event: public event {
 
             public:
                 string type() override { return "IoT_data_pkt_gen_event";}
-                ~IoT_data_pkt_gen_event_generator() override {}
+                ~IoT_data_pkt_gen_event_generator() override = default;
         };
         // this class is used to initialize the IoT_data_pkt_gen_event
         class pkt_gen_data{
@@ -1269,7 +1269,7 @@ class IoT_ctrl_pkt_gen_event: public event {
 
     private:
         IoT_ctrl_pkt_gen_event (IoT_ctrl_pkt_gen_event &){}
-        IoT_ctrl_pkt_gen_event (){} // we don't allow users to new a IoT_ctrl_pkt_gen_event by themselves
+        IoT_ctrl_pkt_gen_event () = default; // we don't allow users to new a IoT_ctrl_pkt_gen_event by themselves
         // this constructor cannot be directly called by users; only by generator
         unsigned int src; // the src
         unsigned int dst; // the dst
@@ -1292,7 +1292,7 @@ class IoT_ctrl_pkt_gen_event: public event {
         }
 
     public:
-        ~IoT_ctrl_pkt_gen_event() override {}
+        ~IoT_ctrl_pkt_gen_event() override = default;
         // IoT_ctrl_pkt_gen_event will trigger the packet gen function
         void trigger() override;
 
@@ -1313,7 +1313,7 @@ class IoT_ctrl_pkt_gen_event: public event {
 
             public:
                 string type() override { return "IoT_ctrl_pkt_gen_event";}
-                ~IoT_ctrl_pkt_gen_event_generator() override {}
+                ~IoT_ctrl_pkt_gen_event_generator() override = default;
         };
         // this class is used to initialize the IoT_ctrl_pkt_gen_event
         class pkt_gen_data{
@@ -1394,7 +1394,7 @@ class AGG_ctrl_pkt_gen_event: public event {
 
     private:
         AGG_ctrl_pkt_gen_event (AGG_ctrl_pkt_gen_event &){}
-        AGG_ctrl_pkt_gen_event (){} // we don't allow users to new a AGG_ctrl_pkt_gen_event by themselves
+        AGG_ctrl_pkt_gen_event () = default; // we don't allow users to new a AGG_ctrl_pkt_gen_event by themselves
         // this constructor cannot be directly called by users; only by generator
         unsigned int src; // the src
         unsigned int dst; // the dst
@@ -1417,7 +1417,7 @@ class AGG_ctrl_pkt_gen_event: public event {
         }
 
     public:
-        ~AGG_ctrl_pkt_gen_event() override {}
+        ~AGG_ctrl_pkt_gen_event() override = default;
         // AGG_ctrl_pkt_gen_event will trigger the packet gen function
         void trigger() override;
 
@@ -1438,7 +1438,7 @@ class AGG_ctrl_pkt_gen_event: public event {
 
             public:
                 string type() override { return "AGG_ctrl_pkt_gen_event";}
-                ~AGG_ctrl_pkt_gen_event_generator() override {}
+                ~AGG_ctrl_pkt_gen_event_generator() override = default;
         };
         // this class is used to initialize the AGG_ctrl_pkt_gen_event
         class pkt_gen_data{
@@ -1518,7 +1518,7 @@ class DIS_ctrl_pkt_gen_event: public event {
 
     private:
         DIS_ctrl_pkt_gen_event (DIS_ctrl_pkt_gen_event &){}
-        DIS_ctrl_pkt_gen_event (){} // we don't allow users to new a DIS_ctrl_pkt_gen_event by themselves
+        DIS_ctrl_pkt_gen_event () = default; // we don't allow users to new a DIS_ctrl_pkt_gen_event by themselves
         // this constructor cannot be directly called by users; only by generator
         unsigned int src; // the src
         unsigned int dst; // the dst
@@ -1543,7 +1543,7 @@ class DIS_ctrl_pkt_gen_event: public event {
         }
 
     public:
-        ~DIS_ctrl_pkt_gen_event() override {}
+        ~DIS_ctrl_pkt_gen_event() override = default;
         // DIS_ctrl_pkt_gen_event will trigger the packet gen function
         void trigger() override;
 
@@ -1564,7 +1564,7 @@ class DIS_ctrl_pkt_gen_event: public event {
 
             public:
                 string type() override { return "DIS_ctrl_pkt_gen_event";}
-                ~DIS_ctrl_pkt_gen_event_generator() override {}
+                ~DIS_ctrl_pkt_gen_event_generator() override = default;
         };
         // this class is used to initialize the DIS_ctrl_pkt_gen_event
         class pkt_gen_data{
@@ -1650,7 +1650,7 @@ class link {
 
     protected:
         link(link&){} // this constructor should not be used
-        link(){} // this constructor should not be used
+        link() = default; // this constructor should not be used
         link(unsigned int _id1, unsigned int _id2): id1(_id1), id2(_id2) { id_id_link_table[pair<unsigned int,unsigned int>(id1,id2)] = this; }
 
     public:
@@ -1674,12 +1674,12 @@ class link {
 
         class link_generator {
                 // lock the copy constructor
-                link_generator(link_generator &){}
+                link_generator(link_generator &) = default;
                 // store all possible types of link
                 static map<string,link_generator*> prototypes;
             protected:
                 // allow derived class to use it
-                link_generator() {}
+                link_generator() = default;
                 // after you create a new link type, please register the factory of this link type by this function
                 void register_link_type(link_generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your link
@@ -1709,7 +1709,7 @@ class link {
             	    for (map<string,link::link_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
             	        cout << it->second->type() << endl;
             	}
-            	virtual ~link_generator(){}
+            	virtual ~link_generator() = default;
         };
 };
 map<string,link::link_generator*> link::link_generator::prototypes;
@@ -1731,12 +1731,12 @@ void node::del_phy_neighbor (unsigned int _id){
 
 class simple_link: public link {
     protected:
-        simple_link() {} // it should not be used outside the class
+        simple_link() = default; // it should not be used outside the class
         simple_link(simple_link&) {} // it should not be used
         simple_link(unsigned int _id1, unsigned int _id2): link (_id1,_id2){} // this constructor cannot be directly called by users
 
     public:
-        ~simple_link() override {}
+        ~simple_link() override = default;
         double getLatency() override { return ONE_HOP_DELAY; } // you can implement your own latency
 
         class simple_link_generator;
@@ -1751,7 +1751,7 @@ class simple_link: public link {
                 { /*cout << "simple_link generated" << endl;*/ return new simple_link(_id1,_id2); }
             public:
                 string type() override { return "simple_link"; }
-                ~simple_link_generator() override {}
+                ~simple_link_generator() override = default;
         };
 };
 
