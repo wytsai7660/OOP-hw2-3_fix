@@ -684,7 +684,7 @@ class node {
 
         // you can use the function to get the node's neigbhors at this time
         // but in the project 3, you are not allowed to use this function
-        const std::map<unsigned int,bool> & getPhyNeighbors () {
+        const std::map<unsigned int,bool> & get_phy_neighbors () {
             return phy_neighbors;
         }
 
@@ -701,14 +701,14 @@ class node {
         void send_handler(packet *P);
 
         static node * id_to_node (unsigned int _id) { return ((id_node_table.find(_id)!=id_node_table.end()) ? id_node_table[_id]: nullptr) ; }
-        GET_WITH_NAME(getNodeID, unsigned int, id)
+        GET_WITH_NAME(get_node_ID, unsigned int, id)
 
         static void del_node (unsigned int _id) {
             if (id_node_table.find(_id) != id_node_table.end()) {
                 id_node_table.erase(_id);
             }
         }
-        static unsigned int getNodeNum () { return id_node_table.size(); }
+        static unsigned int get_node_num () { return id_node_table.size(); }
 
         class node_generator {
                 // lock the copy constructor
@@ -829,8 +829,8 @@ class event {
 
         static void start_simulate( unsigned int _end_time ); // the function is used to start the simulation
 
-        static unsigned int getCurTime() { return cur_time ; }
-        static void getCurTime(unsigned int _cur_time) { cur_time = _cur_time; }
+        static unsigned int get_cur_time() { return cur_time ; }
+        static void get_cur_time(unsigned int _cur_time) { cur_time = _cur_time; }
         // static unsigned int getEndTime() { return end_time ; }
         // static void getEndTime(unsigned int _end_time) { end_time = _end_time; }
 
@@ -1012,7 +1012,7 @@ unsigned int recv_event::event_priority() const {
 }
 // the recv_event::print() function is used for log file
 void recv_event::print () const {
-    std::cout << "time "     << std::setw(11) << event::getCurTime()
+    std::cout << "time "     << std::setw(11) << event::get_cur_time()
          << "   recID"       << std::setw(11) << receiverID
          << "   pktID"       << std::setw(11) << pkt->get_packet_ID()
          << "   srcID"       << std::setw(11) << pkt->get_header()->get_src_ID()
@@ -1107,7 +1107,7 @@ unsigned int send_event::event_priority() const {
 }
 // the send_event::print() function is used for log file
 void send_event::print () const {
-    std::cout << "time "     << std::setw(11) << event::getCurTime()
+    std::cout << "time "     << std::setw(11) << event::get_cur_time()
          << "   senID"       << std::setw(11) << senderID
          << "   pktID"       << std::setw(11) << pkt->get_packet_ID()
          << "   srcID"       << std::setw(11) << pkt->get_header()->get_src_ID()
@@ -1234,7 +1234,7 @@ unsigned int IoT_data_pkt_gen_event::event_priority() const {
 }
 // the IoT_data_pkt_gen_event::print() function is used for log file
 void IoT_data_pkt_gen_event::print () const {
-    std::cout << "time "     << std::setw(11) << event::getCurTime()
+    std::cout << "time "     << std::setw(11) << event::get_cur_time()
          << "        "       << std::setw(11) << " "
          << "        "       << std::setw(11) << " "
          << "   srcID"       << std::setw(11) << src
@@ -1353,7 +1353,7 @@ unsigned int IoT_ctrl_pkt_gen_event::event_priority() const {
 }
 // the IoT_ctrl_pkt_gen_event::print() function is used for log file
 void IoT_ctrl_pkt_gen_event::print () const {
-    std::cout << "time "     << std::setw(11) << event::getCurTime()
+    std::cout << "time "     << std::setw(11) << event::get_cur_time()
          << "        "       << std::setw(11) << " "
          << "        "       << std::setw(11) << " "
          << "   srcID"       << std::setw(11) << src
@@ -1476,7 +1476,7 @@ unsigned int AGG_ctrl_pkt_gen_event::event_priority() const {
 }
 // the AGG_ctrl_pkt_gen_event::print() function is used for log file
 void AGG_ctrl_pkt_gen_event::print () const {
-    std::cout << "time "     << std::setw(11) << event::getCurTime()
+    std::cout << "time "     << std::setw(11) << event::get_cur_time()
          << "        "       << std::setw(11) << " "
          << "        "       << std::setw(11) << " "
          << "   srcID"       << std::setw(11) << src
@@ -1602,7 +1602,7 @@ unsigned int DIS_ctrl_pkt_gen_event::event_priority() const {
 }
 // the DIS_ctrl_pkt_gen_event::print() function is used for log file
 void DIS_ctrl_pkt_gen_event::print () const {
-    std::cout << "time "     << std::setw(11) << event::getCurTime()
+    std::cout << "time "     << std::setw(11) << event::get_cur_time()
          << "        "       << std::setw(11) << " "
          << "        "       << std::setw(11) << " "
          << "   srcID"       << std::setw(11) << src
@@ -1638,7 +1638,7 @@ class link {
             return ((id_id_link_table.find(std::pair<unsigned int,unsigned int>(_id1, _id2)) != id_id_link_table.end()) ? id_id_link_table[std::pair<unsigned,unsigned>(_id1,_id2)] : nullptr);
         }
 
-        virtual double getLatency() = 0; // you must implement your own latency
+        virtual double get_latency() = 0; // you must implement your own latency
 
         static void del_link (unsigned int _id1, unsigned int _id2) {
             std::pair<unsigned int, unsigned int> temp;
@@ -1715,7 +1715,7 @@ class simple_link: public link {
 
     public:
         ~simple_link() override = default;
-        double getLatency() override { return ONE_HOP_DELAY; } // you can implement your own latency
+        double get_latency() override { return ONE_HOP_DELAY; } // you can implement your own latency
 
         // simple_link is derived from link_generator to generate a link
         class simple_link_generator : public link_generator {
@@ -1755,7 +1755,7 @@ void IoT_data_packet_event (unsigned int src, unsigned int dst=0, unsigned int t
 
 // the IoT_ctrl_packet_event function is used to add an initial event
 
-void IoT_ctrl_packet_event (unsigned int src, unsigned int t = event::getCurTime(),
+void IoT_ctrl_packet_event (unsigned int src, unsigned int t = event::get_cur_time(),
                         std::string msg = "default") {
         // 1st parameter: the source; the destination that want to broadcast a msg with counter 0 (i.e., match ID)
         // 2nd parameter: time (optional)
@@ -1780,7 +1780,7 @@ void IoT_ctrl_packet_event (unsigned int src, unsigned int t = event::getCurTime
 }
 
 // the AGG_ctrl_packet_event function is used to add an initial event
-void AGG_ctrl_packet_event (unsigned int src, unsigned int dst = 0, unsigned int t = event::getCurTime(), std::string msg = "default"){
+void AGG_ctrl_packet_event (unsigned int src, unsigned int dst = 0, unsigned int t = event::get_cur_time(), std::string msg = "default"){
     if ( node::id_to_node(src) == nullptr || (dst != BROCAST_ID && node::id_to_node(dst) == nullptr) ) {
         std::cerr << "src or dst is incorrect" << '\n'; return ;
         return;
@@ -1800,7 +1800,7 @@ void AGG_ctrl_packet_event (unsigned int src, unsigned int dst = 0, unsigned int
 
 // the DIS_ctrl_packet_event function is used to add an initial event
 void DIS_ctrl_packet_event (unsigned int sink_id, unsigned int id, unsigned int parent,
-                            unsigned int t = event::getCurTime(), std::string msg = "default"){
+                            unsigned int t = event::get_cur_time(), std::string msg = "default"){
     if ( node::id_to_node(sink_id) == nullptr || (id != BROCAST_ID && node::id_to_node(id) == nullptr) ) {
         std::cerr << "sink_id or id is incorrect" << '\n'; return ;
         return;
@@ -1828,7 +1828,7 @@ void node::send_handler(packet *p){
     e_data.s_id = _p->get_header()->get_pre_ID();
     e_data.r_id = _p->get_header()->get_nex_ID();
     e_data._pkt = _p;
-    send_event *e = dynamic_cast<send_event*> (event::event_generator::generate("send_event",event::getCurTime(), (void *)&e_data) );
+    send_event *e = dynamic_cast<send_event*> (event::event_generator::generate("send_event",event::get_cur_time(), (void *)&e_data) );
     if (e == nullptr) {
         std::cerr << "event type is incorrect" << '\n';
     }
@@ -1843,7 +1843,7 @@ void node::send(packet *p){ // this function is called by event; not for the use
 
         if (nb_id != _nexID && BROCAST_ID != _nexID) {continue;} // this neighbor will not receive the packet
 
-        unsigned int trigger_time = event::getCurTime() + link::id_id_to_link(id, nb_id)->getLatency() ; // we simply assume that the delay is fixed
+        unsigned int trigger_time = event::get_cur_time() + link::id_id_to_link(id, nb_id)->get_latency() ; // we simply assume that the delay is fixed
         // cout << "node " << id << " send to node " <<  nb_id << '\n';
         recv_event::recv_data e_data;
         e_data.s_id = id;    // set the sender   (i.e., preID)
@@ -1876,7 +1876,7 @@ void IoT_device::recv_handler (packet *p){
         IoT_ctrl_payload *l3 = nullptr;
         l3 = dynamic_cast<IoT_ctrl_payload*> (p3->get_payload());
 
-        p3->get_header()->set_pre_ID ( getNodeID() );
+        p3->get_header()->set_pre_ID ( get_node_ID() );
         p3->get_header()->set_nex_ID ( BROCAST_ID );
         p3->get_header()->set_dst_ID ( BROCAST_ID );
 
