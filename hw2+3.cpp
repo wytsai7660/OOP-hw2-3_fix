@@ -61,7 +61,7 @@ class header {
                 // you have to implement your own type() to return your header type
         	    virtual string type() = 0 ;
         	    // this function is used to generate any type of header derived
-        	    static header * generate (string type) {
+        	    static header * generate (const string &type) {
             		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             			return prototypes[type]->generate(); // generate it!!
             		}
@@ -232,7 +232,7 @@ class payload {
                 // you have to implement your own type() to return your header type
         	    virtual string type() = 0;
         	    // this function is used to generate any type of header derived
-        	    static payload * generate (string type) {
+        	    static payload * generate (const string &type) {
             		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             			return prototypes[type]->generate(); // generate it!!
             		}
@@ -390,7 +390,7 @@ class packet{
     protected:
         // these constructors cannot be directly called by users
         packet(): hdr(nullptr), pld(nullptr) { p_id=last_packet_id++; live_packet_num ++; }
-        packet(string _hdr, string _pld, bool rep = false, unsigned int rep_id = 0) {
+        packet(const string &_hdr, const string &_pld, bool rep = false, unsigned int rep_id = 0) {
             if (! rep ) // a duplicated packet does not have a new packet id
                 p_id = last_packet_id ++;
             else
@@ -450,7 +450,7 @@ class packet{
                 // you have to implement your own type() to return your packet type
         	    virtual string type() = 0;
         	    // this function is used to generate any type of packet derived
-        	    static packet * generate (string type) {
+        	    static packet * generate (const string &type) {
             		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             			return prototypes[type]->generate(); // generate it!!
             		}
@@ -489,7 +489,7 @@ class IoT_data_packet: public packet {
             //DFS_path = (dynamic_cast<IoT_data_header*>(p))->DFS_path;
             //isVisited = (dynamic_cast<IoT_data_header*>(p))->isVisited;
         } // for duplicate
-        IoT_data_packet(string _h, string _p): packet(_h,_p) {}
+        IoT_data_packet(const string &_h, const string &_p): packet(_h, _p) {}
 
     public:
         ~IoT_data_packet() override = default;
@@ -527,7 +527,7 @@ class IoT_ctrl_packet: public packet {
             //DFS_path = (dynamic_cast<IoT_ctrl_header*>(p))->DFS_path;
             //isVisited = (dynamic_cast<IoT_ctrl_header*>(p))->isVisited;
         } // for duplicate
-        IoT_ctrl_packet(string _h, string _p): packet(_h,_p) {}
+        IoT_ctrl_packet(const string &_h, const string &_p): packet(_h, _p) {}
 
     public:
         ~IoT_ctrl_packet() override = default;
@@ -572,7 +572,7 @@ class AGG_ctrl_packet: public packet {
             //DFS_path = (dynamic_cast<AGG_ctrl_header*>(p))->DFS_path;
             //isVisited = (dynamic_cast<AGG_ctrl_header*>(p))->isVisited;
         } // for duplicate
-        AGG_ctrl_packet(string _h, string _p): packet(_h,_p) {}
+        AGG_ctrl_packet(const string &_h, const string &_p): packet(_h, _p) {}
 
     public:
         ~AGG_ctrl_packet() override = default;
@@ -616,7 +616,7 @@ class DIS_ctrl_packet: public packet {
             //DFS_path = (dynamic_cast<DIS_ctrl_header*>(p))->DFS_path;
             //isVisited = (dynamic_cast<DIS_ctrl_header*>(p))->isVisited;
         } // for duplicate
-        DIS_ctrl_packet(string _h, string _p): packet(_h,_p) {}
+        DIS_ctrl_packet(const string &_h, const string &_p): packet(_h, _p) {}
 
     public:
         ~DIS_ctrl_packet() override = default;
@@ -667,7 +667,7 @@ class node {
         }
         virtual string type() = 0; // please define it in your derived node class
 
-        void add_phy_neighbor (unsigned int _id, string link_type = "simple_link"); // we only add a directed link from id to _id
+        void add_phy_neighbor (unsigned int _id, const string &link_type = "simple_link"); // we only add a directed link from id to _id
         void del_phy_neighbor (unsigned int _id); // we only delete a directed link from id to _id
 
         // you can use the function to get the node's neigbhors at this time
@@ -713,7 +713,7 @@ class node {
                 // you have to implement your own type() to return your node type
         	    virtual string type() = 0;
         	    // this function is used to generate any type of node derived
-        	    static node * generate (string type, unsigned int _id) {
+        	    static node * generate (const string &type, unsigned int _id) {
         	        if(id_node_table.find(_id)!=id_node_table.end()){
         	            std::cerr << "duplicate node id" << '\n'; // node id is duplicated
         	            return nullptr;
@@ -804,7 +804,7 @@ class event {
         virtual ~event() = default;
 
         virtual unsigned int event_priority() const = 0;
-        unsigned int get_hash_value(string string_for_hash) const {
+        unsigned int get_hash_value(const string &string_for_hash) const {
             unsigned int priority = event_seq (string_for_hash);
             return priority;
         }
@@ -838,7 +838,7 @@ class event {
                 // you have to implement your own type() to return your event type
         	    virtual string type() = 0;
         	    // this function is used to generate any type of event derived
-        	    static event * generate (string type, unsigned int _trigger_time, void * data) {
+        	    static event * generate (const string &type, unsigned int _trigger_time, void *data) {
             		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             		    event * e = prototypes[type]->generate(_trigger_time, data);
             		    add_event(e);
@@ -1645,7 +1645,7 @@ class link {
                 // you have to implement your own type() to return your link type
         	    virtual string type() = 0;
         	    // this function is used to generate any type of link derived
-        	    static link * generate (string type, unsigned int _id1, unsigned int _id2) {
+        	    static link * generate (const string &type, unsigned int _id1, unsigned int _id2) {
         	        if(id_id_link_table.find(pair<unsigned int,unsigned int>(_id1,_id2))!=id_id_link_table.end()){
         	            std::cerr << "duplicate link id" << '\n'; // link id is duplicated
         	            return nullptr;
@@ -1672,7 +1672,7 @@ class link {
 map<string,link::link_generator*> link::link_generator::prototypes;
 map<pair<unsigned int,unsigned int>, link*> link::id_id_link_table;
 
-void node::add_phy_neighbor (unsigned int _id, string link_type){
+void node::add_phy_neighbor (unsigned int _id, const string &link_type){
     if (id == _id) return; // if the two nodes are the same...
     if (id_node_table.find(_id)==id_node_table.end()) return; // if this node does not exist
     if (phy_neighbors.find(_id)!=phy_neighbors.end()) return; // if this neighbor has been added
