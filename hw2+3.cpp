@@ -67,8 +67,9 @@ class header {
             	}
             	static void print () {
             	    std::cout << "registered header types: " << '\n';
-            	    for (std::map<std::string, header::header_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
+            	    for (std::map<std::string, header::header_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
             	        std::cout << it->second->type() << '\n';
+                    }
             	}
             	virtual ~header_generator() = default;
         };
@@ -238,8 +239,9 @@ class payload {
             	}
             	static void print () {
             	    std::cout << "registered payload types: " << '\n';
-            	    for (std::map<std::string,payload::payload_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
+            	    for (std::map<std::string,payload::payload_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
             	        std::cout << it->second->type() << '\n';
+                    }
             	}
             	virtual ~payload_generator() = default;
         };
@@ -388,10 +390,12 @@ class packet{
         // these constructors cannot be directly called by users
         packet(): hdr(nullptr), pld(nullptr) { p_id=last_packet_id++; live_packet_num ++; }
         packet(const std::string &_hdr, const std::string &_pld, bool rep = false, unsigned int rep_id = 0) {
-            if (! rep ) // a duplicated packet does not have a new packet id
+            if (! rep )  { // a duplicated packet does not have a new packet id
                 p_id = last_packet_id ++;
-            else
+            }
+            else {
                 p_id = rep_id;
+            }
             hdr = header::header_generator::generate(_hdr);
             pld = payload::payload_generator::generate(_pld);
             live_packet_num ++;
@@ -399,10 +403,12 @@ class packet{
     public:
         virtual ~packet(){
             // cout << "packet destructor begin" << '\n';
-            if (hdr != nullptr)
+            if (hdr != nullptr) {
                 delete hdr;
-            if (pld != nullptr)
+            }
+            if (pld != nullptr) {
                 delete pld;
+            }
             live_packet_num --;
             // cout << "packet destructor end" << '\n';
         }
@@ -463,8 +469,9 @@ class packet{
             	}
             	static void print () {
             	    std::cout << "registered packet types: " << '\n';
-            	    for (std::map<std::string,packet::packet_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
+            	    for (std::map<std::string,packet::packet_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
             	        std::cout << it->second->type() << '\n';
+                    }
             	}
             	virtual ~packet_generator() = default;
         };
@@ -500,10 +507,12 @@ class IoT_data_packet: public packet {
             protected:
                 packet *generate (packet *p = nullptr) override {
                     // cout << "IoT_data_packet generated" << '\n';
-                    if ( nullptr == p )
+                    if ( nullptr == p ) {
                         return new IoT_data_packet("IoT_data_header","IoT_data_payload");
-                    else
+                    }
+                    else {
                         return new IoT_data_packet(p); // duplicate
+                    }
                 }
             public:
                 std::string type() override { return "IoT_data_packet";}
@@ -543,10 +552,12 @@ class IoT_ctrl_packet: public packet {
             protected:
                 packet *generate (packet *p = nullptr) override {
                     // cout << "IoT_ctrl_packet generated" << '\n';
-                    if ( nullptr == p )
+                    if ( nullptr == p ) {
                         return new IoT_ctrl_packet("IoT_ctrl_header","IoT_ctrl_payload");
-                    else
+                    }
+                    else {
                         return new IoT_ctrl_packet(p); // duplicate
+                    }
                 }
             public:
                 std::string type() override { return "IoT_ctrl_packet";}
@@ -588,10 +599,12 @@ class AGG_ctrl_packet: public packet {
             protected:
                 packet *generate (packet *p = nullptr) override {
                     // cout << "AGG_ctrl_packet generated" << '\n';
-                    if ( nullptr == p )
+                    if ( nullptr == p ) {
                         return new AGG_ctrl_packet("AGG_ctrl_header","AGG_ctrl_payload");
-                    else
+                    }
+                    else {
                         return new AGG_ctrl_packet(p); // duplicate
+                    }
                 }
             public:
                 std::string type() override { return "AGG_ctrl_packet";}
@@ -632,10 +645,12 @@ class DIS_ctrl_packet: public packet {
             protected:
                 packet *generate (packet *p = nullptr) override {
                     // cout << "DIS_ctrl_packet generated" << '\n';
-                    if ( nullptr == p )
+                    if ( nullptr == p ) {
                         return new DIS_ctrl_packet("DIS_ctrl_header","DIS_ctrl_payload");
-                    else
+                    }
+                    else {
                         return new DIS_ctrl_packet(p); // duplicate
+                    }
                 }
             public:
                 std::string type() override { return "DIS_ctrl_packet";}
@@ -689,8 +704,9 @@ class node {
         GET_WITH_NAME(getNodeID, unsigned int, id)
 
         static void del_node (unsigned int _id) {
-            if (id_node_table.find(_id) != id_node_table.end())
+            if (id_node_table.find(_id) != id_node_table.end()) {
                 id_node_table.erase(_id);
+            }
         }
         static unsigned int getNodeNum () { return id_node_table.size(); }
 
@@ -728,8 +744,9 @@ class node {
             	}
             	static void print () {
             	    std::cout << "registered node types: " << '\n';
-            	    for (std::map<std::string, node::node_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
+            	    for (std::map<std::string, node::node_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
             	        std::cout << it->second->type() << '\n';
+                    }
             	}
             	virtual ~node_generator() = default;
         };
@@ -846,8 +863,9 @@ class event {
             	}
             	static void print () {
             	    std::cout << "registered event types: " << '\n';
-            	    for (std::map<std::string, event::event_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
+            	    for (std::map<std::string, event::event_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
             	        std::cout << it->second->type() << '\n';
+                    }
             	}
             	virtual ~event_generator() = default;
         };
@@ -870,8 +888,9 @@ void event::flush_events()
     std::cout << "**flush end" << '\n';
 }
 event * event::get_next_event() {
-    if(events.empty())
+    if(events.empty()) {
         return nullptr;
+    }
     event * e = events.top();
     events.pop();
     // cout << events.size() << " events remains" << '\n';
@@ -886,8 +905,9 @@ void event::start_simulate(unsigned int _end_time) {
     event *e;
     e = event::get_next_event ();
     while ( e != nullptr && e->trigger_time <= end_time ) {
-        if ( cur_time <= e->trigger_time )
+        if ( cur_time <= e->trigger_time ) {
             cur_time = e->trigger_time;
+        }
         else {
             std::cerr << "cur_time = " << cur_time << ", event trigger_time = " << e->trigger_time << '\n';
             break;
@@ -912,10 +932,12 @@ bool mycomp::operator() (const event* lhs, const event* rhs) const {
     // cout << "lhs hash = " << lhs_pri << '\n';
     // cout << "rhs hash = " << rhs_pri << '\n';
 
-    if (reverse)
+    if (reverse) {
         return ((lhs->get_trigger_time()) == (rhs->get_trigger_time())) ? (lhs_pri < rhs_pri): ((lhs->get_trigger_time()) < (rhs->get_trigger_time()));
-    else
+    }
+    else {
         return ((lhs->get_trigger_time()) == (rhs->get_trigger_time())) ? (lhs_pri > rhs_pri): ((lhs->get_trigger_time()) > (rhs->get_trigger_time()));
+    }
 }
 
 class recv_event: public event {
@@ -1620,8 +1642,9 @@ class link {
 
         static void del_link (unsigned int _id1, unsigned int _id2) {
             std::pair<unsigned int, unsigned int> temp;
-            if (id_id_link_table.find(temp)!=id_id_link_table.end())
+            if (id_id_link_table.find(temp)!=id_id_link_table.end()) {
                 id_id_link_table.erase(temp);
+            }
         }
 
         static unsigned int get_link_num () { return id_id_link_table.size(); }
@@ -1660,8 +1683,9 @@ class link {
             	}
             	static void print () {
             	    std::cout << "registered link types: " << '\n';
-            	    for (std::map<std::string, link::link_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++)
+            	    for (std::map<std::string, link::link_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
             	        std::cout << it->second->type() << '\n';
+                    }
             	}
             	virtual ~link_generator() = default;
         };
@@ -1670,9 +1694,9 @@ std::map<std::string,link::link_generator*> link::link_generator::prototypes;
 std::map<std::pair<unsigned int,unsigned int>, link*> link::id_id_link_table;
 
 void node::add_phy_neighbor (unsigned int _id, const std::string &link_type){
-    if (id == _id) return; // if the two nodes are the same...
-    if (id_node_table.find(_id)==id_node_table.end()) return; // if this node does not exist
-    if (phy_neighbors.find(_id)!=phy_neighbors.end()) return; // if this neighbor has been added
+    if (id == _id) {return;} // if the two nodes are the same...
+    if (id_node_table.find(_id)==id_node_table.end()) {return;} // if this node does not exist
+    if (phy_neighbors.find(_id)!=phy_neighbors.end()) {return;} // if this neighbor has been added
     phy_neighbors[_id] = true;
 
     link::link_generator::generate(link_type,id,_id);
@@ -1724,7 +1748,9 @@ void IoT_data_packet_event (unsigned int src, unsigned int dst=0, unsigned int t
 
     // recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",t, (void *)&e_data) );
     IoT_data_pkt_gen_event *e = dynamic_cast<IoT_data_pkt_gen_event*> ( event::event_generator::generate("IoT_data_pkt_gen_event",t, (void *)&e_data) );
-    if (e == nullptr) std::cerr << "event type is incorrect" << '\n';
+    if (e == nullptr) {
+        std::cerr << "event type is incorrect" << '\n';
+    }
 }
 
 // the IoT_ctrl_packet_event function is used to add an initial event
@@ -1748,7 +1774,9 @@ void IoT_ctrl_packet_event (unsigned int src, unsigned int t = event::getCurTime
     // e_data.per = per;
 
     IoT_ctrl_pkt_gen_event *e = dynamic_cast<IoT_ctrl_pkt_gen_event*> ( event::event_generator::generate("IoT_ctrl_pkt_gen_event",t, (void *)&e_data) );
-    if (e == nullptr) std::cerr << "event type is incorrect" << '\n';
+    if (e == nullptr) {
+        std::cerr << "event type is incorrect" << '\n';
+    }
 }
 
 // the AGG_ctrl_packet_event function is used to add an initial event
@@ -1765,7 +1793,9 @@ void AGG_ctrl_packet_event (unsigned int src, unsigned int dst = 0, unsigned int
 
     // recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",t, (void *)&e_data) );
     AGG_ctrl_pkt_gen_event *e = dynamic_cast<AGG_ctrl_pkt_gen_event*> ( event::event_generator::generate("AGG_ctrl_pkt_gen_event",t, (void *)&e_data) );
-    if (e == nullptr) std::cerr << "event type is incorrect" << '\n';
+    if (e == nullptr) {
+        std::cerr << "event type is incorrect" << '\n';
+    }
 }
 
 // the DIS_ctrl_packet_event function is used to add an initial event
@@ -1784,7 +1814,9 @@ void DIS_ctrl_packet_event (unsigned int sink_id, unsigned int id, unsigned int 
 
     // recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",t, (void *)&e_data) );
     DIS_ctrl_pkt_gen_event *e = dynamic_cast<DIS_ctrl_pkt_gen_event*> ( event::event_generator::generate("DIS_ctrl_pkt_gen_event",t, (void *)&e_data) );
-    if (e == nullptr) std::cerr << "event type is incorrect" << '\n';
+    if (e == nullptr) {
+        std::cerr << "event type is incorrect" << '\n';
+    }
 }
 
 // send_handler function is used to transmit packet p based on the information in the header
@@ -1797,17 +1829,19 @@ void node::send_handler(packet *p){
     e_data.r_id = _p->get_header()->get_nex_ID();
     e_data._pkt = _p;
     send_event *e = dynamic_cast<send_event*> (event::event_generator::generate("send_event",event::getCurTime(), (void *)&e_data) );
-    if (e == nullptr) std::cerr << "event type is incorrect" << '\n';
+    if (e == nullptr) {
+        std::cerr << "event type is incorrect" << '\n';
+    }
 }
 
 void node::send(packet *p){ // this function is called by event; not for the user
-    if (p == nullptr) return;
+    if (p == nullptr) {return;}
 
     unsigned int _nexID = p->get_header()->get_nex_ID();
     for ( std::map<unsigned int,bool>::iterator it = phy_neighbors.begin(); it != phy_neighbors.end(); it ++) {
         unsigned int nb_id = it->first; // neighbor id
 
-        if (nb_id != _nexID && BROCAST_ID != _nexID) continue; // this neighbor will not receive the packet
+        if (nb_id != _nexID && BROCAST_ID != _nexID) {continue;} // this neighbor will not receive the packet
 
         unsigned int trigger_time = event::getCurTime() + link::id_id_to_link(id, nb_id)->getLatency() ; // we simply assume that the delay is fixed
         // cout << "node " << id << " send to node " <<  nb_id << '\n';
@@ -1819,7 +1853,9 @@ void node::send(packet *p){ // this function is called by event; not for the use
         e_data._pkt = p2;
 
         recv_event *e = dynamic_cast<recv_event*> (event::event_generator::generate("recv_event", trigger_time, (void*) &e_data)); // send the packet to the neighbor
-        if (e == nullptr) std::cerr << "event type is incorrect" << '\n';
+        if (e == nullptr) {
+            std::cerr << "event type is incorrect" << '\n';
+        }
     }
     packet::discard(p);
 }
@@ -1832,7 +1868,7 @@ void IoT_device::recv_handler (packet *p){
     // node 0 broadcasts its message to every node and every node relays the packet "only once" and increases its counter
     // the variable hi is used to examine whether the packet has been received by this node before
     // you can remove the variable hi and create your own routing table in class IoT_device
-    if (p == nullptr) return ;
+    if (p == nullptr) {return ;}
 
     if (p->type() == "IoT_ctrl_packet" && !hi ) { // the device receives a packet from the sink
         IoT_ctrl_packet *p3 = nullptr;
