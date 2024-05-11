@@ -432,7 +432,7 @@ class packet{
         // to print more information for recv_event and send_event
         virtual string addition_information () { return ""; }
 
-        static int getLivePacketNum () { return live_packet_num; }
+        static int get_live_packet_num () { return live_packet_num; }
 
         class packet_generator {
                 // lock the copy constructor
@@ -1627,7 +1627,7 @@ class link {
                 id_id_link_table.erase(temp);
         }
 
-        static unsigned int getLinkNum () { return id_id_link_table.size(); }
+        static unsigned int get_link_num () { return id_id_link_table.size(); }
 
         class link_generator {
                 // lock the copy constructor
@@ -1981,6 +1981,6 @@ int main()
     // start simulation!!
     event::start_simulate(300);
     // event::flush_events() ;
-    // cout << packet::getLivePacketNum() << endl;
+    // cout << packet::get_live_packet_num() << endl;
     return 0;
 }
