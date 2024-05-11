@@ -43,7 +43,7 @@ class header {
         GET(unsigned int, pre_ID)
         GET(unsigned int, nex_ID)
         virtual string type() = 0;
-        
+
         // factory concept: generate a header
         class header_generator {
                 // lock the copy constructor
@@ -62,7 +62,7 @@ class header {
         	    virtual string type() = 0 ;
         	    // this function is used to generate any type of header derived
         	    static header * generate (string type) {
-            		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists 
+            		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             			return prototypes[type]->generate(); // generate it!!
             		}
             		std::cerr << "no such header type" << std::endl; // otherwise
@@ -75,7 +75,7 @@ class header {
             	}
             	virtual ~header_generator(){}
         };
-        
+
     protected:
         header():src_ID(BROCAST_ID),dst_ID(BROCAST_ID),pre_ID(BROCAST_ID),nex_ID(BROCAST_ID){} // this constructor cannot be directly called by users
 
@@ -90,7 +90,7 @@ map<string,header::header_generator*> header::header_generator::prototypes;
 
 class IoT_data_header : public header{
         IoT_data_header(IoT_data_header&){} // cannot be called by users
-        
+
     protected:
         IoT_data_header(){} // this constructor cannot be directly called by users
 
@@ -108,19 +108,19 @@ class IoT_data_header : public header{
             protected:
                 header * generate() override {
                     // cout << "IoT_data_header generated" << endl;
-                    return new IoT_data_header; 
+                    return new IoT_data_header;
                 }
             public:
                 string type() override { return "IoT_data_header";}
                 ~IoT_data_header_generator() override {}
-        
+
         };
 };
 IoT_data_header::IoT_data_header_generator IoT_data_header::IoT_data_header_generator::sample;
 
 class IoT_ctrl_header : public header{
         IoT_ctrl_header(IoT_ctrl_header&){} // cannot be called by users
-        
+
     protected:
         IoT_ctrl_header(){} // this constructor cannot be directly called by users
 
@@ -138,12 +138,12 @@ class IoT_ctrl_header : public header{
             protected:
                 header * generate() override {
                     // cout << "IoT_ctrl_header generated" << endl;
-                    return new IoT_ctrl_header; 
+                    return new IoT_ctrl_header;
                 }
             public:
                 string type() override { return "IoT_ctrl_header";}
                 ~IoT_ctrl_header_generator() override {}
-        
+
         };
 };
 IoT_ctrl_header::IoT_ctrl_header_generator IoT_ctrl_header::IoT_ctrl_header_generator::sample;
@@ -151,7 +151,7 @@ IoT_ctrl_header::IoT_ctrl_header_generator IoT_ctrl_header::IoT_ctrl_header_gene
 
 class AGG_ctrl_header : public header{
         AGG_ctrl_header(AGG_ctrl_header&){} // cannot be called by users
-        
+
     protected:
         AGG_ctrl_header(){} // this constructor cannot be directly called by users
 
@@ -169,12 +169,12 @@ class AGG_ctrl_header : public header{
             protected:
                 header * generate() override {
                     // cout << "AGG_ctrl_header generated" << endl;
-                    return new AGG_ctrl_header; 
+                    return new AGG_ctrl_header;
                 }
             public:
                 string type() override { return "AGG_ctrl_header";}
                 ~AGG_ctrl_header_generator() override {}
-        
+
         };
 };
 AGG_ctrl_header::AGG_ctrl_header_generator AGG_ctrl_header::AGG_ctrl_header_generator::sample;
@@ -182,7 +182,7 @@ AGG_ctrl_header::AGG_ctrl_header_generator AGG_ctrl_header::AGG_ctrl_header_gene
 
 class DIS_ctrl_header : public header{
         DIS_ctrl_header(DIS_ctrl_header&){} // cannot be called by users
-        
+
     protected:
         DIS_ctrl_header(){} // this constructor cannot be directly called by users
 
@@ -200,30 +200,30 @@ class DIS_ctrl_header : public header{
             protected:
                 header * generate() override {
                     // cout << "DIS_ctrl_header generated" << endl;
-                    return new DIS_ctrl_header; 
+                    return new DIS_ctrl_header;
                 }
             public:
                 string type() override { return "DIS_ctrl_header";}
                 ~DIS_ctrl_header_generator() override {}
-        
+
         };
 };
 DIS_ctrl_header::DIS_ctrl_header_generator DIS_ctrl_header::DIS_ctrl_header_generator::sample;
 
 class payload {
         payload(payload&){} // this constructor cannot be directly called by users
-        
+
         string msg;
-        
+
     protected:
         payload(){}
     public:
         virtual ~payload(){}
         virtual string type() = 0;
-        
+
         SET(string, msg)
         GET(string, msg)
-        
+
         class payload_generator {
                 // lock the copy constructor
                 payload_generator(payload_generator &){}
@@ -241,7 +241,7 @@ class payload {
         	    virtual string type() = 0;
         	    // this function is used to generate any type of header derived
         	    static payload * generate (string type) {
-            		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists 
+            		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             			return prototypes[type]->generate(); // generate it!!
             		}
             		std::cerr << "no such payload type" << std::endl; // otherwise
@@ -265,9 +265,9 @@ class IoT_data_payload : public payload {
         IoT_data_payload(){} // this constructor cannot be directly called by users
     public:
         ~IoT_data_payload() override {}
-        
+
         string type() override { return "IoT_data_payload"; }
-        
+
         class IoT_data_payload_generator;
         friend class IoT_data_payload_generator;
         // IoT_data_payload is derived from payload_generator to generate a payload
@@ -276,9 +276,9 @@ class IoT_data_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 IoT_data_payload_generator() { /*cout << "IoT_data_payload registered" << endl;*/ register_payload_type(&sample); }
             protected:
-                payload * generate() override { 
+                payload * generate() override {
                     // cout << "IoT_data_payload generated" << endl;
-                    return new IoT_data_payload; 
+                    return new IoT_data_payload;
                 }
             public:
                 string type() override { return "IoT_data_payload";}
@@ -289,20 +289,20 @@ IoT_data_payload::IoT_data_payload_generator IoT_data_payload::IoT_data_payload_
 
 class IoT_ctrl_payload : public payload {
         IoT_ctrl_payload(IoT_ctrl_payload & s): counter (s.counter) {}
-        
+
         unsigned int counter ;
-        
+
     protected:
         IoT_ctrl_payload(): counter (0) {} // this constructor cannot be directly called by users
     public:
         ~IoT_ctrl_payload() override {}
-        
+
         void increase() { counter ++; } // used to increase the counter
         GET(unsigned int, counter) // used to get the value of counter
-        
+
         string type() override { return "IoT_ctrl_payload"; }
-        
-        
+
+
         class IoT_ctrl_payload_generator;
         friend class IoT_ctrl_payload_generator;
         // IoT_data_payload is derived from payload_generator to generate a payload
@@ -311,9 +311,9 @@ class IoT_ctrl_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 IoT_ctrl_payload_generator() { /*cout << "IoT_ctrl_payload registered" << endl;*/ register_payload_type(&sample); }
             protected:
-                payload * generate() override { 
+                payload * generate() override {
                     // cout << "IoT_ctrl_payload generated" << endl;
-                    return new IoT_ctrl_payload; 
+                    return new IoT_ctrl_payload;
                 }
             public:
                 string type() override { return "IoT_ctrl_payload";}
@@ -325,20 +325,20 @@ IoT_ctrl_payload::IoT_ctrl_payload_generator IoT_ctrl_payload::IoT_ctrl_payload_
 
 class AGG_ctrl_payload : public payload {
         AGG_ctrl_payload(AGG_ctrl_payload & s) {}
-        
+
         // unsigned int counter ;
-        
+
     protected:
         AGG_ctrl_payload() {} // this constructor cannot be directly called by users
     public:
         ~AGG_ctrl_payload() override {}
-        
+
         // void increase() { counter ++; } // used to increase the counter
         // GET(getCounter,unsigned int,counter); // used to get the value of counter
-        
+
         string type() override { return "AGG_ctrl_payload"; }
-        
-        
+
+
         class AGG_ctrl_payload_generator;
         friend class AGG_ctrl_payload_generator;
         // IoT_data_payload is derived from payload_generator to generate a payload
@@ -347,9 +347,9 @@ class AGG_ctrl_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 AGG_ctrl_payload_generator() { /*cout << "AGG_ctrl_payload registered" << endl;*/ register_payload_type(&sample); }
             protected:
-                payload * generate() override { 
+                payload * generate() override {
                     // cout << "AGG_ctrl_payload generated" << endl;
-                    return new AGG_ctrl_payload; 
+                    return new AGG_ctrl_payload;
                 }
             public:
                 string type() override { return "AGG_ctrl_payload";}
@@ -361,22 +361,22 @@ AGG_ctrl_payload::AGG_ctrl_payload_generator AGG_ctrl_payload::AGG_ctrl_payload_
 
 class DIS_ctrl_payload : public payload {
         DIS_ctrl_payload(DIS_ctrl_payload & s): parent(s.parent) {}
-        
+
         // unsigned int counter ;
         unsigned int parent;
-        
+
     protected:
         DIS_ctrl_payload(int _parent=0): parent (_parent) {} // this constructor cannot be directly called by users
     public:
         ~DIS_ctrl_payload() override {}
-        
+
         // void increase() { counter ++; } // used to increase the counter
         SET(unsigned int, parent)
         GET(unsigned int, parent) // used to get the value of counter
-        
+
         string type() override { return "DIS_ctrl_payload"; }
-        
-        
+
+
         class DIS_ctrl_payload_generator;
         friend class DIS_ctrl_payload_generator;
         // IoT_data_payload is derived from payload_generator to generate a payload
@@ -385,9 +385,9 @@ class DIS_ctrl_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 DIS_ctrl_payload_generator() { /*cout << "DIS_ctrl_payload registered" << endl;*/ register_payload_type(&sample); }
             protected:
-                payload * generate() override { 
+                payload * generate() override {
                     // cout << "DIS_ctrl_payload generated" << endl;
-                    return new DIS_ctrl_payload; 
+                    return new DIS_ctrl_payload;
                 }
             public:
                 string type() override { return "DIS_ctrl_payload";}
@@ -402,8 +402,8 @@ class packet{
         header *hdr;
         payload *pld;
         unsigned int p_id;
-        static unsigned int last_packet_id ; 
-        
+        static unsigned int last_packet_id ;
+
         packet(packet &) {}
         static int live_packet_num ;
     protected:
@@ -414,27 +414,27 @@ class packet{
                 p_id = last_packet_id ++;
             else
                 p_id = rep_id;
-            hdr = header::header_generator::generate(_hdr); 
-            pld = payload::payload_generator::generate(_pld); 
+            hdr = header::header_generator::generate(_hdr);
+            pld = payload::payload_generator::generate(_pld);
             live_packet_num ++;
         }
     public:
-        virtual ~packet(){ 
+        virtual ~packet(){
             // cout << "packet destructor begin" << endl;
-            if (hdr != nullptr) 
-                delete hdr; 
-            if (pld != nullptr) 
-                delete pld; 
+            if (hdr != nullptr)
+                delete hdr;
+            if (pld != nullptr)
+                delete pld;
             live_packet_num --;
             // cout << "packet destructor end" << endl;
         }
-        
+
         SET_WITH_NAME(set_header, header *, hdr)
         GET_WITH_NAME(get_header, header *, hdr)
         SET_WITH_NAME(set_payload, payload *, pld)
         GET_WITH_NAME(get_payload, payload *, pld)
         GET_WITH_NAME(get_packet_ID, unsigned int, p_id)
-        
+
         static void discard ( packet* &p ) {
             // cout << "checking" << endl;
             if (p != nullptr) {
@@ -450,9 +450,9 @@ class packet{
         // you can define your own packet's addition_information
         // to print more information for recv_event and send_event
         virtual string addition_information () { return ""; }
-        
+
         static int getLivePacketNum () { return live_packet_num; }
-        
+
         class packet_generator;
         friend class packet_generator;
         class packet_generator {
@@ -472,14 +472,14 @@ class packet{
         	    virtual string type() = 0;
         	    // this function is used to generate any type of packet derived
         	    static packet * generate (string type) {
-            		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists 
+            		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             			return prototypes[type]->generate(); // generate it!!
             		}
             		std::cerr << "no such packet type" << std::endl; // otherwise
             		return nullptr;
             	}
             	static packet * replicate (packet *p) {
-            	    if(prototypes.find(p->type()) != prototypes.end()){ // if this type derived exists 
+            	    if(prototypes.find(p->type()) != prototypes.end()){ // if this type derived exists
             			return prototypes[p->type()]->generate(p); // generate it!!
             		}
             		std::cerr << "no such packet type" << std::endl; // otherwise
@@ -501,7 +501,7 @@ int packet::live_packet_num = 0;
 // this packet is used to transmit the data
 class IoT_data_packet: public packet {
         IoT_data_packet(IoT_data_packet &) {}
-        
+
     protected:
         IoT_data_packet(){} // this constructor cannot be directly called by users
         IoT_data_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
@@ -511,11 +511,11 @@ class IoT_data_packet: public packet {
             //isVisited = (dynamic_cast<IoT_data_header*>(p))->isVisited;
         } // for duplicate
         IoT_data_packet(string _h, string _p): packet(_h,_p) {}
-        
+
     public:
         ~IoT_data_packet() override {}
         string type() override { return "IoT_data_packet"; }
-        
+
         class IoT_data_packet_generator;
         friend class IoT_data_packet_generator;
         // IoT_data_packet is derived from packet_generator to generate a pub packet
@@ -527,7 +527,7 @@ class IoT_data_packet: public packet {
                 packet *generate (packet *p = nullptr) override {
                     // cout << "IoT_data_packet generated" << endl;
                     if ( nullptr == p )
-                        return new IoT_data_packet("IoT_data_header","IoT_data_payload"); 
+                        return new IoT_data_packet("IoT_data_header","IoT_data_payload");
                     else
                         return new IoT_data_packet(p); // duplicate
                 }
@@ -541,7 +541,7 @@ IoT_data_packet::IoT_data_packet_generator IoT_data_packet::IoT_data_packet_gene
 // this packet type is used to conduct distributed BFS
 class IoT_ctrl_packet: public packet {
         IoT_ctrl_packet(IoT_ctrl_packet &) {}
-        
+
     protected:
         IoT_ctrl_packet(){} // this constructor cannot be directly called by users
         IoT_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
@@ -551,7 +551,7 @@ class IoT_ctrl_packet: public packet {
             //isVisited = (dynamic_cast<IoT_ctrl_header*>(p))->isVisited;
         } // for duplicate
         IoT_ctrl_packet(string _h, string _p): packet(_h,_p) {}
-        
+
     public:
         ~IoT_ctrl_packet() override {}
         string type() override { return "IoT_ctrl_packet"; }
@@ -560,7 +560,7 @@ class IoT_ctrl_packet: public packet {
             // cout << counter << endl;
             return " counter " + to_string(counter);
         }
-        
+
         class IoT_ctrl_packet_generator;
         friend class IoT_ctrl_packet_generator;
         // IoT_ctrl_packet is derived from packet_generator to generate a pub packet
@@ -572,7 +572,7 @@ class IoT_ctrl_packet: public packet {
                 packet *generate (packet *p = nullptr) override {
                     // cout << "IoT_ctrl_packet generated" << endl;
                     if ( nullptr == p )
-                        return new IoT_ctrl_packet("IoT_ctrl_header","IoT_ctrl_payload"); 
+                        return new IoT_ctrl_packet("IoT_ctrl_header","IoT_ctrl_payload");
                     else
                         return new IoT_ctrl_packet(p); // duplicate
                 }
@@ -588,7 +588,7 @@ IoT_ctrl_packet::IoT_ctrl_packet_generator IoT_ctrl_packet::IoT_ctrl_packet_gene
 // this packet type is used to transmit each device's nblist to the sink
 class AGG_ctrl_packet: public packet {
         AGG_ctrl_packet(AGG_ctrl_packet &) {}
-        
+
     protected:
         AGG_ctrl_packet(){} // this constructor cannot be directly called by users
         AGG_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
@@ -598,16 +598,16 @@ class AGG_ctrl_packet: public packet {
             //isVisited = (dynamic_cast<AGG_ctrl_header*>(p))->isVisited;
         } // for duplicate
         AGG_ctrl_packet(string _h, string _p): packet(_h,_p) {}
-        
+
     public:
         ~AGG_ctrl_packet() override {}
         string type() override { return "AGG_ctrl_packet"; }
-        
+
         // virtual string addition_information() {
         //     string msg = (dynamic_cast<AGG_ctrl_payload*>(this->get_payload()))->getMsg();
         //     return " msg " + msg;
         // }
-        
+
         class AGG_ctrl_packet_generator;
         friend class AGG_ctrl_packet_generator;
         // AGG_ctrl_packet is derived from packet_generator to generate a pub packet
@@ -619,7 +619,7 @@ class AGG_ctrl_packet: public packet {
                 packet *generate (packet *p = nullptr) override {
                     // cout << "AGG_ctrl_packet generated" << endl;
                     if ( nullptr == p )
-                        return new AGG_ctrl_packet("AGG_ctrl_header","AGG_ctrl_payload"); 
+                        return new AGG_ctrl_packet("AGG_ctrl_header","AGG_ctrl_payload");
                     else
                         return new AGG_ctrl_packet(p); // duplicate
                 }
@@ -634,7 +634,7 @@ AGG_ctrl_packet::AGG_ctrl_packet_generator AGG_ctrl_packet::AGG_ctrl_packet_gene
 // this packet type is used to transmit the new parent to each device
 class DIS_ctrl_packet: public packet {
         DIS_ctrl_packet(DIS_ctrl_packet &) {}
-        
+
     protected:
         DIS_ctrl_packet(){} // this constructor cannot be directly called by users
         DIS_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
@@ -644,7 +644,7 @@ class DIS_ctrl_packet: public packet {
             //isVisited = (dynamic_cast<DIS_ctrl_header*>(p))->isVisited;
         } // for duplicate
         DIS_ctrl_packet(string _h, string _p): packet(_h,_p) {}
-        
+
     public:
         ~DIS_ctrl_packet() override {}
         string type() override { return "DIS_ctrl_packet"; }
@@ -653,7 +653,7 @@ class DIS_ctrl_packet: public packet {
             // cout << counter << endl;
             return " parent " + to_string(parent);
         }
-        
+
         class DIS_ctrl_packet_generator;
         friend class DIS_ctrl_packet_generator;
         // DIS_ctrl_packet is derived from packet_generator to generate a pub packet
@@ -665,7 +665,7 @@ class DIS_ctrl_packet: public packet {
                 packet *generate (packet *p = nullptr) override {
                     // cout << "DIS_ctrl_packet generated" << endl;
                     if ( nullptr == p )
-                        return new DIS_ctrl_packet("DIS_ctrl_header","DIS_ctrl_payload"); 
+                        return new DIS_ctrl_packet("DIS_ctrl_header","DIS_ctrl_payload");
                     else
                         return new DIS_ctrl_packet(p); // duplicate
                 }
@@ -682,10 +682,10 @@ DIS_ctrl_packet::DIS_ctrl_packet_generator DIS_ctrl_packet::DIS_ctrl_packet_gene
 class node {
         // all nodes created in the program
         static map<unsigned int, node*> id_node_table;
-        
+
         unsigned int id;
         map<unsigned int,bool> phy_neighbors;
-        
+
     protected:
         node(node&){} // this constructor should not be used
         node(){} // this constructor should not be used
@@ -695,31 +695,31 @@ class node {
             id_node_table.erase (id) ;
         }
         virtual string type() = 0; // please define it in your derived node class
-        
+
         void add_phy_neighbor (unsigned int _id, string link_type = "simple_link"); // we only add a directed link from id to _id
         void del_phy_neighbor (unsigned int _id); // we only delete a directed link from id to _id
-        
+
         // you can use the function to get the node's neigbhors at this time
-        // but in the project 3, you are not allowed to use this function 
-        const map<unsigned int,bool> & getPhyNeighbors () { 
+        // but in the project 3, you are not allowed to use this function
+        const map<unsigned int,bool> & getPhyNeighbors () {
             return phy_neighbors;
         }
-        
-        
+
+
         void recv (packet *p) {
             packet *tp = p;
-            recv_handler(tp); 
-            packet::discard(p); 
+            recv_handler(tp);
+            packet::discard(p);
         } // the packet will be directly deleted after the handler
         void send (packet *p);
-        
+
         // receive the packet and do something; this is a pure virtual function
         virtual void recv_handler(packet *p) = 0;
         void send_handler(packet *P);
-        
+
         static node * id_to_node (unsigned int _id) { return ((id_node_table.find(_id)!=id_node_table.end()) ? id_node_table[_id]: nullptr) ; }
         GET_WITH_NAME(getNodeID, unsigned int, id)
-        
+
         static void del_node (unsigned int _id) {
             if (id_node_table.find(_id) != id_node_table.end())
                 id_node_table.erase(_id);
@@ -751,7 +751,7 @@ class node {
         	            cerr << "BROCAST_ID cannot be used" << endl;
         	            return nullptr;
         	        }
-            		else if(prototypes.find(type) != prototypes.end()){ // if this type derived exists 
+            		else if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             		    node * created_node = prototypes[type]->generate(_id);
             			return created_node; // generate it!!
             		}
@@ -770,25 +770,25 @@ map<string,node::node_generator*> node::node_generator::prototypes;
 map<unsigned int,node*> node::id_node_table;
 
 class IoT_device: public node {
-        // map<unsigned int,bool> one_hop_neighbors; // you can use this variable to record the node's 1-hop neighbors 
-        
+        // map<unsigned int,bool> one_hop_neighbors; // you can use this variable to record the node's 1-hop neighbors
+
         bool hi; // this is used for example; you can remove it when doing hw2
 
     protected:
         IoT_device() {} // it should not be used
         IoT_device(IoT_device&) {} // it should not be used
         IoT_device(unsigned int _id): node(_id), hi(false) {} // this constructor cannot be directly called by users
-    
+
     public:
         ~IoT_device() override {}
         string type() override { return "IoT_device"; }
-        
+
         // please define recv_handler function to deal with the incoming packet
         void recv_handler (packet *p) override;
-        
+
         // void add_one_hop_neighbor (unsigned int n_id) { one_hop_neighbors[n_id] = true; }
         // unsigned int get_one_hop_neighbor_num () { return one_hop_neighbors.size(); }
-        
+
         class IoT_device_generator;
         friend class IoT_device_generator;
         // IoT_device is derived from node_generator to generate a node
@@ -807,7 +807,7 @@ IoT_device::IoT_device_generator IoT_device::IoT_device_generator::sample;
 
 class mycomp {
     bool reverse;
-    
+
     public:
         mycomp(const bool& revparam = false) { reverse=revparam ; }
         bool operator() (const event* lhs, const event* rhs) const;
@@ -818,15 +818,15 @@ class event {
         static priority_queue < event*, vector < event* >, mycomp > events;
         static unsigned int cur_time; // timer
         static unsigned int end_time;
-        
+
         // get the next event
         static event * get_next_event() ;
         static void add_event (event *e) { events.push(e); }
         static hash<string> event_seq;
-        
+
     protected:
         unsigned int trigger_time;
-        
+
         event(){} // it should not be used
         event(unsigned int _trigger_time): trigger_time(_trigger_time) {}
 
@@ -839,18 +839,18 @@ class event {
             unsigned int priority = event_seq (string_for_hash);
             return priority;
         }
-        
+
         static void flush_events (); // only for debug
-        
+
         GET(unsigned int, trigger_time)
-        
+
         static void start_simulate( unsigned int _end_time ); // the function is used to start the simulation
-        
+
         static unsigned int getCurTime() { return cur_time ; }
-        static void getCurTime(unsigned int _cur_time) { cur_time = _cur_time; } 
+        static void getCurTime(unsigned int _cur_time) { cur_time = _cur_time; }
         // static unsigned int getEndTime() { return end_time ; }
         // static void getEndTime(unsigned int _end_time) { end_time = _end_time; }
-        
+
         virtual void print () const = 0; // the function is used to print the event information
 
         class event_generator{
@@ -894,7 +894,7 @@ unsigned int event::cur_time = 0;
 unsigned int event::end_time = 0;
 
 void event::flush_events()
-{ 
+{
     cout << "**flush begin" << endl;
     while ( ! events.empty() ) {
         cout << setw(11) << events.top()->trigger_time << ": " << setw(11) << events.top()->event_priority() << endl;
@@ -904,12 +904,12 @@ void event::flush_events()
     cout << "**flush end" << endl;
 }
 event * event::get_next_event() {
-    if(events.empty()) 
-        return nullptr; 
+    if(events.empty())
+        return nullptr;
     event * e = events.top();
-    events.pop(); 
+    events.pop();
     // cout << events.size() << " events remains" << endl;
-    return e; 
+    return e;
 }
 void event::start_simulate(unsigned int _end_time) {
     if (_end_time<0) {
@@ -917,7 +917,7 @@ void event::start_simulate(unsigned int _end_time) {
         return;
     }
     end_time = _end_time;
-    event *e; 
+    event *e;
     e = event::get_next_event ();
     while ( e != nullptr && e->trigger_time <= end_time ) {
         if ( cur_time <= e->trigger_time )
@@ -945,24 +945,24 @@ bool mycomp::operator() (const event* lhs, const event* rhs) const {
     unsigned int rhs_pri = rhs->event_priority();
     // cout << "lhs hash = " << lhs_pri << endl;
     // cout << "rhs hash = " << rhs_pri << endl;
-    
-    if (reverse) 
+
+    if (reverse)
         return ((lhs->get_trigger_time()) == (rhs->get_trigger_time())) ? (lhs_pri < rhs_pri): ((lhs->get_trigger_time()) < (rhs->get_trigger_time()));
-    else 
+    else
         return ((lhs->get_trigger_time()) == (rhs->get_trigger_time())) ? (lhs_pri > rhs_pri): ((lhs->get_trigger_time()) > (rhs->get_trigger_time()));
 }
 
 class recv_event: public event {
     public:
         class recv_data; // forward declaration
-            
+
     private:
         recv_event(recv_event&) {} // this constructor cannot be used
         recv_event() {} // we don't allow users to new a recv_event by themselv
         unsigned int senderID; // the sender
         unsigned int receiverID; // the receiver; the packet will be given to the receiver
         packet *pkt; // the packet
-        
+
     protected:
         // this constructor cannot be directly called by users; only by generator
         recv_event(unsigned int _trigger_time, void *data): event(_trigger_time), senderID(BROCAST_ID), receiverID(BROCAST_ID), pkt(nullptr){
@@ -970,15 +970,15 @@ class recv_event: public event {
             senderID = data_ptr->s_id;
             receiverID = data_ptr->r_id; // the packet will be given to the receiver
             pkt = data_ptr->_pkt;
-        } 
-        
+        }
+
     public:
         ~recv_event() override {}
         // recv_event will trigger the recv function
         void trigger() override;
-        
+
         unsigned int event_priority() const override;
-        
+
         class recv_event_generator;
         friend class recv_event_generator;
         // recv_event is derived from event_generator to generate a event
@@ -987,11 +987,11 @@ class recv_event: public event {
                 // this constructor is only for sample to register this event type
                 recv_event_generator() { /*cout << "recv_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                event * generate(unsigned int _trigger_time, void *data) override { 
-                    // cout << "recv_event generated" << endl; 
-                    return new recv_event(_trigger_time, data); 
+                event * generate(unsigned int _trigger_time, void *data) override {
+                    // cout << "recv_event generated" << endl;
+                    return new recv_event(_trigger_time, data);
                 }
-                
+
             public:
                 string type() override { return "recv_event";}
                 ~recv_event_generator() override {}
@@ -1003,21 +1003,21 @@ class recv_event: public event {
                 unsigned int r_id;
                 packet *_pkt;
         };
-        
+
         void print () const override;
 };
 recv_event::recv_event_generator recv_event::recv_event_generator::sample;
 
 void recv_event::trigger() {
     if (pkt == nullptr) {
-        cerr << "recv_event error: no pkt!" << endl; 
-        return ; 
+        cerr << "recv_event error: no pkt!" << endl;
+        return ;
     }
     else if (node::id_to_node(receiverID) == nullptr){
         cerr << "recv_event error: no node " << receiverID << "!" << endl;
         delete pkt; return ;
     }
-    node::id_to_node(receiverID)->recv(pkt); 
+    node::id_to_node(receiverID)->recv(pkt);
 }
 unsigned int recv_event::event_priority() const {
     string string_for_hash;
@@ -1026,11 +1026,11 @@ unsigned int recv_event::event_priority() const {
 }
 // the recv_event::print() function is used for log file
 void recv_event::print () const {
-    cout << "time "          << setw(11) << event::getCurTime() 
-         << "   recID"       << setw(11) << receiverID 
+    cout << "time "          << setw(11) << event::getCurTime()
+         << "   recID"       << setw(11) << receiverID
          << "   pktID"       << setw(11) << pkt->get_packet_ID()
-         << "   srcID"       << setw(11) << pkt->get_header()->get_src_ID() 
-         << "   dstID"       << setw(11) << pkt->get_header()->get_dst_ID() 
+         << "   srcID"       << setw(11) << pkt->get_header()->get_src_ID()
+         << "   dstID"       << setw(11) << pkt->get_header()->get_dst_ID()
          << "   preID"       << setw(11) << pkt->get_header()->get_pre_ID()
          << "   nexID"       << setw(11) << pkt->get_header()->get_nex_ID()
          << "   "            << pkt->type()
@@ -1038,11 +1038,11 @@ void recv_event::print () const {
 //  if ( pkt->type() == "IoT_ctrl_packet" ) cout << "   " << ((IoT_ctrl_payload*)pkt->get_payload())->getCounter();
          cout << endl;
     // cout << pkt->type()
-    //      << "   time "       << setw(11) << event::getCurTime() 
-    //      << "   recID "      << setw(11) << receiverID 
+    //      << "   time "       << setw(11) << event::getCurTime()
+    //      << "   recID "      << setw(11) << receiverID
     //      << "   pktID"       << setw(11) << pkt->get_packet_ID()
-    //      << "   srcID "      << setw(11) << pkt->get_header()->get_src_ID() 
-    //      << "   dstID"       << setw(11) << pkt->get_header()->get_dst_ID() 
+    //      << "   srcID "      << setw(11) << pkt->get_header()->get_src_ID()
+    //      << "   dstID"       << setw(11) << pkt->get_header()->get_dst_ID()
     //      << "   preID"       << setw(11) << pkt->get_header()->get_pre_ID()
     //      << "   nexID"       << setw(11) << pkt->get_header()->get_nex_ID()
     //      << endl;
@@ -1051,30 +1051,30 @@ void recv_event::print () const {
 class send_event: public event {
     public:
         class send_data; // forward declaration
-            
+
     private:
         send_event (send_event &){}
         send_event (){} // we don't allow users to new a recv_event by themselves
         // this constructor cannot be directly called by users; only by generator
         unsigned int senderID; // the sender
-        unsigned int receiverID; // the receiver 
+        unsigned int receiverID; // the receiver
         packet *pkt; // the packet
-    
+
     protected:
         send_event (unsigned int _trigger_time, void *data): event(_trigger_time), senderID(BROCAST_ID), receiverID(BROCAST_ID), pkt(nullptr){
             send_data * data_ptr = (send_data*) data;
             senderID = data_ptr->s_id;
             receiverID = data_ptr->r_id;
             pkt = data_ptr->_pkt;
-        } 
-        
+        }
+
     public:
         ~send_event() override {}
         // send_event will trigger the send function
         void trigger() override;
-        
+
         unsigned int event_priority() const override;
-        
+
         class send_event_generator;
         friend class send_event_generator;
         // send_event is derived from event_generator to generate a event
@@ -1083,11 +1083,11 @@ class send_event: public event {
                 // this constructor is only for sample to register this event type
                 send_event_generator() { /*cout << "send_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                event * generate(unsigned int _trigger_time, void *data) override { 
-                    // cout << "send_event generated" << endl; 
-                    return new send_event(_trigger_time, data); 
+                event * generate(unsigned int _trigger_time, void *data) override {
+                    // cout << "send_event generated" << endl;
+                    return new send_event(_trigger_time, data);
                 }
-            
+
             public:
                 string type() override { return "send_event";}
                 ~send_event_generator() override {}
@@ -1100,15 +1100,15 @@ class send_event: public event {
                 packet *_pkt;
                 unsigned int t;
         };
-        
+
         void print () const override;
 };
 send_event::send_event_generator send_event::send_event_generator::sample;
 
 void send_event::trigger() {
     if (pkt == nullptr) {
-        cerr << "send_event error: no pkt!" << endl; 
-        return ; 
+        cerr << "send_event error: no pkt!" << endl;
+        return ;
     }
     else if (node::id_to_node(senderID) == nullptr){
         cerr << "send_event error: no node " << senderID << "!" << endl;
@@ -1123,11 +1123,11 @@ unsigned int send_event::event_priority() const {
 }
 // the send_event::print() function is used for log file
 void send_event::print () const {
-    cout << "time "          << setw(11) << event::getCurTime() 
-         << "   senID"       << setw(11) << senderID 
+    cout << "time "          << setw(11) << event::getCurTime()
+         << "   senID"       << setw(11) << senderID
          << "   pktID"       << setw(11) << pkt->get_packet_ID()
-         << "   srcID"       << setw(11) << pkt->get_header()->get_src_ID() 
-         << "   dstID"       << setw(11) << pkt->get_header()->get_dst_ID() 
+         << "   srcID"       << setw(11) << pkt->get_header()->get_src_ID()
+         << "   dstID"       << setw(11) << pkt->get_header()->get_dst_ID()
          << "   preID"       << setw(11) << pkt->get_header()->get_pre_ID()
          << "   nexID"       << setw(11) << pkt->get_header()->get_nex_ID()
          << "   "            << pkt->type()
@@ -1135,11 +1135,11 @@ void send_event::print () const {
          //<< "   msg"         << setw(11) << dynamic_cast<IoT_data_payload*>(pkt->get_payload())->getMsg()
          << endl;
     // cout << pkt->type()
-    //      << "   time "       << setw(11) << event::getCurTime() 
+    //      << "   time "       << setw(11) << event::getCurTime()
     //      << "   senID "      << setw(11) << senderID
     //      << "   pktID"       << setw(11) << pkt->get_packet_ID()
-    //      << "   srcID "      << setw(11) << pkt->get_header()->get_src_ID() 
-    //      << "   dstID"       << setw(11) << pkt->get_header()->get_dst_ID() 
+    //      << "   srcID "      << setw(11) << pkt->get_header()->get_src_ID()
+    //      << "   dstID"       << setw(11) << pkt->get_header()->get_dst_ID()
     //      << "   preID"       << setw(11) << pkt->get_header()->get_pre_ID()
     //      << "   nexID"       << setw(11) << pkt->get_header()->get_nex_ID()
     //      << endl;
@@ -1150,16 +1150,16 @@ void send_event::print () const {
 class IoT_data_pkt_gen_event: public event {
     public:
         class gen_data; // forward declaration
-            
+
     private:
         IoT_data_pkt_gen_event (IoT_data_pkt_gen_event &){}
         IoT_data_pkt_gen_event (){} // we don't allow users to new a IoT_data_pkt_gen_event by themselves
         // this constructor cannot be directly called by users; only by generator
         unsigned int src; // the src
-        unsigned int dst; // the dst 
+        unsigned int dst; // the dst
         // packet *pkt; // the packet
         string msg;
-    
+
     protected:
         IoT_data_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROCAST_ID), dst(BROCAST_ID){
             pkt_gen_data * data_ptr = (pkt_gen_data*) data;
@@ -1167,15 +1167,15 @@ class IoT_data_pkt_gen_event: public event {
             dst = data_ptr->dst_id;
             // pkt = data_ptr->_pkt;
             msg = data_ptr->msg;
-        } 
-        
+        }
+
     public:
         ~IoT_data_pkt_gen_event() override {}
         // IoT_data_pkt_gen_event will trigger the packet gen function
         void trigger() override;
-        
+
         unsigned int event_priority() const override;
-        
+
         class IoT_data_pkt_gen_event_generator;
         friend class IoT_data_pkt_gen_event_generator;
         // IoT_data_pkt_gen_event_generator is derived from event_generator to generate an event
@@ -1184,11 +1184,11 @@ class IoT_data_pkt_gen_event: public event {
                 // this constructor is only for sample to register this event type
                 IoT_data_pkt_gen_event_generator() { /*cout << "send_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                event * generate(unsigned int _trigger_time, void *data) override { 
-                    // cout << "send_event generated" << endl; 
-                    return new IoT_data_pkt_gen_event(_trigger_time, data); 
+                event * generate(unsigned int _trigger_time, void *data) override {
+                    // cout << "send_event generated" << endl;
+                    return new IoT_data_pkt_gen_event(_trigger_time, data);
                 }
-            
+
             public:
                 string type() override { return "IoT_data_pkt_gen_event";}
                 ~IoT_data_pkt_gen_event_generator() override {}
@@ -1201,7 +1201,7 @@ class IoT_data_pkt_gen_event: public event {
                 string msg;
                 // packet *_pkt;
         };
-        
+
         void print () const override;
 };
 IoT_data_pkt_gen_event::IoT_data_pkt_gen_event_generator IoT_data_pkt_gen_event::IoT_data_pkt_gen_event_generator::sample;
@@ -1215,14 +1215,14 @@ void IoT_data_pkt_gen_event::trigger() {
         cerr << "IoT_data_pkt_gen_event error: no node " << dst << "!" << endl;
         return;
     }
-    
+
     IoT_data_packet *pkt = dynamic_cast<IoT_data_packet*> ( packet::packet_generator::generate("IoT_data_packet") );
-    if (pkt == nullptr) { 
-        cerr << "packet type is incorrect" << endl; return; 
+    if (pkt == nullptr) {
+        cerr << "packet type is incorrect" << endl; return;
     }
     IoT_data_header *hdr = dynamic_cast<IoT_data_header*> ( pkt->get_header() );
     IoT_data_payload *pld = dynamic_cast<IoT_data_payload*> ( pkt->get_payload() );
-    
+
     if (hdr == nullptr) {
         cerr << "header type is incorrect" << endl; return ;
     }
@@ -1236,12 +1236,12 @@ void IoT_data_pkt_gen_event::trigger() {
     hdr->set_nex_ID(src); // this column is not important when the packet is first received by the src (i.e., just generated)
 
     pld->set_msg(msg);
-    
+
     recv_event::recv_data e_data;
     e_data.s_id = src;
     e_data.r_id = src; // to make the packet start from the src
     e_data._pkt = pkt;
-    
+
     recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event", trigger_time, (void *)&e_data) );
 
 }
@@ -1252,7 +1252,7 @@ unsigned int IoT_data_pkt_gen_event::event_priority() const {
 }
 // the IoT_data_pkt_gen_event::print() function is used for log file
 void IoT_data_pkt_gen_event::print () const {
-    cout << "time "          << setw(11) << event::getCurTime() 
+    cout << "time "          << setw(11) << event::getCurTime()
          << "        "       << setw(11) << " "
          << "        "       << setw(11) << " "
          << "   srcID"       << setw(11) << src
@@ -1266,19 +1266,19 @@ void IoT_data_pkt_gen_event::print () const {
 class IoT_ctrl_pkt_gen_event: public event {
     public:
         class gen_data; // forward declaration
-            
+
     private:
         IoT_ctrl_pkt_gen_event (IoT_ctrl_pkt_gen_event &){}
         IoT_ctrl_pkt_gen_event (){} // we don't allow users to new a IoT_ctrl_pkt_gen_event by themselves
         // this constructor cannot be directly called by users; only by generator
         unsigned int src; // the src
-        unsigned int dst; // the dst 
+        unsigned int dst; // the dst
         // unsigned int mat;
         // unsigned int act;
         // packet *pkt; // the packet
         string msg;
         // double per; // percentage
-    
+
     protected:
         IoT_ctrl_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROCAST_ID), dst(BROCAST_ID){
             pkt_gen_data * data_ptr = (pkt_gen_data*) data;
@@ -1289,15 +1289,15 @@ class IoT_ctrl_pkt_gen_event: public event {
             // act = data_ptr->act_id;
             msg = data_ptr->msg;
             // per = data_ptr->per;
-        } 
-        
+        }
+
     public:
         ~IoT_ctrl_pkt_gen_event() override {}
         // IoT_ctrl_pkt_gen_event will trigger the packet gen function
         void trigger() override;
-        
+
         unsigned int event_priority() const override;
-        
+
         class IoT_ctrl_pkt_gen_event_generator;
         friend class IoT_ctrl_pkt_gen_event_generator;
         // IoT_ctrl_pkt_gen_event_generator is derived from event_generator to generate an event
@@ -1306,11 +1306,11 @@ class IoT_ctrl_pkt_gen_event: public event {
                 // this constructor is only for sample to register this event type
                 IoT_ctrl_pkt_gen_event_generator() { /*cout << "send_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                event * generate(unsigned int _trigger_time, void *data) override { 
-                    // cout << "send_event generated" << endl; 
-                    return new IoT_ctrl_pkt_gen_event(_trigger_time, data); 
+                event * generate(unsigned int _trigger_time, void *data) override {
+                    // cout << "send_event generated" << endl;
+                    return new IoT_ctrl_pkt_gen_event(_trigger_time, data);
                 }
-            
+
             public:
                 string type() override { return "IoT_ctrl_pkt_gen_event";}
                 ~IoT_ctrl_pkt_gen_event_generator() override {}
@@ -1326,20 +1326,20 @@ class IoT_ctrl_pkt_gen_event: public event {
                 // double per; // the percentage
                 // packet *_pkt;
         };
-        
+
         void print () const override;
 };
 IoT_ctrl_pkt_gen_event::IoT_ctrl_pkt_gen_event_generator IoT_ctrl_pkt_gen_event::IoT_ctrl_pkt_gen_event_generator::sample;
 
 void IoT_ctrl_pkt_gen_event::trigger() {
-    
+
     IoT_ctrl_packet *pkt = dynamic_cast<IoT_ctrl_packet*> ( packet::packet_generator::generate("IoT_ctrl_packet") );
-    if (pkt == nullptr) { 
-        cerr << "packet type is incorrect" << endl; return; 
+    if (pkt == nullptr) {
+        cerr << "packet type is incorrect" << endl; return;
     }
     IoT_ctrl_header *hdr = dynamic_cast<IoT_ctrl_header*> ( pkt->get_header() );
     IoT_ctrl_payload *pld = dynamic_cast<IoT_ctrl_payload*> ( pkt->get_payload() );
-    
+
     if (hdr == nullptr) {
         cerr << "header type is incorrect" << endl; return ;
     }
@@ -1347,22 +1347,22 @@ void IoT_ctrl_pkt_gen_event::trigger() {
         cerr << "payload type is incorrect" << endl; return ;
     }
 
-    hdr->set_src_ID(src); 
+    hdr->set_src_ID(src);
     hdr->set_dst_ID(dst);
     hdr->set_pre_ID(src);
     hdr->set_nex_ID(src);
-    
+
     // payload
     pld->set_msg(msg);
     // pld->setMatID(mat);
     // pld->setActID(act);
     // pld->setPer(per);
-    
+
     recv_event::recv_data e_data;
     e_data.s_id = src;
     e_data.r_id = src;
     e_data._pkt = pkt;
-    
+
     recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",trigger_time, (void *)&e_data) );
 }
 unsigned int IoT_ctrl_pkt_gen_event::event_priority() const {
@@ -1373,7 +1373,7 @@ unsigned int IoT_ctrl_pkt_gen_event::event_priority() const {
 }
 // the IoT_ctrl_pkt_gen_event::print() function is used for log file
 void IoT_ctrl_pkt_gen_event::print () const {
-    cout << "time "          << setw(11) << event::getCurTime() 
+    cout << "time "          << setw(11) << event::getCurTime()
          << "        "       << setw(11) << " "
          << "        "       << setw(11) << " "
          << "   srcID"       << setw(11) << src
@@ -1391,19 +1391,19 @@ void IoT_ctrl_pkt_gen_event::print () const {
 class AGG_ctrl_pkt_gen_event: public event {
     public:
         class gen_data; // forward declaration
-            
+
     private:
         AGG_ctrl_pkt_gen_event (AGG_ctrl_pkt_gen_event &){}
         AGG_ctrl_pkt_gen_event (){} // we don't allow users to new a AGG_ctrl_pkt_gen_event by themselves
         // this constructor cannot be directly called by users; only by generator
         unsigned int src; // the src
-        unsigned int dst; // the dst 
+        unsigned int dst; // the dst
         // unsigned int mat;
         // unsigned int act;
         // packet *pkt; // the packet
         string msg;
         // double per; // percentage
-    
+
     protected:
         AGG_ctrl_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROCAST_ID), dst(BROCAST_ID){
             pkt_gen_data * data_ptr = (pkt_gen_data*) data;
@@ -1414,15 +1414,15 @@ class AGG_ctrl_pkt_gen_event: public event {
             // act = data_ptr->act_id;
             msg = data_ptr->msg;
             // per = data_ptr->per;
-        } 
-        
+        }
+
     public:
         ~AGG_ctrl_pkt_gen_event() override {}
         // AGG_ctrl_pkt_gen_event will trigger the packet gen function
         void trigger() override;
-        
+
         unsigned int event_priority() const override;
-        
+
         class AGG_ctrl_pkt_gen_event_generator;
         friend class AGG_ctrl_pkt_gen_event_generator;
         // AGG_ctrl_pkt_gen_event_generator is derived from event_generator to generate an event
@@ -1431,11 +1431,11 @@ class AGG_ctrl_pkt_gen_event: public event {
                 // this constructor is only for sample to register this event type
                 AGG_ctrl_pkt_gen_event_generator() { /*cout << "send_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                event * generate(unsigned int _trigger_time, void *data) override { 
-                    // cout << "send_event generated" << endl; 
-                    return new AGG_ctrl_pkt_gen_event(_trigger_time, data); 
+                event * generate(unsigned int _trigger_time, void *data) override {
+                    // cout << "send_event generated" << endl;
+                    return new AGG_ctrl_pkt_gen_event(_trigger_time, data);
                 }
-            
+
             public:
                 string type() override { return "AGG_ctrl_pkt_gen_event";}
                 ~AGG_ctrl_pkt_gen_event_generator() override {}
@@ -1451,20 +1451,20 @@ class AGG_ctrl_pkt_gen_event: public event {
                 // double per; // the percentage
                 // packet *_pkt;
         };
-        
+
         void print () const override;
 };
 AGG_ctrl_pkt_gen_event::AGG_ctrl_pkt_gen_event_generator AGG_ctrl_pkt_gen_event::AGG_ctrl_pkt_gen_event_generator::sample;
 
 void AGG_ctrl_pkt_gen_event::trigger() {
-    
+
     AGG_ctrl_packet *pkt = dynamic_cast<AGG_ctrl_packet*> ( packet::packet_generator::generate("AGG_ctrl_packet") );
-    if (pkt == nullptr) { 
-        cerr << "packet type is incorrect" << endl; return; 
+    if (pkt == nullptr) {
+        cerr << "packet type is incorrect" << endl; return;
     }
     AGG_ctrl_header *hdr = dynamic_cast<AGG_ctrl_header*> ( pkt->get_header() );
     AGG_ctrl_payload *pld = dynamic_cast<AGG_ctrl_payload*> ( pkt->get_payload() );
-    
+
     if (hdr == nullptr) {
         cerr << "header type is incorrect" << endl; return ;
     }
@@ -1472,22 +1472,22 @@ void AGG_ctrl_pkt_gen_event::trigger() {
         cerr << "payload type is incorrect" << endl; return ;
     }
 
-    hdr->set_src_ID(src); 
+    hdr->set_src_ID(src);
     hdr->set_dst_ID(dst);
     hdr->set_pre_ID(src);
     hdr->set_nex_ID(src);
-    
+
     // payload
     pld->set_msg(msg);
     // pld->setMatID(mat);
     // pld->setActID(act);
     // pld->setPer(per);
-    
+
     recv_event::recv_data e_data;
     e_data.s_id = src;
     e_data.r_id = src;
     e_data._pkt = pkt;
-    
+
     recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",trigger_time, (void *)&e_data) );
 }
 unsigned int AGG_ctrl_pkt_gen_event::event_priority() const {
@@ -1498,7 +1498,7 @@ unsigned int AGG_ctrl_pkt_gen_event::event_priority() const {
 }
 // the AGG_ctrl_pkt_gen_event::print() function is used for log file
 void AGG_ctrl_pkt_gen_event::print () const {
-    cout << "time "          << setw(11) << event::getCurTime() 
+    cout << "time "          << setw(11) << event::getCurTime()
          << "        "       << setw(11) << " "
          << "        "       << setw(11) << " "
          << "   srcID"       << setw(11) << src
@@ -1515,20 +1515,20 @@ void AGG_ctrl_pkt_gen_event::print () const {
 class DIS_ctrl_pkt_gen_event: public event {
     public:
         class gen_data; // forward declaration
-            
+
     private:
         DIS_ctrl_pkt_gen_event (DIS_ctrl_pkt_gen_event &){}
         DIS_ctrl_pkt_gen_event (){} // we don't allow users to new a DIS_ctrl_pkt_gen_event by themselves
         // this constructor cannot be directly called by users; only by generator
         unsigned int src; // the src
-        unsigned int dst; // the dst 
+        unsigned int dst; // the dst
         // unsigned int mat;
         // unsigned int act;
         // packet *pkt; // the packet
         string msg;
         // double per; // percentage
         int parent;
-    
+
     protected:
         DIS_ctrl_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROCAST_ID), dst(BROCAST_ID){
             pkt_gen_data * data_ptr = (pkt_gen_data*) data;
@@ -1540,15 +1540,15 @@ class DIS_ctrl_pkt_gen_event: public event {
             // act = data_ptr->act_id;
             msg = data_ptr->msg;
             // per = data_ptr->per;
-        } 
-        
+        }
+
     public:
         ~DIS_ctrl_pkt_gen_event() override {}
         // DIS_ctrl_pkt_gen_event will trigger the packet gen function
         void trigger() override;
-        
+
         unsigned int event_priority() const override;
-        
+
         class DIS_ctrl_pkt_gen_event_generator;
         friend class DIS_ctrl_pkt_gen_event_generator;
         // DIS_ctrl_pkt_gen_event_generator is derived from event_generator to generate an event
@@ -1557,11 +1557,11 @@ class DIS_ctrl_pkt_gen_event: public event {
                 // this constructor is only for sample to register this event type
                 DIS_ctrl_pkt_gen_event_generator() { /*cout << "send_event registered" << endl;*/ register_event_type(&sample); }
             protected:
-                event * generate(unsigned int _trigger_time, void *data) override { 
-                    // cout << "send_event generated" << endl; 
-                    return new DIS_ctrl_pkt_gen_event(_trigger_time, data); 
+                event * generate(unsigned int _trigger_time, void *data) override {
+                    // cout << "send_event generated" << endl;
+                    return new DIS_ctrl_pkt_gen_event(_trigger_time, data);
                 }
-            
+
             public:
                 string type() override { return "DIS_ctrl_pkt_gen_event";}
                 ~DIS_ctrl_pkt_gen_event_generator() override {}
@@ -1578,20 +1578,20 @@ class DIS_ctrl_pkt_gen_event: public event {
                 // double per; // the percentage
                 // packet *_pkt;
         };
-        
+
         void print () const override;
 };
 DIS_ctrl_pkt_gen_event::DIS_ctrl_pkt_gen_event_generator DIS_ctrl_pkt_gen_event::DIS_ctrl_pkt_gen_event_generator::sample;
 
 void DIS_ctrl_pkt_gen_event::trigger() {
-    
+
     DIS_ctrl_packet *pkt = dynamic_cast<DIS_ctrl_packet*> ( packet::packet_generator::generate("DIS_ctrl_packet") );
-    if (pkt == nullptr) { 
-        cerr << "packet type is incorrect" << endl; return; 
+    if (pkt == nullptr) {
+        cerr << "packet type is incorrect" << endl; return;
     }
     DIS_ctrl_header *hdr = dynamic_cast<DIS_ctrl_header*> ( pkt->get_header() );
     DIS_ctrl_payload *pld = dynamic_cast<DIS_ctrl_payload*> ( pkt->get_payload() );
-    
+
     if (hdr == nullptr) {
         cerr << "header type is incorrect" << endl; return ;
     }
@@ -1599,23 +1599,23 @@ void DIS_ctrl_pkt_gen_event::trigger() {
         cerr << "payload type is incorrect" << endl; return ;
     }
 
-    hdr->set_src_ID(src); 
+    hdr->set_src_ID(src);
     hdr->set_dst_ID(dst);
     hdr->set_pre_ID(src);
     hdr->set_nex_ID(src);
-    
+
     // payload
     pld->set_parent(parent);
     pld->set_msg(msg);
     // pld->setMatID(mat);
     // pld->setActID(act);
     // pld->setPer(per);
-    
+
     recv_event::recv_data e_data;
     e_data.s_id = src;
     e_data.r_id = src;
     e_data._pkt = pkt;
-    
+
     recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",trigger_time, (void *)&e_data) );
 }
 unsigned int DIS_ctrl_pkt_gen_event::event_priority() const {
@@ -1626,7 +1626,7 @@ unsigned int DIS_ctrl_pkt_gen_event::event_priority() const {
 }
 // the DIS_ctrl_pkt_gen_event::print() function is used for log file
 void DIS_ctrl_pkt_gen_event::print () const {
-    cout << "time "          << setw(11) << event::getCurTime() 
+    cout << "time "          << setw(11) << event::getCurTime()
          << "        "       << setw(11) << " "
          << "        "       << setw(11) << " "
          << "   srcID"       << setw(11) << src
@@ -1644,30 +1644,30 @@ void DIS_ctrl_pkt_gen_event::print () const {
 class link {
         // all links created in the program
         static map< pair<unsigned int,unsigned int>, link*> id_id_link_table;
-        
+
         unsigned int id1; // from
         unsigned int id2; // to
-        
+
     protected:
         link(link&){} // this constructor should not be used
         link(){} // this constructor should not be used
         link(unsigned int _id1, unsigned int _id2): id1(_id1), id2(_id2) { id_id_link_table[pair<unsigned int,unsigned int>(id1,id2)] = this; }
 
     public:
-        virtual ~link() { 
+        virtual ~link() {
             id_id_link_table.erase (pair<unsigned int,unsigned int>(id1,id2)); // erase the link
         }
-        
-        static link * id_id_to_link (unsigned int _id1, unsigned int _id2) { 
-            return ((id_id_link_table.find(pair<unsigned int,unsigned int>(_id1,_id2))!=id_id_link_table.end()) ? id_id_link_table[pair<unsigned,unsigned>(_id1,_id2)]: nullptr) ; 
+
+        static link * id_id_to_link (unsigned int _id1, unsigned int _id2) {
+            return ((id_id_link_table.find(pair<unsigned int,unsigned int>(_id1,_id2))!=id_id_link_table.end()) ? id_id_link_table[pair<unsigned,unsigned>(_id1,_id2)]: nullptr) ;
         }
 
         virtual double getLatency() = 0; // you must implement your own latency
-        
+
         static void del_link (unsigned int _id1, unsigned int _id2) {
             pair<unsigned int, unsigned int> temp;
             if (id_id_link_table.find(temp)!=id_id_link_table.end())
-                id_id_link_table.erase(temp); 
+                id_id_link_table.erase(temp);
         }
 
         static unsigned int getLinkNum () { return id_id_link_table.size(); }
@@ -1697,7 +1697,7 @@ class link {
         	            cerr << "BROCAST_ID cannot be used" << endl;
         	            return nullptr;
         	        }
-            		else if (prototypes.find(type) != prototypes.end()){ // if this type derived exists 
+            		else if (prototypes.find(type) != prototypes.end()){ // if this type derived exists
             		    link * created_link = prototypes[type]->generate(_id1,_id2);
             			return created_link; // generate it!!
             		}
@@ -1720,12 +1720,12 @@ void node::add_phy_neighbor (unsigned int _id, string link_type){
     if (id_node_table.find(_id)==id_node_table.end()) return; // if this node does not exist
     if (phy_neighbors.find(_id)!=phy_neighbors.end()) return; // if this neighbor has been added
     phy_neighbors[_id] = true;
-    
+
     link::link_generator::generate(link_type,id,_id);
 }
 void node::del_phy_neighbor (unsigned int _id){
     phy_neighbors.erase(_id);
-    
+
 }
 
 
@@ -1734,11 +1734,11 @@ class simple_link: public link {
         simple_link() {} // it should not be used outside the class
         simple_link(simple_link&) {} // it should not be used
         simple_link(unsigned int _id1, unsigned int _id2): link (_id1,_id2){} // this constructor cannot be directly called by users
-    
+
     public:
         ~simple_link() override {}
         double getLatency() override { return ONE_HOP_DELAY; } // you can implement your own latency
-        
+
         class simple_link_generator;
         friend class simple_link_generator;
         // simple_link is derived from link_generator to generate a link
@@ -1769,7 +1769,7 @@ void IoT_data_packet_event (unsigned int src, unsigned int dst=0, unsigned int t
     e_data.src_id = src;
     e_data.dst_id = dst;
     e_data.msg = msg;
-    
+
     // recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",t, (void *)&e_data) );
     IoT_data_pkt_gen_event *e = dynamic_cast<IoT_data_pkt_gen_event*> ( event::event_generator::generate("IoT_data_pkt_gen_event",t, (void *)&e_data) );
     if (e == nullptr) cerr << "event type is incorrect" << endl;
@@ -1785,7 +1785,7 @@ void IoT_ctrl_packet_event (unsigned int src, unsigned int t = event::getCurTime
     if ( node::id_to_node(src) == nullptr ) {
         cerr << "id is incorrect" << endl; return;
     }
-    
+
     // unsigned int src = con_id;
     IoT_ctrl_pkt_gen_event::pkt_gen_data e_data;
     e_data.src_id = src;
@@ -1794,7 +1794,7 @@ void IoT_ctrl_packet_event (unsigned int src, unsigned int t = event::getCurTime
     // e_data.act_id = act;
     e_data.msg = msg;
     // e_data.per = per;
-    
+
     IoT_ctrl_pkt_gen_event *e = dynamic_cast<IoT_ctrl_pkt_gen_event*> ( event::event_generator::generate("IoT_ctrl_pkt_gen_event",t, (void *)&e_data) );
     if (e == nullptr) cerr << "event type is incorrect" << endl;
 }
@@ -1810,14 +1810,14 @@ void AGG_ctrl_packet_event (unsigned int src, unsigned int dst=0, unsigned int t
     e_data.src_id = src;
     e_data.dst_id = dst;
     e_data.msg = msg;
-    
+
     // recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",t, (void *)&e_data) );
     AGG_ctrl_pkt_gen_event *e = dynamic_cast<AGG_ctrl_pkt_gen_event*> ( event::event_generator::generate("AGG_ctrl_pkt_gen_event",t, (void *)&e_data) );
     if (e == nullptr) cerr << "event type is incorrect" << endl;
 }
 
 // the DIS_ctrl_packet_event function is used to add an initial event
-void DIS_ctrl_packet_event (unsigned int sink_id, unsigned int id, unsigned int parent, 
+void DIS_ctrl_packet_event (unsigned int sink_id, unsigned int id, unsigned int parent,
                             unsigned int t = event::getCurTime(), string msg = "default"){
     if ( node::id_to_node(sink_id) == nullptr || (id != BROCAST_ID && node::id_to_node(id) == nullptr) ) {
         cerr << "sink_id or id is incorrect" << endl; return ;
@@ -1829,7 +1829,7 @@ void DIS_ctrl_packet_event (unsigned int sink_id, unsigned int id, unsigned int 
     e_data.dst_id = id;
     e_data.parent = parent;
     e_data.msg = msg;
-    
+
     // recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",t, (void *)&e_data) );
     DIS_ctrl_pkt_gen_event *e = dynamic_cast<DIS_ctrl_pkt_gen_event*> ( event::event_generator::generate("DIS_ctrl_pkt_gen_event",t, (void *)&e_data) );
     if (e == nullptr) cerr << "event type is incorrect" << endl;
@@ -1850,22 +1850,22 @@ void node::send_handler(packet *p){
 
 void node::send(packet *p){ // this function is called by event; not for the user
     if (p == nullptr) return;
-    
+
     unsigned int _nexID = p->get_header()->get_nex_ID();
     for ( map<unsigned int,bool>::iterator it = phy_neighbors.begin(); it != phy_neighbors.end(); it ++) {
         unsigned int nb_id = it->first; // neighbor id
-        
+
         if (nb_id != _nexID && BROCAST_ID != _nexID) continue; // this neighbor will not receive the packet
-        
+
         unsigned int trigger_time = event::getCurTime() + link::id_id_to_link(id, nb_id)->getLatency() ; // we simply assume that the delay is fixed
         // cout << "node " << id << " send to node " <<  nb_id << endl;
         recv_event::recv_data e_data;
         e_data.s_id = id;    // set the sender   (i.e., preID)
         e_data.r_id = nb_id; // set the receiver (i.e., nexID)
-        
+
         packet *p2 = packet::packet_generator::replicate(p);
         e_data._pkt = p2;
-        
+
         recv_event *e = dynamic_cast<recv_event*> (event::event_generator::generate("recv_event", trigger_time, (void*) &e_data)); // send the packet to the neighbor
         if (e == nullptr) cerr << "event type is incorrect" << endl;
     }
@@ -1881,17 +1881,17 @@ void IoT_device::recv_handler (packet *p){
     // the variable hi is used to examine whether the packet has been received by this node before
     // you can remove the variable hi and create your own routing table in class IoT_device
     if (p == nullptr) return ;
-    
+
     if (p->type() == "IoT_ctrl_packet" && !hi ) { // the device receives a packet from the sink
         IoT_ctrl_packet *p3 = nullptr;
         p3 = dynamic_cast<IoT_ctrl_packet*> (p);
         IoT_ctrl_payload *l3 = nullptr;
         l3 = dynamic_cast<IoT_ctrl_payload*> (p3->get_payload());
-        
+
         p3->get_header()->set_pre_ID ( getNodeID() );
         p3->get_header()->set_nex_ID ( BROCAST_ID );
         p3->get_header()->set_dst_ID ( BROCAST_ID );
-        
+
         l3->increase();
         hi = true;
         send_handler(p3);
@@ -1907,7 +1907,7 @@ void IoT_device::recv_handler (packet *p){
         p3 = dynamic_cast<AGG_ctrl_packet*> (p);
         AGG_ctrl_payload *l3 = nullptr;
         l3 = dynamic_cast<AGG_ctrl_payload*> (p3->get_payload());
-        
+
         // cout << "node id = " << getNodeID() << ", msg = "  << l3->getMsg() << endl;
     }
     else if (p->type() == "DIS_ctrl_packet") {
@@ -1915,14 +1915,14 @@ void IoT_device::recv_handler (packet *p){
         p3 = dynamic_cast<DIS_ctrl_packet*> (p);
         DIS_ctrl_payload *l3 = nullptr;
         l3 = dynamic_cast<DIS_ctrl_payload*> (p3->get_payload());
-        
+
         // cout << "node id = " << getNodeID() << ", parent = "  << l3->get_parent() << endl;
     }
 
     // you should implement the OSPF algorithm in recv_handler
     // getNodeID() returns the id of the current node
-    
-    // The current node's neighbors are already stored in the following variable 
+
+    // The current node's neighbors are already stored in the following variable
     // map<unsigned int,bool> node::phy_neighbors
     // however, this variable is private in the class node
     // You have to use node::getPhyNeighbors to get the variable
@@ -1939,27 +1939,27 @@ void IoT_device::recv_handler (packet *p){
     //             p->get_header()->set_dst_ID() or get_dst_ID()
     //             p->get_header()->set_pre_ID() or get_pre_ID()
     //             p->get_header()->set_nex_ID() or get_nex_ID() to change or read the packet header
-    
+
     // In addition, you can get the packet, header, and payload with the correct type
     // in fact, this is downcasting
     // IoT_data_packet * pkt = dynamic_cast<IoT_data_packet*> (p);
     // IoT_data_header * hdr = dynamic_cast<IoT_data_header*> (p->get_header());
     // IoT_data_payload * pld = dynamic_cast<IoT_data_payload*> (p->get_payload());
-    
+
     // you can also change the IoT_data_payload setting
     // pld->set_msg(string): to set the message transmitted to the destination
-    
+
     // Besides, you can use packet::packet_generator::generate() to generate a new packet; note that you should fill the header and payload in the packet
     // moreover, you can use "packet *p2 = packet::packet_generator::replicate(p)" to make a clone p2 of packet p
     // note that if the packet is generated or replicated manually, you must delete it by packet::discard() manually before recv_handler finishes
-    
+
     // "IMPORTANT":
     // You have to "carefully" fill the correct information (e.g., srcID, dstID, ...) in the packet before you send it
     // Note that if you want to transmit a packet to only one next node (i.e., unicast), then you fill the ID of a specific node to "nexID" in the header
     // Otherwise, i.e., you want to broadcasts, then you fill "BROCAST_ID" to "nexID" in the header
-    // after that, you can use send() to transmit the packet 
+    // after that, you can use send() to transmit the packet
     // usage: send_handler (p);
-    
+
     // note that packet p will be discarded (deleted) after recv_handler(); you don't need to manually delete it
 }
 
@@ -1970,18 +1970,18 @@ int main()
     // packet::packet_generator::print(); // print all registered packets
     // node::node_generator::print(); // print all registered nodes
     // event::event_generator::print(); // print all registered events
-    // link::link_generator::print(); // print all registered links 
-    
+    // link::link_generator::print(); // print all registered links
+
     // read the input and generate devices
     for (unsigned int id = 0; id < 5; id ++){
-        
+
         node::node_generator::generate("IoT_device",id);
-        
+
     }
-    
+
     // please generate the sink by yourself
-    
-    
+
+
     // set devices' neighbors
     node::id_to_node(0)->add_phy_neighbor(1);
     node::id_to_node(1)->add_phy_neighbor(0);
@@ -1993,33 +1993,33 @@ int main()
     node::id_to_node(3)->add_phy_neighbor(1);
     node::id_to_node(2)->add_phy_neighbor(4);
     node::id_to_node(4)->add_phy_neighbor(2);
-    
-    
+
+
     // node 0 broadcasts a msg with counter 0 at time 100
     IoT_ctrl_packet_event(0, 100);
     // 1st parameter: the source; the destination that want to broadcast a msg with counter 0 (i.e., match ID)
     // 2nd parameter: time (optional)
     // 3rd parameter: msg for debug information (optional)
-    
+
     // node 4 sends a packet to node 0 at time 200 --> you need to implement routing tables for IoT_devicees
     IoT_data_packet_event(4, 0, 200); // IoT_data_packet
     // 1st parameter: the source node
     // 2nd parameter: the destination node (sink)
     // 3rd parameter: time (optional)
     // 4th parameter: msg for debug (optional)
-    
-    
-    
+
+
+
     AGG_ctrl_packet_event(4, 0, 250);
     // 1st parameter: the source node
     // 2nd parameter: the destination node (sink)
     // 3rd parameter: time (optional)
     // 4th parameter: msg (for storing nb list)
-    
+
     DIS_ctrl_packet_event(0, 3, 8, 260);
     // 1st parameter: the source node (sink)
     // 2nd parameter: the destination node
-    // 3rd parameter: parent 
+    // 3rd parameter: parent
     // 4th parameter: time (optional)
     // 5th parameter: msg for debug (optional)
 
