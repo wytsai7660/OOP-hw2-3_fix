@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.txt": "log",
+        "*.json5": "jsonc",
+        "*.h": "c",
+        "map": "cpp"
+    }
+}
