@@ -98,8 +98,6 @@ class IoT_data_header : public header{
         ~IoT_data_header() override = default;
         string type() override { return "IoT_data_header"; }
 
-        class IoT_data_header_generator;
-        friend class IoT_data_header_generator;
         // IoT_data_header_generator is derived from header_generator to generate a header
         class IoT_data_header_generator : public header_generator{
                 static IoT_data_header_generator sample;
@@ -128,8 +126,6 @@ class IoT_ctrl_header : public header{
         ~IoT_ctrl_header() override = default;
         string type() override { return "IoT_ctrl_header"; }
 
-        class IoT_ctrl_header_generator;
-        friend class IoT_ctrl_header_generator;
         // IoT_ctrl_header_generator is derived from header_generator to generate a header
         class IoT_ctrl_header_generator : public header_generator{
                 static IoT_ctrl_header_generator sample;
@@ -159,8 +155,6 @@ class AGG_ctrl_header : public header{
         ~AGG_ctrl_header() override = default;
         string type() override { return "AGG_ctrl_header"; }
 
-        class AGG_ctrl_header_generator;
-        friend class AGG_ctrl_header_generator;
         // AGG_ctrl_header_generator is derived from header_generator to generate a header
         class AGG_ctrl_header_generator : public header_generator{
                 static AGG_ctrl_header_generator sample;
@@ -190,8 +184,6 @@ class DIS_ctrl_header : public header{
         ~DIS_ctrl_header() override = default;
         string type() override { return "DIS_ctrl_header"; }
 
-        class DIS_ctrl_header_generator;
-        friend class DIS_ctrl_header_generator;
         // DIS_ctrl_header_generator is derived from header_generator to generate a header
         class DIS_ctrl_header_generator : public header_generator{
                 static DIS_ctrl_header_generator sample;
@@ -268,8 +260,6 @@ class IoT_data_payload : public payload {
 
         string type() override { return "IoT_data_payload"; }
 
-        class IoT_data_payload_generator;
-        friend class IoT_data_payload_generator;
         // IoT_data_payload is derived from payload_generator to generate a payload
         class IoT_data_payload_generator : public payload_generator{
                 static IoT_data_payload_generator sample;
@@ -302,9 +292,6 @@ class IoT_ctrl_payload : public payload {
 
         string type() override { return "IoT_ctrl_payload"; }
 
-
-        class IoT_ctrl_payload_generator;
-        friend class IoT_ctrl_payload_generator;
         // IoT_data_payload is derived from payload_generator to generate a payload
         class IoT_ctrl_payload_generator : public payload_generator{
                 static IoT_ctrl_payload_generator sample;
@@ -338,9 +325,6 @@ class AGG_ctrl_payload : public payload {
 
         string type() override { return "AGG_ctrl_payload"; }
 
-
-        class AGG_ctrl_payload_generator;
-        friend class AGG_ctrl_payload_generator;
         // IoT_data_payload is derived from payload_generator to generate a payload
         class AGG_ctrl_payload_generator : public payload_generator{
                 static AGG_ctrl_payload_generator sample;
@@ -376,9 +360,6 @@ class DIS_ctrl_payload : public payload {
 
         string type() override { return "DIS_ctrl_payload"; }
 
-
-        class DIS_ctrl_payload_generator;
-        friend class DIS_ctrl_payload_generator;
         // IoT_data_payload is derived from payload_generator to generate a payload
         class DIS_ctrl_payload_generator : public payload_generator{
                 static DIS_ctrl_payload_generator sample;
@@ -453,8 +434,6 @@ class packet{
 
         static int getLivePacketNum () { return live_packet_num; }
 
-        class packet_generator;
-        friend class packet_generator;
         class packet_generator {
                 // lock the copy constructor
                 packet_generator(packet_generator &) = default;
@@ -516,8 +495,6 @@ class IoT_data_packet: public packet {
         ~IoT_data_packet() override = default;
         string type() override { return "IoT_data_packet"; }
 
-        class IoT_data_packet_generator;
-        friend class IoT_data_packet_generator;
         // IoT_data_packet is derived from packet_generator to generate a pub packet
         class IoT_data_packet_generator : public packet_generator{
                 static IoT_data_packet_generator sample;
@@ -561,8 +538,6 @@ class IoT_ctrl_packet: public packet {
             return " counter " + to_string(counter);
         }
 
-        class IoT_ctrl_packet_generator;
-        friend class IoT_ctrl_packet_generator;
         // IoT_ctrl_packet is derived from packet_generator to generate a pub packet
         class IoT_ctrl_packet_generator : public packet_generator{
                 static IoT_ctrl_packet_generator sample;
@@ -608,8 +583,6 @@ class AGG_ctrl_packet: public packet {
         //     return " msg " + msg;
         // }
 
-        class AGG_ctrl_packet_generator;
-        friend class AGG_ctrl_packet_generator;
         // AGG_ctrl_packet is derived from packet_generator to generate a pub packet
         class AGG_ctrl_packet_generator : public packet_generator{
                 static AGG_ctrl_packet_generator sample;
@@ -654,8 +627,6 @@ class DIS_ctrl_packet: public packet {
             return " parent " + to_string(parent);
         }
 
-        class DIS_ctrl_packet_generator;
-        friend class DIS_ctrl_packet_generator;
         // DIS_ctrl_packet is derived from packet_generator to generate a pub packet
         class DIS_ctrl_packet_generator : public packet_generator{
                 static DIS_ctrl_packet_generator sample;
@@ -789,8 +760,6 @@ class IoT_device: public node {
         // void add_one_hop_neighbor (unsigned int n_id) { one_hop_neighbors[n_id] = true; }
         // unsigned int get_one_hop_neighbor_num () { return one_hop_neighbors.size(); }
 
-        class IoT_device_generator;
-        friend class IoT_device_generator;
         // IoT_device is derived from node_generator to generate a node
         class IoT_device_generator : public node_generator{
                 static IoT_device_generator sample;
@@ -979,8 +948,6 @@ class recv_event: public event {
 
         unsigned int event_priority() const override;
 
-        class recv_event_generator;
-        friend class recv_event_generator;
         // recv_event is derived from event_generator to generate a event
         class recv_event_generator : public event_generator{
                 static recv_event_generator sample;
@@ -1075,8 +1042,6 @@ class send_event: public event {
 
         unsigned int event_priority() const override;
 
-        class send_event_generator;
-        friend class send_event_generator;
         // send_event is derived from event_generator to generate a event
         class send_event_generator : public event_generator{
                 static send_event_generator sample;
@@ -1176,8 +1141,6 @@ class IoT_data_pkt_gen_event: public event {
 
         unsigned int event_priority() const override;
 
-        class IoT_data_pkt_gen_event_generator;
-        friend class IoT_data_pkt_gen_event_generator;
         // IoT_data_pkt_gen_event_generator is derived from event_generator to generate an event
         class IoT_data_pkt_gen_event_generator : public event_generator{
                 static IoT_data_pkt_gen_event_generator sample;
@@ -1298,8 +1261,6 @@ class IoT_ctrl_pkt_gen_event: public event {
 
         unsigned int event_priority() const override;
 
-        class IoT_ctrl_pkt_gen_event_generator;
-        friend class IoT_ctrl_pkt_gen_event_generator;
         // IoT_ctrl_pkt_gen_event_generator is derived from event_generator to generate an event
         class IoT_ctrl_pkt_gen_event_generator : public event_generator{
                 static IoT_ctrl_pkt_gen_event_generator sample;
@@ -1423,8 +1384,6 @@ class AGG_ctrl_pkt_gen_event: public event {
 
         unsigned int event_priority() const override;
 
-        class AGG_ctrl_pkt_gen_event_generator;
-        friend class AGG_ctrl_pkt_gen_event_generator;
         // AGG_ctrl_pkt_gen_event_generator is derived from event_generator to generate an event
         class AGG_ctrl_pkt_gen_event_generator : public event_generator{
                 static AGG_ctrl_pkt_gen_event_generator sample;
@@ -1549,8 +1508,6 @@ class DIS_ctrl_pkt_gen_event: public event {
 
         unsigned int event_priority() const override;
 
-        class DIS_ctrl_pkt_gen_event_generator;
-        friend class DIS_ctrl_pkt_gen_event_generator;
         // DIS_ctrl_pkt_gen_event_generator is derived from event_generator to generate an event
         class DIS_ctrl_pkt_gen_event_generator : public event_generator{
                 static DIS_ctrl_pkt_gen_event_generator sample;
@@ -1739,8 +1696,6 @@ class simple_link: public link {
         ~simple_link() override = default;
         double getLatency() override { return ONE_HOP_DELAY; } // you can implement your own latency
 
-        class simple_link_generator;
-        friend class simple_link_generator;
         // simple_link is derived from link_generator to generate a link
         class simple_link_generator : public link_generator {
                 static simple_link_generator sample;
