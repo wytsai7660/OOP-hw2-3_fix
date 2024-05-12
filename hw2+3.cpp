@@ -23,9 +23,9 @@ class link; // new
 // for simplicity, we use a const int to simulate the delay
 // if you want to simulate the more details, you should revise it to be a class
 const unsigned int ONE_HOP_DELAY = 10;
-const unsigned int BROCAST_ID = UINT_MAX;
+const unsigned int BROADCAST_ID = UINT_MAX;
 
-// BROCAST_ID means that all neighbors are receivers; UINT_MAX is the maximum value of unsigned int
+// BROADCAST_ID means that all neighbors are receivers; UINT_MAX is the maximum value of unsigned int
 
 class header {
     public:
@@ -75,7 +75,7 @@ class header {
         };
 
     protected:
-        header():src_ID(BROCAST_ID),dst_ID(BROCAST_ID),pre_ID(BROCAST_ID),nex_ID(BROCAST_ID){} // this constructor cannot be directly called by users
+        header():src_ID(BROADCAST_ID),dst_ID(BROADCAST_ID),pre_ID(BROADCAST_ID),nex_ID(BROADCAST_ID){} // this constructor cannot be directly called by users
 
     private:
         unsigned int src_ID;
@@ -666,7 +666,7 @@ class node {
             phy_neighbors.erase(_id);
         }
 
-        // you can use the function to get the node's neigbhors at this time
+        // you can use the function to get the node's neighbors at this time
         // but in the project 3, you are not allowed to use this function
         const std::map<unsigned int,bool> & get_phy_neighbors () {
             return phy_neighbors;
@@ -715,8 +715,8 @@ class node {
         	            std::cerr << "duplicate node id" << '\n'; // node id is duplicated
         	            return nullptr;
         	        }
-        	        else if ( BROCAST_ID == _id ) {
-        	            std::cerr << "BROCAST_ID cannot be used" << '\n';
+        	        else if ( BROADCAST_ID == _id ) {
+        	            std::cerr << "BROADCAST_ID cannot be used" << '\n';
         	            return nullptr;
         	        }
             		else if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
@@ -768,8 +768,8 @@ class IoT_device: public node {
                 l3 = dynamic_cast<IoT_ctrl_payload*> (p3->get_payload());
 
                 p3->get_header()->set_pre_ID ( get_node_ID() );
-                p3->get_header()->set_nex_ID ( BROCAST_ID );
-                p3->get_header()->set_dst_ID ( BROCAST_ID );
+                p3->get_header()->set_nex_ID ( BROADCAST_ID );
+                p3->get_header()->set_dst_ID ( BROADCAST_ID );
 
                 l3->increase();
                 hi = true;
@@ -835,7 +835,7 @@ class IoT_device: public node {
             // "IMPORTANT":
             // You have to "carefully" fill the correct information (e.g., srcID, dstID, ...) in the packet before you send it
             // Note that if you want to transmit a packet to only one next node (i.e., unicast), then you fill the ID of a specific node to "nexID" in the header
-            // Otherwise, i.e., you want to broadcasts, then you fill "BROCAST_ID" to "nexID" in the header
+            // Otherwise, i.e., you want to broadcasts, then you fill "BROADCAST_ID" to "nexID" in the header
             // after that, you can use send() to transmit the packet
             // usage: send_handler (p);
 
@@ -916,7 +916,7 @@ class event {
 
         static void start_simulate( unsigned int _end_time ) { // the function is used to start the simulation
             if (_end_time<0) {
-                std::cerr << "you should give a possitive value of _end_time" << '\n';
+                std::cerr << "you should give a positive value of _end_time" << '\n';
                 return;
             }
             end_time = _end_time;
@@ -1006,14 +1006,14 @@ class recv_event: public event {
 
     private:
         recv_event(recv_event&) {} // this constructor cannot be used
-        recv_event() = default; // we don't allow users to new a recv_event by themselv
+        recv_event() = default; // we don't allow users to new a recv_event by themselves
         unsigned int senderID; // the sender
         unsigned int receiverID; // the receiver; the packet will be given to the receiver
         packet *pkt; // the packet
 
     protected:
         // this constructor cannot be directly called by users; only by generator
-        recv_event(unsigned int _trigger_time, void *data): event(_trigger_time), senderID(BROCAST_ID), receiverID(BROCAST_ID), pkt(nullptr){
+        recv_event(unsigned int _trigger_time, void *data): event(_trigger_time), senderID(BROADCAST_ID), receiverID(BROADCAST_ID), pkt(nullptr){
             recv_data * data_ptr = (recv_data*) data;
             senderID = data_ptr->s_id;
             receiverID = data_ptr->r_id; // the packet will be given to the receiver
@@ -1104,7 +1104,7 @@ class send_event: public event {
         packet *pkt; // the packet
 
     protected:
-        send_event (unsigned int _trigger_time, void *data): event(_trigger_time), senderID(BROCAST_ID), receiverID(BROCAST_ID), pkt(nullptr){
+        send_event (unsigned int _trigger_time, void *data): event(_trigger_time), senderID(BROADCAST_ID), receiverID(BROADCAST_ID), pkt(nullptr){
             send_data * data_ptr = (send_data*) data;
             senderID = data_ptr->s_id;
             receiverID = data_ptr->r_id;
@@ -1197,7 +1197,7 @@ class IoT_data_pkt_gen_event: public event {
         std::string msg;
 
     protected:
-        IoT_data_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROCAST_ID), dst(BROCAST_ID){
+        IoT_data_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROADCAST_ID), dst(BROADCAST_ID){
             pkt_gen_data * data_ptr = (pkt_gen_data*) data;
             src = data_ptr->src_id;
             dst = data_ptr->dst_id;
@@ -1213,7 +1213,7 @@ class IoT_data_pkt_gen_event: public event {
                 std::cerr << "IoT_data_pkt_gen_event error: no node " << src << "!" << '\n';
                 return ;
             }
-            else if ( dst != BROCAST_ID && node::id_to_node(dst) == nullptr ) {
+            else if ( dst != BROADCAST_ID && node::id_to_node(dst) == nullptr ) {
                 std::cerr << "IoT_data_pkt_gen_event error: no node " << dst << "!" << '\n';
                 return;
             }
@@ -1310,7 +1310,7 @@ class IoT_ctrl_pkt_gen_event: public event {
         // double per; // percentage
 
     protected:
-        IoT_ctrl_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROCAST_ID), dst(BROCAST_ID){
+        IoT_ctrl_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROADCAST_ID), dst(BROADCAST_ID){
             pkt_gen_data * data_ptr = (pkt_gen_data*) data;
             src = data_ptr->src_id;
             dst = data_ptr->dst_id;
@@ -1426,7 +1426,7 @@ class AGG_ctrl_pkt_gen_event: public event {
         // double per; // percentage
 
     protected:
-        AGG_ctrl_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROCAST_ID), dst(BROCAST_ID){
+        AGG_ctrl_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROADCAST_ID), dst(BROADCAST_ID){
             pkt_gen_data * data_ptr = (pkt_gen_data*) data;
             src = data_ptr->src_id;
             dst = data_ptr->dst_id;
@@ -1543,7 +1543,7 @@ class DIS_ctrl_pkt_gen_event: public event {
         int parent;
 
     protected:
-        DIS_ctrl_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROCAST_ID), dst(BROCAST_ID){
+        DIS_ctrl_pkt_gen_event (unsigned int _trigger_time, void *data): event(_trigger_time), src(BROADCAST_ID), dst(BROADCAST_ID){
             pkt_gen_data * data_ptr = (pkt_gen_data*) data;
             src = data_ptr->src_id;
             dst = data_ptr->dst_id;
@@ -1700,8 +1700,8 @@ class link {
         	            std::cerr << "duplicate link id" << '\n'; // link id is duplicated
         	            return nullptr;
         	        }
-        	        else if ( BROCAST_ID == _id1 || BROCAST_ID == _id2 ) {
-        	            std::cerr << "BROCAST_ID cannot be used" << '\n';
+        	        else if ( BROADCAST_ID == _id1 || BROADCAST_ID == _id2 ) {
+        	            std::cerr << "BROADCAST_ID cannot be used" << '\n';
         	            return nullptr;
         	        }
             		else if (prototypes.find(type) != prototypes.end()){ // if this type derived exists
@@ -1759,7 +1759,7 @@ simple_link::simple_link_generator simple_link::simple_link_generator::sample;
 
 // the IoT_data_packet_event function is used to add an initial event
 void IoT_data_packet_event (unsigned int src, unsigned int dst=0, unsigned int t = 0, std::string msg = "default"){
-    if ( node::id_to_node(src) == nullptr || (dst != BROCAST_ID && node::id_to_node(dst) == nullptr) ) {
+    if ( node::id_to_node(src) == nullptr || (dst != BROADCAST_ID && node::id_to_node(dst) == nullptr) ) {
         std::cerr << "src or dst is incorrect" << '\n'; return ;
         return;
     }
@@ -1790,7 +1790,7 @@ void IoT_ctrl_packet_event (unsigned int src, unsigned int t = event::get_cur_ti
     // unsigned int src = con_id;
     IoT_ctrl_pkt_gen_event::pkt_gen_data e_data;
     e_data.src_id = src;
-    e_data.dst_id = BROCAST_ID;
+    e_data.dst_id = BROADCAST_ID;
     // e_data.mat_id = mat;
     // e_data.act_id = act;
     e_data.msg = msg;
@@ -1804,7 +1804,7 @@ void IoT_ctrl_packet_event (unsigned int src, unsigned int t = event::get_cur_ti
 
 // the AGG_ctrl_packet_event function is used to add an initial event
 void AGG_ctrl_packet_event (unsigned int src, unsigned int dst = 0, unsigned int t = event::get_cur_time(), std::string msg = "default"){
-    if ( node::id_to_node(src) == nullptr || (dst != BROCAST_ID && node::id_to_node(dst) == nullptr) ) {
+    if ( node::id_to_node(src) == nullptr || (dst != BROADCAST_ID && node::id_to_node(dst) == nullptr) ) {
         std::cerr << "src or dst is incorrect" << '\n'; return ;
         return;
     }
@@ -1824,7 +1824,7 @@ void AGG_ctrl_packet_event (unsigned int src, unsigned int dst = 0, unsigned int
 // the DIS_ctrl_packet_event function is used to add an initial event
 void DIS_ctrl_packet_event (unsigned int sink_id, unsigned int id, unsigned int parent,
                             unsigned int t = event::get_cur_time(), std::string msg = "default"){
-    if ( node::id_to_node(sink_id) == nullptr || (id != BROCAST_ID && node::id_to_node(id) == nullptr) ) {
+    if ( node::id_to_node(sink_id) == nullptr || (id != BROADCAST_ID && node::id_to_node(id) == nullptr) ) {
         std::cerr << "sink_id or id is incorrect" << '\n'; return ;
         return;
     }
@@ -1864,7 +1864,7 @@ void node::send(packet *p){ // this function is called by event; not for the use
     for ( std::map<unsigned int,bool>::iterator it = phy_neighbors.begin(); it != phy_neighbors.end(); it ++) {
         unsigned int nb_id = it->first; // neighbor id
 
-        if (nb_id != _nexID && BROCAST_ID != _nexID) {continue;} // this neighbor will not receive the packet
+        if (nb_id != _nexID && BROADCAST_ID != _nexID) {continue;} // this neighbor will not receive the packet
 
         unsigned int trigger_time = event::get_cur_time() + link::id_id_to_link(id, nb_id)->get_latency() ; // we simply assume that the delay is fixed
         // cout << "node " << id << " send to node " <<  nb_id << '\n';
@@ -1921,7 +1921,7 @@ int main()
     // 2nd parameter: time (optional)
     // 3rd parameter: msg for debug information (optional)
 
-    // node 4 sends a packet to node 0 at time 200 --> you need to implement routing tables for IoT_devicees
+    // node 4 sends a packet to node 0 at time 200 --> you need to implement routing tables for IoT_devices
     IoT_data_packet_event(4, 0, 200); // IoT_data_packet
     // 1st parameter: the source node
     // 2nd parameter: the destination node (sink)
