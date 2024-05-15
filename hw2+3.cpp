@@ -1760,7 +1760,7 @@ simple_link::simple_link_generator simple_link::simple_link_generator::sample;
 // the IoT_data_packet_event function is used to add an initial event
 void IoT_data_packet_event (unsigned int src, unsigned int dst=0, unsigned int t = 0, std::string msg = "default"){
     if ( node::id_to_node(src) == nullptr || (dst != BROADCAST_ID && node::id_to_node(dst) == nullptr) ) {
-        std::cerr << "src or dst is incorrect" << '\n'; return ;
+        std::cerr << "src or dst is incorrect" << '\n';
         return;
     }
 
@@ -1805,7 +1805,7 @@ void IoT_ctrl_packet_event (unsigned int src, unsigned int t = event::get_cur_ti
 // the AGG_ctrl_packet_event function is used to add an initial event
 void AGG_ctrl_packet_event (unsigned int src, unsigned int dst = 0, unsigned int t = event::get_cur_time(), std::string msg = "default"){
     if ( node::id_to_node(src) == nullptr || (dst != BROADCAST_ID && node::id_to_node(dst) == nullptr) ) {
-        std::cerr << "src or dst is incorrect" << '\n'; return ;
+        std::cerr << "src or dst is incorrect" << '\n';
         return;
     }
 
@@ -1825,7 +1825,7 @@ void AGG_ctrl_packet_event (unsigned int src, unsigned int dst = 0, unsigned int
 void DIS_ctrl_packet_event (unsigned int sink_id, unsigned int id, unsigned int parent,
                             unsigned int t = event::get_cur_time(), std::string msg = "default"){
     if ( node::id_to_node(sink_id) == nullptr || (id != BROADCAST_ID && node::id_to_node(id) == nullptr) ) {
-        std::cerr << "sink_id or id is incorrect" << '\n'; return ;
+        std::cerr << "sink_id or id is incorrect" << '\n';
         return;
     }
 
