@@ -1861,9 +1861,7 @@ void node::send(packet *p){ // this function is called by event; not for the use
     if (p == nullptr) {return;}
 
     unsigned int _nexID = p->get_header()->get_nex_ID();
-    for ( std::map<unsigned int,bool>::iterator it = phy_neighbors.begin(); it != phy_neighbors.end(); it ++) {
-        unsigned int nb_id = it->first; // neighbor id
-
+    for (const auto &[nb_id, _] : phy_neighbors) { // neighbor id
         if (nb_id != _nexID && BROADCAST_ID != _nexID) {continue;} // this neighbor will not receive the packet
 
         unsigned int trigger_time = event::get_cur_time() + link::id_id_to_link(id, nb_id)->get_latency() ; // we simply assume that the delay is fixed
