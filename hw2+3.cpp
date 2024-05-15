@@ -342,7 +342,7 @@ class DIS_ctrl_payload : public payload {
         unsigned int parent;
 
     protected:
-        DIS_ctrl_payload(int _parent=0): parent (_parent) {} // this constructor cannot be directly called by users
+        explicit DIS_ctrl_payload(int _parent=0): parent (_parent) {} // this constructor cannot be directly called by users
     public:
         ~DIS_ctrl_payload() override = default;
 
@@ -475,7 +475,7 @@ class IoT_data_packet: public packet {
 
     protected:
         IoT_data_packet() = default; // this constructor cannot be directly called by users
-        IoT_data_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
+        explicit IoT_data_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
             *(dynamic_cast<IoT_data_header*>(this->get_header())) = *(dynamic_cast<IoT_data_header*> (p->get_header()));
             *(dynamic_cast<IoT_data_payload*>(this->get_payload())) = *(dynamic_cast<IoT_data_payload*> (p->get_payload()));
             //DFS_path = (dynamic_cast<IoT_data_header*>(p))->DFS_path;
@@ -515,7 +515,7 @@ class IoT_ctrl_packet: public packet {
 
     protected:
         IoT_ctrl_packet() = default; // this constructor cannot be directly called by users
-        IoT_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
+        explicit IoT_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
             *(dynamic_cast<IoT_ctrl_header*>(this->get_header())) = *(dynamic_cast<IoT_ctrl_header*> (p->get_header()));
             *(dynamic_cast<IoT_ctrl_payload*>(this->get_payload())) = *(dynamic_cast<IoT_ctrl_payload*> (p->get_payload()));
             //DFS_path = (dynamic_cast<IoT_ctrl_header*>(p))->DFS_path;
@@ -560,7 +560,7 @@ class AGG_ctrl_packet: public packet {
 
     protected:
         AGG_ctrl_packet() = default; // this constructor cannot be directly called by users
-        AGG_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
+        explicit AGG_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
             *(dynamic_cast<AGG_ctrl_header*>(this->get_header())) = *(dynamic_cast<AGG_ctrl_header*> (p->get_header()));
             *(dynamic_cast<AGG_ctrl_payload*>(this->get_payload())) = *(dynamic_cast<AGG_ctrl_payload*> (p->get_payload()));
             //DFS_path = (dynamic_cast<AGG_ctrl_header*>(p))->DFS_path;
@@ -605,7 +605,7 @@ class DIS_ctrl_packet: public packet {
 
     protected:
         DIS_ctrl_packet() = default; // this constructor cannot be directly called by users
-        DIS_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
+        explicit DIS_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
             *(dynamic_cast<DIS_ctrl_header*>(this->get_header())) = *(dynamic_cast<DIS_ctrl_header*> (p->get_header()));
             *(dynamic_cast<DIS_ctrl_payload*>(this->get_payload())) = *(dynamic_cast<DIS_ctrl_payload*> (p->get_payload()));
             //DFS_path = (dynamic_cast<DIS_ctrl_header*>(p))->DFS_path;
@@ -654,7 +654,7 @@ class node {
     protected:
         node(node&){} // this constructor should not be used
         node() = default; // this constructor should not be used
-        node(unsigned int _id): id(_id) { id_node_table[_id] = this; }
+        explicit node(unsigned int _id): id(_id) { id_node_table[_id] = this; }
     public:
         virtual ~node() { // erase the node
             id_node_table.erase (id) ;
@@ -744,7 +744,7 @@ class IoT_device: public node {
     protected:
         IoT_device() = default; // it should not be used
         IoT_device(IoT_device&) {} // it should not be used
-        IoT_device(unsigned int _id): node(_id), hi(false) {} // this constructor cannot be directly called by users
+        explicit IoT_device(unsigned int _id): node(_id), hi(false) {} // this constructor cannot be directly called by users
 
     public:
         ~IoT_device() override = default;
@@ -863,12 +863,12 @@ class mycomp {
     bool reverse;
 
     public:
-        mycomp(const bool& revparam = false) { reverse=revparam ; }
+        explicit mycomp(const bool& revparam = false) { reverse=revparam ; }
         bool operator() (const event* lhs, const event* rhs) const;
 };
 
 class event {
-        event(event*&){} // this constructor cannot be directly called by users
+        explicit event(event*&){} // this constructor cannot be directly called by users
         static inline std::priority_queue < event*, std::vector < event* >, mycomp > events;
         static inline unsigned int cur_time; // timer
         static inline unsigned int end_time;
@@ -890,7 +890,7 @@ class event {
         unsigned int trigger_time;
 
         event() = default; // it should not be used
-        event(unsigned int _trigger_time): trigger_time(_trigger_time) {}
+        explicit event(unsigned int _trigger_time): trigger_time(_trigger_time) {}
 
     public:
         virtual void trigger()=0;
