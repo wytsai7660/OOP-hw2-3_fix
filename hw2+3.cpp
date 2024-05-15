@@ -67,8 +67,8 @@ class header {
             	}
             	static void print () {
             	    std::cout << "registered header types: " << '\n';
-            	    for (std::map<std::string, header::header_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
-            	        std::cout << it->second->type() << '\n';
+            	    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+            	        std::cout << generator->type() << '\n';
                     }
             	}
             	virtual ~header_generator() = default;
@@ -236,8 +236,8 @@ class payload {
             	}
             	static void print () {
             	    std::cout << "registered payload types: " << '\n';
-            	    for (std::map<std::string,payload::payload_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
-            	        std::cout << it->second->type() << '\n';
+                    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+            	        std::cout << generator->type() << '\n';
                     }
             	}
             	virtual ~payload_generator() = default;
@@ -461,8 +461,8 @@ class packet{
             	}
             	static void print () {
             	    std::cout << "registered packet types: " << '\n';
-            	    for (std::map<std::string,packet::packet_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
-            	        std::cout << it->second->type() << '\n';
+            	    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+            	        std::cout << generator->type() << '\n';
                     }
             	}
             	virtual ~packet_generator() = default;
@@ -728,8 +728,8 @@ class node {
             	}
             	static void print () {
             	    std::cout << "registered node types: " << '\n';
-            	    for (std::map<std::string, node::node_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
-            	        std::cout << it->second->type() << '\n';
+            	    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+            	        std::cout << generator->type() << '\n';
                     }
             	}
             	virtual ~node_generator() = default;
@@ -976,8 +976,8 @@ class event {
             	}
             	static void print () {
             	    std::cout << "registered event types: " << '\n';
-            	    for (std::map<std::string, event::event_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
-            	        std::cout << it->second->type() << '\n';
+            	    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+            	        std::cout << generator->type() << '\n';
                     }
             	}
             	virtual ~event_generator() = default;
@@ -1713,8 +1713,8 @@ class link {
             	}
             	static void print () {
             	    std::cout << "registered link types: " << '\n';
-            	    for (std::map<std::string, link::link_generator*>::iterator it = prototypes.begin(); it != prototypes.end(); it ++) {
-            	        std::cout << it->second->type() << '\n';
+            	    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+            	        std::cout << generator->type() << '\n';
                     }
             	}
             	virtual ~link_generator() = default;
@@ -1861,7 +1861,7 @@ void node::send(packet *p){ // this function is called by event; not for the use
     if (p == nullptr) {return;}
 
     unsigned int _nexID = p->get_header()->get_nex_ID();
-    for (const auto &[nb_id, _] : phy_neighbors) { // neighbor id
+    for (const auto &[nb_id, _]: phy_neighbors) { // neighbor id
         if (nb_id != _nexID && BROADCAST_ID != _nexID) {continue;} // this neighbor will not receive the packet
 
         unsigned int trigger_time = event::get_cur_time() + link::id_id_to_link(id, nb_id)->get_latency() ; // we simply assume that the delay is fixed
