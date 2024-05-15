@@ -67,7 +67,7 @@ class header {
             	}
             	static void print () {
             	    std::cout << "registered header types: " << '\n';
-            	    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+            	    for (const auto &[_, generator]: prototypes) {
             	        std::cout << generator->type() << '\n';
                     }
             	}
@@ -236,7 +236,7 @@ class payload {
             	}
             	static void print () {
             	    std::cout << "registered payload types: " << '\n';
-                    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+                    for (const auto &[_, generator]: prototypes) {
             	        std::cout << generator->type() << '\n';
                     }
             	}
@@ -461,7 +461,7 @@ class packet{
             	}
             	static void print () {
             	    std::cout << "registered packet types: " << '\n';
-            	    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+            	    for (const auto &[_, generator]: prototypes) {
             	        std::cout << generator->type() << '\n';
                     }
             	}
@@ -728,7 +728,7 @@ class node {
             	}
             	static void print () {
             	    std::cout << "registered node types: " << '\n';
-            	    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+            	    for (const auto &[_, generator]: prototypes) {
             	        std::cout << generator->type() << '\n';
                     }
             	}
@@ -976,7 +976,7 @@ class event {
             	}
             	static void print () {
             	    std::cout << "registered event types: " << '\n';
-            	    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+            	    for (const auto &[_, generator]: prototypes) {
             	        std::cout << generator->type() << '\n';
                     }
             	}
@@ -1713,7 +1713,7 @@ class link {
             	}
             	static void print () {
             	    std::cout << "registered link types: " << '\n';
-            	    for (const auto &[_, generator]: prototypes) { // NOTE: please review my naming here: 'generator'
+            	    for (const auto &[_, generator]: prototypes) {
             	        std::cout << generator->type() << '\n';
                     }
             	}
