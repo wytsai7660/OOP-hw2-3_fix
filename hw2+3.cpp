@@ -8,10 +8,20 @@
 #include <utility>
 #include <vector>
 
-#define SET(type, var_name) void set_##var_name(type const &_##var_name) { (var_name) = _##var_name; }
-#define SET_WITH_NAME(setter_name, type, var_name) void setter_name(type const &_##var_name) { (var_name) = _##var_name; }
-#define GET(type, var_name) type get_##var_name() const { return var_name; }
-#define GET_WITH_NAME(getter_name, type, var_name) type getter_name() const { return var_name; }
+#define SET(var_name) \
+    template <typename T> \
+    void set_##var_name(const T &_##var_name) { \
+        static_assert(std::is_convertible_v<decltype(var_name), T>); \
+        (var_name) = static_cast<decltype(var_name)>(_##var_name); \
+    }
+#define SET_WITH_NAME(setter_name, var_name) \
+    template <typename T> \
+    void setter_name(const T &_##var_name) { \
+        static_assert(std::is_convertible_v<decltype(var_name), T>); \
+        (var_name) = static_cast<decltype(var_name)>(_##var_name); \
+    }
+#define GET(var_name) auto get_##var_name() const { return var_name; }
+#define GET_WITH_NAME(getter_name, var_name) auto getter_name() const{ return var_name; }
 
 class header;
 class payload;
@@ -31,14 +41,14 @@ class header {
     public:
         virtual ~header() = default;
 
-        SET(unsigned int, src_ID)
-        SET(unsigned int, dst_ID)
-        SET(unsigned int, pre_ID)
-        SET(unsigned int, nex_ID)
-        GET(unsigned int, src_ID)
-        GET(unsigned int, dst_ID)
-        GET(unsigned int, pre_ID)
-        GET(unsigned int, nex_ID)
+        SET(src_ID)
+        SET(dst_ID)
+        SET(pre_ID)
+        SET(nex_ID)
+        GET(src_ID)
+        GET(dst_ID)
+        GET(pre_ID)
+        GET(nex_ID)
         virtual std::string type() = 0;
 
         // factory concept: generate a header
@@ -208,8 +218,8 @@ class payload {
         virtual ~payload() = default;
         virtual std::string type() = 0;
 
-        SET(std::string, msg)
-        GET(std::string, msg)
+        SET(msg)
+        GET(msg)
 
         class payload_generator {
                 // lock the copy constructor
@@ -282,7 +292,7 @@ class IoT_ctrl_payload : public payload {
         ~IoT_ctrl_payload() override = default;
 
         void increase() { counter ++; } // used to increase the counter
-        GET(unsigned int, counter) // used to get the value of counter
+        GET(counter) // used to get the value of counter
 
         std::string type() override { return "IoT_ctrl_payload"; }
 
@@ -347,8 +357,8 @@ class DIS_ctrl_payload : public payload {
         ~DIS_ctrl_payload() override = default;
 
         // void increase() { counter ++; } // used to increase the counter
-        SET(unsigned int, parent)
-        GET(unsigned int, parent) // used to get the value of counter
+        SET(parent)
+        GET(parent) // used to get the value of counter
 
         std::string type() override { return "DIS_ctrl_payload"; }
 
@@ -405,11 +415,11 @@ class packet{
             // cout << "packet destructor end" << '\n';
         }
 
-        SET_WITH_NAME(set_header, header *, hdr)
-        GET_WITH_NAME(get_header, header *, hdr)
-        SET_WITH_NAME(set_payload, payload *, pld)
-        GET_WITH_NAME(get_payload, payload *, pld)
-        GET_WITH_NAME(get_packet_ID, unsigned int, p_id)
+        SET_WITH_NAME(set_header, hdr)
+        GET_WITH_NAME(get_header, hdr)
+        SET_WITH_NAME(set_payload, pld)
+        GET_WITH_NAME(get_payload, pld)
+        GET_WITH_NAME(get_packet_ID, p_id)
 
         static void discard ( packet* &p ) {
             // cout << "checking" << '\n';
@@ -685,7 +695,7 @@ class node {
         void send_handler(packet *P);
 
         static node * id_to_node (unsigned int _id) { return ((id_node_table.find(_id)!=id_node_table.end()) ? id_node_table[_id]: nullptr) ; }
-        GET_WITH_NAME(get_node_ID, unsigned int, id)
+        GET_WITH_NAME(get_node_ID, id)
 
         static void del_node (unsigned int _id) {
             if (id_node_table.find(_id) != id_node_table.end()) {
@@ -912,7 +922,7 @@ class event {
             std::cout << "**flush end" << '\n';
         }
 
-        GET(unsigned int, trigger_time)
+        GET(trigger_time)
 
         static void start_simulate( unsigned int _end_time ) { // the function is used to start the simulation
             if (_end_time<0) {
