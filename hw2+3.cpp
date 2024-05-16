@@ -8,8 +8,8 @@
 #include <utility>
 #include <vector>
 
-#define SET(type, var_name) void set_##var_name(type _##var_name) { (var_name) = _##var_name; }
-#define SET_WITH_NAME(setter_name, type, var_name) void setter_name(type _##var_name) { (var_name) = _##var_name; }
+#define SET(type, var_name) void set_##var_name(type const &_##var_name) { (var_name) = _##var_name; }
+#define SET_WITH_NAME(setter_name, type, var_name) void setter_name(type const &_##var_name) { (var_name) = _##var_name; }
 #define GET(type, var_name) type get_##var_name() const { return var_name; }
 #define GET_WITH_NAME(getter_name, type, var_name) type getter_name() const { return var_name; }
 
