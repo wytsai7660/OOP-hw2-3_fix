@@ -1778,7 +1778,7 @@ void IoT_data_packet_event (unsigned int src, unsigned int dst=0, unsigned int t
 
 // the IoT_ctrl_packet_event function is used to add an initial event
 
-void IoT_ctrl_packet_event (unsigned int src, unsigned int t = event::get_cur_time(),
+void IoT_ctrl_packet_event (unsigned int src = 0, unsigned int t = event::get_cur_time(),
                         std::string msg = "default") {
         // 1st parameter: the source; the destination that want to broadcast a msg with counter 0 (i.e., match ID)
         // 2nd parameter: time (optional)
@@ -1822,19 +1822,18 @@ void AGG_ctrl_packet_event (unsigned int src, unsigned int dst = 0, unsigned int
 }
 
 // the DIS_ctrl_packet_event function is used to add an initial event
-void DIS_ctrl_packet_event (unsigned int sink_id, unsigned int id, unsigned int parent,
-                            unsigned int t = event::get_cur_time(), std::string msg = "default"){
-    if ( node::id_to_node(sink_id) == nullptr || (id != BROADCAST_ID && node::id_to_node(id) == nullptr) ) {
+void DIS_ctrl_packet_event (unsigned int sink_id = 0, unsigned int t = event::get_cur_time(), const std::string &msg = "default"){
+    if ( node::id_to_node(sink_id) == nullptr ) {
         std::cerr << "sink_id or id is incorrect" << '\n';
         return;
     }
 
     DIS_ctrl_pkt_gen_event::pkt_gen_data e_data;
     e_data.src_id = sink_id;
-    e_data.dst_id = id;
-    e_data.parent = parent;
+    e_data.dst_id = sink_id;
+    e_data.parent = sink_id;
     e_data.msg = msg;
-
+    
     // recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",t, (void *)&e_data) );
     DIS_ctrl_pkt_gen_event *e = dynamic_cast<DIS_ctrl_pkt_gen_event*> ( event::event_generator::generate("DIS_ctrl_pkt_gen_event",t, (void *)&e_data) );
     if (e == nullptr) {
@@ -1934,7 +1933,7 @@ int main()
     // 3rd parameter: time (optional)
     // 4th parameter: msg (for storing nb list)
 
-    DIS_ctrl_packet_event(0, 3, 8, 260);
+    DIS_ctrl_packet_event(0, 260);
     // 1st parameter: the source node (sink)
     // 2nd parameter: the destination node
     // 3rd parameter: parent
