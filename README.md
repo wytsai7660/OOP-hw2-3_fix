@@ -7,4 +7,7 @@ This repository attempts to modernize JJK's code.
 In order to improve on JJK's code, the following breaking changes have been made:
 
 - All mutators and accessors have been renamed to use snake_case instead of camelCase.
+
+- Since all `generator`s are inner classes of the classes they generate objects for, their names don't need to include their enclosing classes' names again, so they have all been renamed to `generator`.
+
 - `GET` and `SET` has been modified to take one parameter only. The type of the property, the name of the accessor/mutator and the name of their parameters will be generated automatically.

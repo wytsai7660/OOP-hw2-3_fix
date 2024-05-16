@@ -52,16 +52,16 @@ class header {
         virtual std::string type() = 0;
 
         // factory concept: generate a header
-        class header_generator {
+        class generator {
                 // lock the copy constructor
-                header_generator(header_generator &) = default;
+                generator(generator &) = default;
                 // store all possible types of header
-                static inline std::map<std::string,header_generator*> prototypes;
+                static inline std::map<std::string,generator*> prototypes;
             protected:
                 // allow derived class to use it
-                header_generator() = default;
+                generator() = default;
                 // after you create a new header type, please register the factory of this header type by this function
-                void register_header_type(header_generator *h) { prototypes[h->type()] = h; }
+                void register_header_type(generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your header
                 virtual header* generate() = 0 ;
             public:
@@ -81,7 +81,7 @@ class header {
             	        std::cout << generator->type() << '\n';
                     }
             	}
-            	virtual ~header_generator() = default;
+            	virtual ~generator() = default;
         };
 
     protected:
@@ -105,11 +105,11 @@ class IoT_data_header : public header{
         ~IoT_data_header() override = default;
         std::string type() override { return "IoT_data_header"; }
 
-        // IoT_data_header_generator is derived from header_generator to generate a header
-        class IoT_data_header_generator : public header_generator{
-                static IoT_data_header_generator sample;
+        // IoT_data_header::generator is derived from header::generator to generate a header
+        class generator : public header::generator{
+                static generator sample;
                 // this constructor is only for sample to register this header type
-                IoT_data_header_generator() { /*cout << "IoT_data_header registered" << '\n';*/ register_header_type(&sample); }
+                generator() { /*cout << "IoT_data_header registered" << '\n';*/ register_header_type(&sample); }
             protected:
                 header * generate() override {
                     // cout << "IoT_data_header generated" << '\n';
@@ -117,11 +117,11 @@ class IoT_data_header : public header{
                 }
             public:
                 std::string type() override { return "IoT_data_header";}
-                ~IoT_data_header_generator() override = default;
+                ~generator() override = default;
 
         };
 };
-IoT_data_header::IoT_data_header_generator IoT_data_header::IoT_data_header_generator::sample;
+IoT_data_header::generator IoT_data_header::generator::sample;
 
 class IoT_ctrl_header : public header{
         IoT_ctrl_header(IoT_ctrl_header&){} // cannot be called by users
@@ -133,11 +133,11 @@ class IoT_ctrl_header : public header{
         ~IoT_ctrl_header() override = default;
         std::string type() override { return "IoT_ctrl_header"; }
 
-        // IoT_ctrl_header_generator is derived from header_generator to generate a header
-        class IoT_ctrl_header_generator : public header_generator{
-                static IoT_ctrl_header_generator sample;
+        // IoT_ctrl_header::generator is derived from header::generator to generate a header
+        class generator : public header::generator{
+                static generator sample;
                 // this constructor is only for sample to register this header type
-                IoT_ctrl_header_generator() { /*cout << "IoT_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
+                generator() { /*cout << "IoT_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
             protected:
                 header * generate() override {
                     // cout << "IoT_ctrl_header generated" << '\n';
@@ -145,11 +145,11 @@ class IoT_ctrl_header : public header{
                 }
             public:
                 std::string type() override { return "IoT_ctrl_header";}
-                ~IoT_ctrl_header_generator() override = default;
+                ~generator() override = default;
 
         };
 };
-IoT_ctrl_header::IoT_ctrl_header_generator IoT_ctrl_header::IoT_ctrl_header_generator::sample;
+IoT_ctrl_header::generator IoT_ctrl_header::generator::sample;
 
 class AGG_ctrl_header : public header{
         AGG_ctrl_header(AGG_ctrl_header&){} // cannot be called by users
@@ -161,11 +161,11 @@ class AGG_ctrl_header : public header{
         ~AGG_ctrl_header() override = default;
         std::string type() override { return "AGG_ctrl_header"; }
 
-        // AGG_ctrl_header_generator is derived from header_generator to generate a header
-        class AGG_ctrl_header_generator : public header_generator{
-                static AGG_ctrl_header_generator sample;
+        // AGG_ctrl_header::generator is derived from header::generator to generate a header
+        class generator : public header::generator{
+                static generator sample;
                 // this constructor is only for sample to register this header type
-                AGG_ctrl_header_generator() { /*cout << "AGG_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
+                generator() { /*cout << "AGG_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
             protected:
                 header * generate() override {
                     // cout << "AGG_ctrl_header generated" << '\n';
@@ -173,11 +173,11 @@ class AGG_ctrl_header : public header{
                 }
             public:
                 std::string type() override { return "AGG_ctrl_header";}
-                ~AGG_ctrl_header_generator() override = default;
+                ~generator() override = default;
 
         };
 };
-AGG_ctrl_header::AGG_ctrl_header_generator AGG_ctrl_header::AGG_ctrl_header_generator::sample;
+AGG_ctrl_header::generator AGG_ctrl_header::generator::sample;
 
 class DIS_ctrl_header : public header{
         DIS_ctrl_header(DIS_ctrl_header&){} // cannot be called by users
@@ -189,11 +189,11 @@ class DIS_ctrl_header : public header{
         ~DIS_ctrl_header() override = default;
         std::string type() override { return "DIS_ctrl_header"; }
 
-        // DIS_ctrl_header_generator is derived from header_generator to generate a header
-        class DIS_ctrl_header_generator : public header_generator{
-                static DIS_ctrl_header_generator sample;
+        // DIS_ctrl_header::generator is derived from header::generator to generate a header
+        class generator : public header::generator{
+                static generator sample;
                 // this constructor is only for sample to register this header type
-                DIS_ctrl_header_generator() { /*cout << "DIS_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
+                generator() { /*cout << "DIS_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
             protected:
                 header * generate() override {
                     // cout << "DIS_ctrl_header generated" << '\n';
@@ -201,11 +201,11 @@ class DIS_ctrl_header : public header{
                 }
             public:
                 std::string type() override { return "DIS_ctrl_header";}
-                ~DIS_ctrl_header_generator() override = default;
+                ~generator() override = default;
 
         };
 };
-DIS_ctrl_header::DIS_ctrl_header_generator DIS_ctrl_header::DIS_ctrl_header_generator::sample;
+DIS_ctrl_header::generator DIS_ctrl_header::generator::sample;
 
 class payload {
         payload(payload&){} // this constructor cannot be directly called by users
@@ -221,16 +221,16 @@ class payload {
         SET(msg)
         GET(msg)
 
-        class payload_generator {
+        class generator {
                 // lock the copy constructor
-                payload_generator(payload_generator &) = default;
+                generator(generator &) = default;
                 // store all possible types of header
-                static inline std::map<std::string,payload_generator*> prototypes;
+                static inline std::map<std::string,generator*> prototypes;
             protected:
                 // allow derived class to use it
-                payload_generator() = default;
+                generator() = default;
                 // after you create a new payload type, please register the factory of this payload type by this function
-                void register_payload_type(payload_generator *h) { prototypes[h->type()] = h; }
+                void register_payload_type(generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your payload
                 virtual payload* generate() = 0;
             public:
@@ -250,7 +250,7 @@ class payload {
             	        std::cout << generator->type() << '\n';
                     }
             	}
-            	virtual ~payload_generator() = default;
+            	virtual ~generator() = default;
         };
 };
 
@@ -264,11 +264,11 @@ class IoT_data_payload : public payload {
 
         std::string type() override { return "IoT_data_payload"; }
 
-        // IoT_data_payload is derived from payload_generator to generate a payload
-        class IoT_data_payload_generator : public payload_generator{
-                static IoT_data_payload_generator sample;
+        // IoT_data_payload::generator is derived from payload::generator to generate a payload
+        class generator : public payload::generator{
+                static generator sample;
                 // this constructor is only for sample to register this payload type
-                IoT_data_payload_generator() { /*cout << "IoT_data_payload registered" << '\n';*/ register_payload_type(&sample); }
+                generator() { /*cout << "IoT_data_payload registered" << '\n';*/ register_payload_type(&sample); }
             protected:
                 payload * generate() override {
                     // cout << "IoT_data_payload generated" << '\n';
@@ -276,10 +276,10 @@ class IoT_data_payload : public payload {
                 }
             public:
                 std::string type() override { return "IoT_data_payload";}
-                ~IoT_data_payload_generator() override = default;
+                ~generator() override = default;
         };
 };
-IoT_data_payload::IoT_data_payload_generator IoT_data_payload::IoT_data_payload_generator::sample;
+IoT_data_payload::generator IoT_data_payload::generator::sample;
 
 class IoT_ctrl_payload : public payload {
         IoT_ctrl_payload(IoT_ctrl_payload & s): counter (s.counter) {}
@@ -296,11 +296,11 @@ class IoT_ctrl_payload : public payload {
 
         std::string type() override { return "IoT_ctrl_payload"; }
 
-        // IoT_data_payload is derived from payload_generator to generate a payload
-        class IoT_ctrl_payload_generator : public payload_generator{
-                static IoT_ctrl_payload_generator sample;
+        // IoT_ctrl_payload::generator is derived from payload::generator to generate a payload
+        class generator : public payload::generator{
+                static generator sample;
                 // this constructor is only for sample to register this payload type
-                IoT_ctrl_payload_generator() { /*cout << "IoT_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
+                generator() { /*cout << "IoT_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
             protected:
                 payload * generate() override {
                     // cout << "IoT_ctrl_payload generated" << '\n';
@@ -308,10 +308,10 @@ class IoT_ctrl_payload : public payload {
                 }
             public:
                 std::string type() override { return "IoT_ctrl_payload";}
-                ~IoT_ctrl_payload_generator() override = default;
+                ~generator() override = default;
         };
 };
-IoT_ctrl_payload::IoT_ctrl_payload_generator IoT_ctrl_payload::IoT_ctrl_payload_generator::sample;
+IoT_ctrl_payload::generator IoT_ctrl_payload::generator::sample;
 
 class AGG_ctrl_payload : public payload {
         AGG_ctrl_payload(AGG_ctrl_payload & s) {}
@@ -328,11 +328,11 @@ class AGG_ctrl_payload : public payload {
 
         std::string type() override { return "AGG_ctrl_payload"; }
 
-        // IoT_data_payload is derived from payload_generator to generate a payload
-        class AGG_ctrl_payload_generator : public payload_generator{
-                static AGG_ctrl_payload_generator sample;
+        // AGG_ctrl_payload::generator is derived from payload::generator to generate a payload
+        class generator : public payload::generator{
+                static generator sample;
                 // this constructor is only for sample to register this payload type
-                AGG_ctrl_payload_generator() { /*cout << "AGG_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
+                generator() { /*cout << "AGG_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
             protected:
                 payload * generate() override {
                     // cout << "AGG_ctrl_payload generated" << '\n';
@@ -340,10 +340,10 @@ class AGG_ctrl_payload : public payload {
                 }
             public:
                 std::string type() override { return "AGG_ctrl_payload";}
-                ~AGG_ctrl_payload_generator() override = default;
+                ~generator() override = default;
         };
 };
-AGG_ctrl_payload::AGG_ctrl_payload_generator AGG_ctrl_payload::AGG_ctrl_payload_generator::sample;
+AGG_ctrl_payload::generator AGG_ctrl_payload::generator::sample;
 
 class DIS_ctrl_payload : public payload {
         DIS_ctrl_payload(DIS_ctrl_payload & s): parent(s.parent) {}
@@ -362,11 +362,11 @@ class DIS_ctrl_payload : public payload {
 
         std::string type() override { return "DIS_ctrl_payload"; }
 
-        // IoT_data_payload is derived from payload_generator to generate a payload
-        class DIS_ctrl_payload_generator : public payload_generator{
-                static DIS_ctrl_payload_generator sample;
+        // DIS_ctrl_payload::generator is derived from payload::generator to generate a payload
+        class generator : public payload::generator{
+                static generator sample;
                 // this constructor is only for sample to register this payload type
-                DIS_ctrl_payload_generator() { /*cout << "DIS_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
+                generator() { /*cout << "DIS_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
             protected:
                 payload * generate() override {
                     // cout << "DIS_ctrl_payload generated" << '\n';
@@ -374,10 +374,10 @@ class DIS_ctrl_payload : public payload {
                 }
             public:
                 std::string type() override { return "DIS_ctrl_payload";}
-                ~DIS_ctrl_payload_generator() override = default;
+                ~generator() override = default;
         };
 };
-DIS_ctrl_payload::DIS_ctrl_payload_generator DIS_ctrl_payload::DIS_ctrl_payload_generator::sample;
+DIS_ctrl_payload::generator DIS_ctrl_payload::generator::sample;
 
 class packet{
         // a packet usually contains a header and a payload
@@ -398,8 +398,8 @@ class packet{
             else {
                 p_id = rep_id;
             }
-            hdr = header::header_generator::generate(_hdr);
-            pld = payload::payload_generator::generate(_pld);
+            hdr = header::generator::generate(_hdr);
+            pld = payload::generator::generate(_pld);
             live_packet_num ++;
         }
     public:
@@ -439,16 +439,16 @@ class packet{
 
         static int get_live_packet_num () { return live_packet_num; }
 
-        class packet_generator {
+        class generator {
                 // lock the copy constructor
-                packet_generator(packet_generator &) = default;
+                generator(generator &) = default;
                 // store all possible types of packet
-                static inline std::map<std::string,packet_generator*> prototypes;
+                static inline std::map<std::string,generator*> prototypes;
             protected:
                 // allow derived class to use it
-                packet_generator() = default;
+                generator() = default;
                 // after you create a new packet type, please register the factory of this payload type by this function
-                void register_packet_type(packet_generator *h) { prototypes[h->type()] = h; }
+                void register_packet_type(generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your payload
                 virtual packet* generate ( packet *p = nullptr) = 0;
             public:
@@ -475,7 +475,7 @@ class packet{
             	        std::cout << generator->type() << '\n';
                     }
             	}
-            	virtual ~packet_generator() = default;
+            	virtual ~generator() = default;
         };
 };
 
@@ -497,11 +497,11 @@ class IoT_data_packet: public packet {
         ~IoT_data_packet() override = default;
         std::string type() override { return "IoT_data_packet"; }
 
-        // IoT_data_packet is derived from packet_generator to generate a pub packet
-        class IoT_data_packet_generator : public packet_generator{
-                static IoT_data_packet_generator sample;
+        // IoT_data_packet::generator is derived from packet::generator to generate a pub packet
+        class generator : public packet::generator{
+                static generator sample;
                 // this constructor is only for sample to register this packet type
-                IoT_data_packet_generator() { /*cout << "IoT_data_packet registered" << '\n';*/ register_packet_type(&sample); }
+                generator() { /*cout << "IoT_data_packet registered" << '\n';*/ register_packet_type(&sample); }
             protected:
                 packet *generate (packet *p = nullptr) override {
                     // cout << "IoT_data_packet generated" << '\n';
@@ -514,10 +514,10 @@ class IoT_data_packet: public packet {
                 }
             public:
                 std::string type() override { return "IoT_data_packet";}
-                ~IoT_data_packet_generator() override = default;
+                ~generator() override = default;
         };
 };
-IoT_data_packet::IoT_data_packet_generator IoT_data_packet::IoT_data_packet_generator::sample;
+IoT_data_packet::generator IoT_data_packet::generator::sample;
 
 // this packet type is used to conduct distributed BFS
 class IoT_ctrl_packet: public packet {
@@ -542,11 +542,11 @@ class IoT_ctrl_packet: public packet {
             return " counter " + std::to_string(counter);
         }
 
-        // IoT_ctrl_packet is derived from packet_generator to generate a pub packet
-        class IoT_ctrl_packet_generator : public packet_generator{
-                static IoT_ctrl_packet_generator sample;
+        // IoT_ctrl_packet::generator is derived from packet::generator to generate a pub packet
+        class generator : public packet::generator{
+                static generator sample;
                 // this constructor is only for sample to register this packet type
-                IoT_ctrl_packet_generator() { /*cout << "IoT_ctrl_packet registered" << '\n';*/ register_packet_type(&sample); }
+                generator() { /*cout << "IoT_ctrl_packet registered" << '\n';*/ register_packet_type(&sample); }
             protected:
                 packet *generate (packet *p = nullptr) override {
                     // cout << "IoT_ctrl_packet generated" << '\n';
@@ -559,10 +559,10 @@ class IoT_ctrl_packet: public packet {
                 }
             public:
                 std::string type() override { return "IoT_ctrl_packet";}
-                ~IoT_ctrl_packet_generator() override = default;
+                ~generator() override = default;
         };
 };
-IoT_ctrl_packet::IoT_ctrl_packet_generator IoT_ctrl_packet::IoT_ctrl_packet_generator::sample;
+IoT_ctrl_packet::generator IoT_ctrl_packet::generator::sample;
 
 // this packet type is used to transmit each device's nblist to the sink
 class AGG_ctrl_packet: public packet {
@@ -587,11 +587,11 @@ class AGG_ctrl_packet: public packet {
         //     return " msg " + msg;
         // }
 
-        // AGG_ctrl_packet is derived from packet_generator to generate a pub packet
-        class AGG_ctrl_packet_generator : public packet_generator{
-                static AGG_ctrl_packet_generator sample;
+        // AGG_ctrl_packet::generator is derived from packet::generator to generate a pub packet
+        class generator : public packet::generator{
+                static generator sample;
                 // this constructor is only for sample to register this packet type
-                AGG_ctrl_packet_generator() { /*cout << "AGG_ctrl_packet registered" << '\n';*/ register_packet_type(&sample); }
+                generator() { /*cout << "AGG_ctrl_packet registered" << '\n';*/ register_packet_type(&sample); }
             protected:
                 packet *generate (packet *p = nullptr) override {
                     // cout << "AGG_ctrl_packet generated" << '\n';
@@ -604,10 +604,10 @@ class AGG_ctrl_packet: public packet {
                 }
             public:
                 std::string type() override { return "AGG_ctrl_packet";}
-                ~AGG_ctrl_packet_generator() override = default;
+                ~generator() override = default;
         };
 };
-AGG_ctrl_packet::AGG_ctrl_packet_generator AGG_ctrl_packet::AGG_ctrl_packet_generator::sample;
+AGG_ctrl_packet::generator AGG_ctrl_packet::generator::sample;
 
 // this packet type is used to transmit the new parent to each device
 class DIS_ctrl_packet: public packet {
@@ -632,11 +632,11 @@ class DIS_ctrl_packet: public packet {
             return " parent " + std::to_string(parent);
         }
 
-        // DIS_ctrl_packet is derived from packet_generator to generate a pub packet
-        class DIS_ctrl_packet_generator : public packet_generator{
-                static DIS_ctrl_packet_generator sample;
+        // DIS_ctrl_packet::generator is derived from packet::generator to generate a pub packet
+        class generator : public packet::generator{
+                static generator sample;
                 // this constructor is only for sample to register this packet type
-                DIS_ctrl_packet_generator() { /*cout << "DIS_ctrl_packet registered" << '\n';*/ register_packet_type(&sample); }
+                generator() { /*cout << "DIS_ctrl_packet registered" << '\n';*/ register_packet_type(&sample); }
             protected:
                 packet *generate (packet *p = nullptr) override {
                     // cout << "DIS_ctrl_packet generated" << '\n';
@@ -649,10 +649,10 @@ class DIS_ctrl_packet: public packet {
                 }
             public:
                 std::string type() override { return "DIS_ctrl_packet";}
-                ~DIS_ctrl_packet_generator() override = default;
+                ~generator() override = default;
         };
 };
-DIS_ctrl_packet::DIS_ctrl_packet_generator DIS_ctrl_packet::DIS_ctrl_packet_generator::sample;
+DIS_ctrl_packet::generator DIS_ctrl_packet::generator::sample;
 
 class node {
         // all nodes created in the program
@@ -704,16 +704,16 @@ class node {
         }
         static unsigned int get_node_num () { return id_node_table.size(); }
 
-        class node_generator {
+        class generator {
                 // lock the copy constructor
-                node_generator(node_generator &) = default;
+                generator(generator &) = default;
                 // store all possible types of node
-                static inline std::map<std::string, node_generator*> prototypes;
+                static inline std::map<std::string, generator*> prototypes;
             protected:
                 // allow derived class to use it
-                node_generator() = default;
+                generator() = default;
                 // after you create a new node type, please register the factory of this node type by this function
-                void register_node_type(node_generator *h) { prototypes[h->type()] = h; }
+                void register_node_type(generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your node
                 virtual node* generate(unsigned int _id) = 0;
             public:
@@ -742,7 +742,7 @@ class node {
             	        std::cout << generator->type() << '\n';
                     }
             	}
-            	virtual ~node_generator() = default;
+            	virtual ~generator() = default;
         };
 };
 
@@ -838,8 +838,8 @@ class IoT_device: public node {
             // you can also change the IoT_data_payload setting
             // pld->set_msg(string): to set the message transmitted to the destination
 
-            // Besides, you can use packet::packet_generator::generate() to generate a new packet; note that you should fill the header and payload in the packet
-            // moreover, you can use "packet *p2 = packet::packet_generator::replicate(p)" to make a clone p2 of packet p
+            // Besides, you can use packet::generator::generate() to generate a new packet; note that you should fill the header and payload in the packet
+            // moreover, you can use "packet *p2 = packet::generator::replicate(p)" to make a clone p2 of packet p
             // note that if the packet is generated or replicated manually, you must delete it by packet::discard() manually before recv_handler finishes
 
             // "IMPORTANT":
@@ -855,19 +855,19 @@ class IoT_device: public node {
         // void add_one_hop_neighbor (unsigned int n_id) { one_hop_neighbors[n_id] = true; }
         // unsigned int get_one_hop_neighbor_num () { return one_hop_neighbors.size(); }
 
-        // IoT_device is derived from node_generator to generate a node
-        class IoT_device_generator : public node_generator{
-                static IoT_device_generator sample;
+        // IoT_device::generator is derived from node::generator to generate a node
+        class generator : public node::generator{
+                static generator sample;
                 // this constructor is only for sample to register this node type
-                IoT_device_generator() { /*cout << "IoT_device registered" << '\n';*/ register_node_type(&sample); }
+                generator() { /*cout << "IoT_device registered" << '\n';*/ register_node_type(&sample); }
             protected:
                 node * generate(unsigned int _id) override { /*cout << "IoT_device generated" << '\n';*/ return new IoT_device(_id); }
             public:
                 std::string type() override { return "IoT_device";}
-                ~IoT_device_generator() override = default;
+                ~generator() override = default;
         };
 };
-IoT_device::IoT_device_generator IoT_device::IoT_device_generator::sample;
+IoT_device::generator IoT_device::generator::sample;
 
 class mycomp {
     bool reverse;
@@ -959,16 +959,16 @@ class event {
 
         virtual void print () const = 0; // the function is used to print the event information
 
-        class event_generator{
+        class generator{
                 // lock the copy constructor
-                event_generator(event_generator &) = default;
+                generator(generator &) = default;
                 // store all possible types of event
-                static inline std::map<std::string, event_generator*> prototypes;
+                static inline std::map<std::string, generator*> prototypes;
             protected:
                 // allow derived class to use it
-                event_generator() = default;
+                generator() = default;
                 // after you create a new event type, please register the factory of this event type by this function
-                void register_event_type(event_generator *h) { prototypes[h->type()] = h; }
+                void register_event_type(generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your event
                 virtual event* generate(unsigned int _trigger_time, void * data) = 0;
             public:
@@ -990,7 +990,7 @@ class event {
             	        std::cout << generator->type() << '\n';
                     }
             	}
-            	virtual ~event_generator() = default;
+            	virtual ~generator() = default;
         };
 };
 
@@ -1052,11 +1052,11 @@ class recv_event: public event {
             return get_hash_value(string_for_hash);
         }
 
-        // recv_event is derived from event_generator to generate a event
-        class recv_event_generator : public event_generator{
-                static recv_event_generator sample;
+        // recv_event::generator is derived from event::generator to generate a event
+        class generator : public event::generator{
+                static generator sample;
                 // this constructor is only for sample to register this event type
-                recv_event_generator() { /*cout << "recv_event registered" << '\n';*/ register_event_type(&sample); }
+                generator() { /*cout << "recv_event registered" << '\n';*/ register_event_type(&sample); }
             protected:
                 event * generate(unsigned int _trigger_time, void *data) override {
                     // cout << "recv_event generated" << '\n';
@@ -1065,7 +1065,7 @@ class recv_event: public event {
 
             public:
                 std::string type() override { return "recv_event";}
-                ~recv_event_generator() override = default;
+                ~generator() override = default;
         };
         // this class is used to initialize the recv_event
         class recv_data{
@@ -1099,7 +1099,7 @@ class recv_event: public event {
             //      << '\n';
         }
 };
-recv_event::recv_event_generator recv_event::recv_event_generator::sample;
+recv_event::generator recv_event::generator::sample;
 
 class send_event: public event {
     public:
@@ -1142,11 +1142,11 @@ class send_event: public event {
             return get_hash_value(string_for_hash);
         }
 
-        // send_event is derived from event_generator to generate a event
-        class send_event_generator : public event_generator{
-                static send_event_generator sample;
+        // send_event::generator is derived from event::generator to generate a event
+        class generator : public event::generator{
+                static generator sample;
                 // this constructor is only for sample to register this event type
-                send_event_generator() { /*cout << "send_event registered" << '\n';*/ register_event_type(&sample); }
+                generator() { /*cout << "send_event registered" << '\n';*/ register_event_type(&sample); }
             protected:
                 event * generate(unsigned int _trigger_time, void *data) override {
                     // cout << "send_event generated" << '\n';
@@ -1155,7 +1155,7 @@ class send_event: public event {
 
             public:
                 std::string type() override { return "send_event";}
-                ~send_event_generator() override = default;
+                ~generator() override = default;
         };
         // this class is used to initialize the send_event
         class send_data{
@@ -1189,7 +1189,7 @@ class send_event: public event {
             //      << '\n';
         }
 };
-send_event::send_event_generator send_event::send_event_generator::sample;
+send_event::generator send_event::generator::sample;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1228,7 +1228,7 @@ class IoT_data_pkt_gen_event: public event {
                 return;
             }
 
-            IoT_data_packet *pkt = dynamic_cast<IoT_data_packet*> ( packet::packet_generator::generate("IoT_data_packet") );
+            IoT_data_packet *pkt = dynamic_cast<IoT_data_packet*> ( packet::generator::generate("IoT_data_packet") );
             if (pkt == nullptr) {
                 std::cerr << "packet type is incorrect" << '\n'; return;
             }
@@ -1254,7 +1254,7 @@ class IoT_data_pkt_gen_event: public event {
             e_data.r_id = src; // to make the packet start from the src
             e_data._pkt = pkt;
 
-            recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event", trigger_time, (void *)&e_data) );
+            recv_event *e = dynamic_cast<recv_event*> ( event::generator::generate("recv_event", trigger_time, (void *)&e_data) );
 
         }
 
@@ -1264,11 +1264,11 @@ class IoT_data_pkt_gen_event: public event {
             return get_hash_value(string_for_hash);
         }
 
-        // IoT_data_pkt_gen_event_generator is derived from event_generator to generate an event
-        class IoT_data_pkt_gen_event_generator : public event_generator{
-                static IoT_data_pkt_gen_event_generator sample;
+        // IoT_data_pkt_gen_event::generator is derived from event::generator to generate an event
+        class generator : public event::generator{
+                static generator sample;
                 // this constructor is only for sample to register this event type
-                IoT_data_pkt_gen_event_generator() { /*cout << "send_event registered" << '\n';*/ register_event_type(&sample); }
+                generator() { /*cout << "send_event registered" << '\n';*/ register_event_type(&sample); }
             protected:
                 event * generate(unsigned int _trigger_time, void *data) override {
                     // cout << "send_event generated" << '\n';
@@ -1277,7 +1277,7 @@ class IoT_data_pkt_gen_event: public event {
 
             public:
                 std::string type() override { return "IoT_data_pkt_gen_event";}
-                ~IoT_data_pkt_gen_event_generator() override = default;
+                ~generator() override = default;
         };
         // this class is used to initialize the IoT_data_pkt_gen_event
         class pkt_gen_data{
@@ -1301,7 +1301,7 @@ class IoT_data_pkt_gen_event: public event {
                 << '\n';
         }
 };
-IoT_data_pkt_gen_event::IoT_data_pkt_gen_event_generator IoT_data_pkt_gen_event::IoT_data_pkt_gen_event_generator::sample;
+IoT_data_pkt_gen_event::generator IoT_data_pkt_gen_event::generator::sample;
 
 class IoT_ctrl_pkt_gen_event: public event {
     public:
@@ -1335,7 +1335,7 @@ class IoT_ctrl_pkt_gen_event: public event {
         ~IoT_ctrl_pkt_gen_event() override = default;
         // IoT_ctrl_pkt_gen_event will trigger the packet gen function
         void trigger() override {
-            IoT_ctrl_packet *pkt = dynamic_cast<IoT_ctrl_packet*> ( packet::packet_generator::generate("IoT_ctrl_packet") );
+            IoT_ctrl_packet *pkt = dynamic_cast<IoT_ctrl_packet*> ( packet::generator::generate("IoT_ctrl_packet") );
             if (pkt == nullptr) {
                 std::cerr << "packet type is incorrect" << '\n'; return;
             }
@@ -1365,7 +1365,7 @@ class IoT_ctrl_pkt_gen_event: public event {
             e_data.r_id = src;
             e_data._pkt = pkt;
 
-            recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",trigger_time, (void *)&e_data) );
+            recv_event *e = dynamic_cast<recv_event*> ( event::generator::generate("recv_event",trigger_time, (void *)&e_data) );
         }
 
         unsigned int event_priority() const override {
@@ -1375,11 +1375,11 @@ class IoT_ctrl_pkt_gen_event: public event {
             return get_hash_value(string_for_hash);
         }
 
-        // IoT_ctrl_pkt_gen_event_generator is derived from event_generator to generate an event
-        class IoT_ctrl_pkt_gen_event_generator : public event_generator{
-                static IoT_ctrl_pkt_gen_event_generator sample;
+        // IoT_ctrl_pkt_gen_event::generator is derived from event::generator to generate an event
+        class generator : public event::generator{
+                static generator sample;
                 // this constructor is only for sample to register this event type
-                IoT_ctrl_pkt_gen_event_generator() { /*cout << "send_event registered" << '\n';*/ register_event_type(&sample); }
+                generator() { /*cout << "send_event registered" << '\n';*/ register_event_type(&sample); }
             protected:
                 event * generate(unsigned int _trigger_time, void *data) override {
                     // cout << "send_event generated" << '\n';
@@ -1388,7 +1388,7 @@ class IoT_ctrl_pkt_gen_event: public event {
 
             public:
                 std::string type() override { return "IoT_ctrl_pkt_gen_event";}
-                ~IoT_ctrl_pkt_gen_event_generator() override = default;
+                ~generator() override = default;
         };
         // this class is used to initialize the IoT_ctrl_pkt_gen_event
         class pkt_gen_data{
@@ -1417,7 +1417,7 @@ class IoT_ctrl_pkt_gen_event: public event {
                 << '\n';
         }
 };
-IoT_ctrl_pkt_gen_event::IoT_ctrl_pkt_gen_event_generator IoT_ctrl_pkt_gen_event::IoT_ctrl_pkt_gen_event_generator::sample;
+IoT_ctrl_pkt_gen_event::generator IoT_ctrl_pkt_gen_event::generator::sample;
 
 class AGG_ctrl_pkt_gen_event: public event {
     public:
@@ -1451,7 +1451,7 @@ class AGG_ctrl_pkt_gen_event: public event {
         ~AGG_ctrl_pkt_gen_event() override = default;
         // AGG_ctrl_pkt_gen_event will trigger the packet gen function
         void trigger() override {
-            AGG_ctrl_packet *pkt = dynamic_cast<AGG_ctrl_packet*> ( packet::packet_generator::generate("AGG_ctrl_packet") );
+            AGG_ctrl_packet *pkt = dynamic_cast<AGG_ctrl_packet*> ( packet::generator::generate("AGG_ctrl_packet") );
             if (pkt == nullptr) {
                 std::cerr << "packet type is incorrect" << '\n'; return;
             }
@@ -1481,7 +1481,7 @@ class AGG_ctrl_pkt_gen_event: public event {
             e_data.r_id = src;
             e_data._pkt = pkt;
 
-            recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",trigger_time, (void *)&e_data) );
+            recv_event *e = dynamic_cast<recv_event*> ( event::generator::generate("recv_event",trigger_time, (void *)&e_data) );
         }
 
         unsigned int event_priority() const override {
@@ -1491,11 +1491,11 @@ class AGG_ctrl_pkt_gen_event: public event {
             return get_hash_value(string_for_hash);
         }
 
-        // AGG_ctrl_pkt_gen_event_generator is derived from event_generator to generate an event
-        class AGG_ctrl_pkt_gen_event_generator : public event_generator{
-                static AGG_ctrl_pkt_gen_event_generator sample;
+        // AGG_ctrl_pkt_gen_event::generator is derived from event::generator to generate an event
+        class generator : public event::generator{
+                static generator sample;
                 // this constructor is only for sample to register this event type
-                AGG_ctrl_pkt_gen_event_generator() { /*cout << "send_event registered" << '\n';*/ register_event_type(&sample); }
+                generator() { /*cout << "send_event registered" << '\n';*/ register_event_type(&sample); }
             protected:
                 event * generate(unsigned int _trigger_time, void *data) override {
                     // cout << "send_event generated" << '\n';
@@ -1504,7 +1504,7 @@ class AGG_ctrl_pkt_gen_event: public event {
 
             public:
                 std::string type() override { return "AGG_ctrl_pkt_gen_event";}
-                ~AGG_ctrl_pkt_gen_event_generator() override = default;
+                ~generator() override = default;
         };
         // this class is used to initialize the AGG_ctrl_pkt_gen_event
         class pkt_gen_data{
@@ -1533,7 +1533,7 @@ class AGG_ctrl_pkt_gen_event: public event {
                 << '\n';
         }
 };
-AGG_ctrl_pkt_gen_event::AGG_ctrl_pkt_gen_event_generator AGG_ctrl_pkt_gen_event::AGG_ctrl_pkt_gen_event_generator::sample;
+AGG_ctrl_pkt_gen_event::generator AGG_ctrl_pkt_gen_event::generator::sample;
 
 class DIS_ctrl_pkt_gen_event: public event {
     public:
@@ -1569,7 +1569,7 @@ class DIS_ctrl_pkt_gen_event: public event {
         ~DIS_ctrl_pkt_gen_event() override = default;
         // DIS_ctrl_pkt_gen_event will trigger the packet gen function
         void trigger() override {
-            DIS_ctrl_packet *pkt = dynamic_cast<DIS_ctrl_packet*> ( packet::packet_generator::generate("DIS_ctrl_packet") );
+            DIS_ctrl_packet *pkt = dynamic_cast<DIS_ctrl_packet*> ( packet::generator::generate("DIS_ctrl_packet") );
             if (pkt == nullptr) {
                 std::cerr << "packet type is incorrect" << '\n'; return;
             }
@@ -1600,7 +1600,7 @@ class DIS_ctrl_pkt_gen_event: public event {
             e_data.r_id = src;
             e_data._pkt = pkt;
 
-            recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",trigger_time, (void *)&e_data) );
+            recv_event *e = dynamic_cast<recv_event*> ( event::generator::generate("recv_event",trigger_time, (void *)&e_data) );
         }
 
         unsigned int event_priority() const override {
@@ -1610,11 +1610,11 @@ class DIS_ctrl_pkt_gen_event: public event {
             return get_hash_value(string_for_hash);
         }
 
-        // DIS_ctrl_pkt_gen_event_generator is derived from event_generator to generate an event
-        class DIS_ctrl_pkt_gen_event_generator : public event_generator{
-                static DIS_ctrl_pkt_gen_event_generator sample;
+        // DIS_ctrl_pkt_gen_event::generator is derived from event::generator to generate an event
+        class generator : public event::generator{
+                static generator sample;
                 // this constructor is only for sample to register this event type
-                DIS_ctrl_pkt_gen_event_generator() { /*cout << "send_event registered" << '\n';*/ register_event_type(&sample); }
+                generator() { /*cout << "send_event registered" << '\n';*/ register_event_type(&sample); }
             protected:
                 event * generate(unsigned int _trigger_time, void *data) override {
                     // cout << "send_event generated" << '\n';
@@ -1623,7 +1623,7 @@ class DIS_ctrl_pkt_gen_event: public event {
 
             public:
                 std::string type() override { return "DIS_ctrl_pkt_gen_event";}
-                ~DIS_ctrl_pkt_gen_event_generator() override = default;
+                ~generator() override = default;
         };
         // this class is used to initialize the DIS_ctrl_pkt_gen_event
         class pkt_gen_data{
@@ -1653,7 +1653,7 @@ class DIS_ctrl_pkt_gen_event: public event {
                 << '\n';
         }
 };
-DIS_ctrl_pkt_gen_event::DIS_ctrl_pkt_gen_event_generator DIS_ctrl_pkt_gen_event::DIS_ctrl_pkt_gen_event_generator::sample;
+DIS_ctrl_pkt_gen_event::generator DIS_ctrl_pkt_gen_event::generator::sample;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1689,16 +1689,16 @@ class link {
 
         static unsigned int get_link_num () { return id_id_link_table.size(); }
 
-        class link_generator {
+        class generator {
                 // lock the copy constructor
-                link_generator(link_generator &) = default;
+                generator(generator &) = default;
                 // store all possible types of link
-                static inline std::map<std::string, link_generator*> prototypes;
+                static inline std::map<std::string, generator*> prototypes;
             protected:
                 // allow derived class to use it
-                link_generator() = default;
+                generator() = default;
                 // after you create a new link type, please register the factory of this link type by this function
-                void register_link_type(link_generator *h) { prototypes[h->type()] = h; }
+                void register_link_type(generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your link
                 virtual link* generate(unsigned int _id1, unsigned int _id2) = 0;
             public:
@@ -1727,7 +1727,7 @@ class link {
             	        std::cout << generator->type() << '\n';
                     }
             	}
-            	virtual ~link_generator() = default;
+            	virtual ~generator() = default;
         };
 };
 
@@ -1737,7 +1737,7 @@ void node::add_phy_neighbor (unsigned int _id, const std::string &link_type){
     if (phy_neighbors.find(_id)!=phy_neighbors.end()) {return;} // if this neighbor has been added
     phy_neighbors[_id] = true;
 
-    link::link_generator::generate(link_type,id,_id);
+    link::generator::generate(link_type,id,_id);
 }
 
 class simple_link: public link {
@@ -1750,21 +1750,21 @@ class simple_link: public link {
         ~simple_link() override = default;
         double get_latency() override { return ONE_HOP_DELAY; } // you can implement your own latency
 
-        // simple_link is derived from link_generator to generate a link
-        class simple_link_generator : public link_generator {
-                static simple_link_generator sample;
+        // simple_link::generator is derived from link::generator to generate a link
+        class generator : public link::generator {
+                static generator sample;
                 // this constructor is only for sample to register this link type
-                simple_link_generator() { /*cout << "simple_link registered" << '\n';*/ register_link_type(&sample); }
+                generator() { /*cout << "simple_link registered" << '\n';*/ register_link_type(&sample); }
             protected:
                 link * generate(unsigned int _id1, unsigned int _id2) override
                 { /*cout << "simple_link generated" << '\n';*/ return new simple_link(_id1,_id2); }
             public:
                 std::string type() override { return "simple_link"; }
-                ~simple_link_generator() override = default;
+                ~generator() override = default;
         };
 };
 
-simple_link::simple_link_generator simple_link::simple_link_generator::sample;
+simple_link::generator simple_link::generator::sample;
 
 
 // the IoT_data_packet_event function is used to add an initial event
@@ -1779,8 +1779,8 @@ void IoT_data_packet_event (unsigned int src, unsigned int dst=0, unsigned int t
     e_data.dst_id = dst;
     e_data.msg = msg;
 
-    // recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",t, (void *)&e_data) );
-    IoT_data_pkt_gen_event *e = dynamic_cast<IoT_data_pkt_gen_event*> ( event::event_generator::generate("IoT_data_pkt_gen_event",t, (void *)&e_data) );
+    // recv_event *e = dynamic_cast<recv_event*> ( event::generator::generate("recv_event",t, (void *)&e_data) );
+    IoT_data_pkt_gen_event *e = dynamic_cast<IoT_data_pkt_gen_event*> ( event::generator::generate("IoT_data_pkt_gen_event",t, (void *)&e_data) );
     if (e == nullptr) {
         std::cerr << "event type is incorrect" << '\n';
     }
@@ -1806,7 +1806,7 @@ void IoT_ctrl_packet_event (unsigned int src = 0, unsigned int t = event::get_cu
     e_data.msg = msg;
     // e_data.per = per;
 
-    IoT_ctrl_pkt_gen_event *e = dynamic_cast<IoT_ctrl_pkt_gen_event*> ( event::event_generator::generate("IoT_ctrl_pkt_gen_event",t, (void *)&e_data) );
+    IoT_ctrl_pkt_gen_event *e = dynamic_cast<IoT_ctrl_pkt_gen_event*> ( event::generator::generate("IoT_ctrl_pkt_gen_event",t, (void *)&e_data) );
     if (e == nullptr) {
         std::cerr << "event type is incorrect" << '\n';
     }
@@ -1824,8 +1824,8 @@ void AGG_ctrl_packet_event (unsigned int src, unsigned int dst = 0, unsigned int
     e_data.dst_id = dst;
     e_data.msg = msg;
 
-    // recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",t, (void *)&e_data) );
-    AGG_ctrl_pkt_gen_event *e = dynamic_cast<AGG_ctrl_pkt_gen_event*> ( event::event_generator::generate("AGG_ctrl_pkt_gen_event",t, (void *)&e_data) );
+    // recv_event *e = dynamic_cast<recv_event*> ( event::generator::generate("recv_event",t, (void *)&e_data) );
+    AGG_ctrl_pkt_gen_event *e = dynamic_cast<AGG_ctrl_pkt_gen_event*> ( event::generator::generate("AGG_ctrl_pkt_gen_event",t, (void *)&e_data) );
     if (e == nullptr) {
         std::cerr << "event type is incorrect" << '\n';
     }
@@ -1844,8 +1844,8 @@ void DIS_ctrl_packet_event (unsigned int sink_id = 0, unsigned int t = event::ge
     e_data.parent = sink_id;
     e_data.msg = msg;
     
-    // recv_event *e = dynamic_cast<recv_event*> ( event::event_generator::generate("recv_event",t, (void *)&e_data) );
-    DIS_ctrl_pkt_gen_event *e = dynamic_cast<DIS_ctrl_pkt_gen_event*> ( event::event_generator::generate("DIS_ctrl_pkt_gen_event",t, (void *)&e_data) );
+    // recv_event *e = dynamic_cast<recv_event*> ( event::generator::generate("recv_event",t, (void *)&e_data) );
+    DIS_ctrl_pkt_gen_event *e = dynamic_cast<DIS_ctrl_pkt_gen_event*> ( event::generator::generate("DIS_ctrl_pkt_gen_event",t, (void *)&e_data) );
     if (e == nullptr) {
         std::cerr << "event type is incorrect" << '\n';
     }
@@ -1855,12 +1855,12 @@ void DIS_ctrl_packet_event (unsigned int sink_id = 0, unsigned int t = event::ge
 // Note that the packet p will not be discard after send_handler ()
 
 void node::send_handler(packet *p){
-    packet *_p = packet::packet_generator::replicate(p);
+    packet *_p = packet::generator::replicate(p);
     send_event::send_data e_data;
     e_data.s_id = _p->get_header()->get_pre_ID();
     e_data.r_id = _p->get_header()->get_nex_ID();
     e_data._pkt = _p;
-    send_event *e = dynamic_cast<send_event*> (event::event_generator::generate("send_event",event::get_cur_time(), (void *)&e_data) );
+    send_event *e = dynamic_cast<send_event*> (event::generator::generate("send_event",event::get_cur_time(), (void *)&e_data) );
     if (e == nullptr) {
         std::cerr << "event type is incorrect" << '\n';
     }
@@ -1879,10 +1879,10 @@ void node::send(packet *p){ // this function is called by event; not for the use
         e_data.s_id = id;    // set the sender   (i.e., preID)
         e_data.r_id = nb_id; // set the receiver (i.e., nexID)
 
-        packet *p2 = packet::packet_generator::replicate(p);
+        packet *p2 = packet::generator::replicate(p);
         e_data._pkt = p2;
 
-        recv_event *e = dynamic_cast<recv_event*> (event::event_generator::generate("recv_event", trigger_time, (void*) &e_data)); // send the packet to the neighbor
+        recv_event *e = dynamic_cast<recv_event*> (event::generator::generate("recv_event", trigger_time, (void*) &e_data)); // send the packet to the neighbor
         if (e == nullptr) {
             std::cerr << "event type is incorrect" << '\n';
         }
@@ -1892,17 +1892,17 @@ void node::send(packet *p){ // this function is called by event; not for the use
 
 int main()
 {
-    // header::header_generator::print(); // print all registered headers
-    // payload::payload_generator::print(); // print all registered payloads
-    // packet::packet_generator::print(); // print all registered packets
-    // node::node_generator::print(); // print all registered nodes
-    // event::event_generator::print(); // print all registered events
-    // link::link_generator::print(); // print all registered links
+    // header::generator::print(); // print all registered headers
+    // payload::generator::print(); // print all registered payloads
+    // packet::generator::print(); // print all registered packets
+    // node::generator::print(); // print all registered nodes
+    // event::generator::print(); // print all registered events
+    // link::generator::print(); // print all registered links
 
     // read the input and generate devices
     for (unsigned int id = 0; id < 5; id ++){
 
-        node::node_generator::generate("IoT_device",id);
+        node::generator::generate("IoT_device",id);
 
     }
 
