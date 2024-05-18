@@ -508,9 +508,7 @@ class IoT_data_packet: public packet {
                     if ( nullptr == p ) {
                         return new IoT_data_packet("IoT_data_header","IoT_data_payload");
                     }
-                    else {
-                        return new IoT_data_packet(p); // duplicate
-                    }
+                    return new IoT_data_packet(p); // duplicate
                 }
             public:
                 std::string type() override { return "IoT_data_packet";}
@@ -553,9 +551,7 @@ class IoT_ctrl_packet: public packet {
                     if ( nullptr == p ) {
                         return new IoT_ctrl_packet("IoT_ctrl_header","IoT_ctrl_payload");
                     }
-                    else {
-                        return new IoT_ctrl_packet(p); // duplicate
-                    }
+                    return new IoT_ctrl_packet(p); // duplicate
                 }
             public:
                 std::string type() override { return "IoT_ctrl_packet";}
@@ -598,9 +594,7 @@ class AGG_ctrl_packet: public packet {
                     if ( nullptr == p ) {
                         return new AGG_ctrl_packet("AGG_ctrl_header","AGG_ctrl_payload");
                     }
-                    else {
-                        return new AGG_ctrl_packet(p); // duplicate
-                    }
+                    return new AGG_ctrl_packet(p); // duplicate
                 }
             public:
                 std::string type() override { return "AGG_ctrl_packet";}
@@ -643,9 +637,7 @@ class DIS_ctrl_packet: public packet {
                     if ( nullptr == p ) {
                         return new DIS_ctrl_packet("DIS_ctrl_header","DIS_ctrl_payload");
                     }
-                    else {
-                        return new DIS_ctrl_packet(p); // duplicate
-                    }
+                    return new DIS_ctrl_packet(p); // duplicate
                 }
             public:
                 std::string type() override { return "DIS_ctrl_packet";}
@@ -725,11 +717,11 @@ class node {
         	            std::cerr << "duplicate node id" << '\n'; // node id is duplicated
         	            return nullptr;
         	        }
-        	        else if ( BROADCAST_ID == _id ) {
+        	        if ( BROADCAST_ID == _id ) {
         	            std::cerr << "BROADCAST_ID cannot be used" << '\n';
         	            return nullptr;
         	        }
-            		else if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
+            		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             		    node * created_node = prototypes[type]->generate(_id);
             			return created_node; // generate it!!
             		}
@@ -1006,9 +998,7 @@ bool mycomp::operator() (const event* lhs, const event* rhs) const  {
     if (reverse) {
         return ((lhs->get_trigger_time()) == (rhs->get_trigger_time())) ? (lhs_pri < rhs_pri): ((lhs->get_trigger_time()) < (rhs->get_trigger_time()));
     }
-    else {
-        return ((lhs->get_trigger_time()) == (rhs->get_trigger_time())) ? (lhs_pri > rhs_pri): ((lhs->get_trigger_time()) > (rhs->get_trigger_time()));
-    }
+    return ((lhs->get_trigger_time()) == (rhs->get_trigger_time())) ? (lhs_pri > rhs_pri): ((lhs->get_trigger_time()) > (rhs->get_trigger_time()));
 }
 
 class recv_event: public event {
@@ -1035,7 +1025,7 @@ class recv_event: public event {
                 std::cerr << "recv_event error: no pkt!" << '\n';
                 return ;
             }
-            else if (node::id_to_node(receiverID) == nullptr){
+            if (node::id_to_node(receiverID) == nullptr){
                 std::cerr << "recv_event error: no node " << receiverID << "!" << '\n';
                 delete pkt; return ;
             }
@@ -1121,7 +1111,7 @@ class send_event: public event {
                 std::cerr << "send_event error: no pkt!" << '\n';
                 return ;
             }
-            else if (node::id_to_node(senderID) == nullptr){
+            if (node::id_to_node(senderID) == nullptr){
                 std::cerr << "send_event error: no node " << senderID << "!" << '\n';
                 delete pkt; return ;
             }
@@ -1218,7 +1208,7 @@ class IoT_data_pkt_gen_event: public event {
                 std::cerr << "IoT_data_pkt_gen_event error: no node " << src << "!" << '\n';
                 return ;
             }
-            else if ( dst != BROADCAST_ID && node::id_to_node(dst) == nullptr ) {
+            if ( dst != BROADCAST_ID && node::id_to_node(dst) == nullptr ) {
                 std::cerr << "IoT_data_pkt_gen_event error: no node " << dst << "!" << '\n';
                 return;
             }
@@ -1671,11 +1661,11 @@ class link {
         	            std::cerr << "duplicate link id" << '\n'; // link id is duplicated
         	            return nullptr;
         	        }
-        	        else if ( BROADCAST_ID == _id1 || BROADCAST_ID == _id2 ) {
+        	        if ( BROADCAST_ID == _id1 || BROADCAST_ID == _id2 ) {
         	            std::cerr << "BROADCAST_ID cannot be used" << '\n';
         	            return nullptr;
         	        }
-            		else if (prototypes.find(type) != prototypes.end()){ // if this type derived exists
+            		if (prototypes.find(type) != prototypes.end()){ // if this type derived exists
             		    link * created_link = prototypes[type]->generate(_id1,_id2);
             			return created_link; // generate it!!
             		}
