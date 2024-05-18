@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <queue>
 #include <string>
 #include <utility>
@@ -63,12 +64,12 @@ class header {
                 // after you create a new header type, please register the factory of this header type by this function
                 void register_header_type(generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your header
-                virtual header* generate() = 0 ;
+                virtual std::unique_ptr<header> generate() = 0 ;
             public:
                 // you have to implement your own type() to return your header type
         	    virtual std::string type() = 0 ;
         	    // this function is used to generate any type of header derived
-        	    static header * generate (const std::string &type) {
+        	    static std::unique_ptr<header> generate (const std::string &type) {
             		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             			return prototypes[type]->generate(); // generate it!!
             		}
@@ -111,9 +112,9 @@ class IoT_data_header : public header{
                 // this constructor is only for sample to register this header type
                 generator() { /*cout << "IoT_data_header registered" << '\n';*/ register_header_type(&sample); }
             protected:
-                header * generate() override {
+                std::unique_ptr<header> generate() override {
                     // cout << "IoT_data_header generated" << '\n';
-                    return new IoT_data_header;
+                    return std::unique_ptr<header>(new IoT_data_header);
                 }
             public:
                 std::string type() override { return "IoT_data_header";}
@@ -139,9 +140,9 @@ class IoT_ctrl_header : public header{
                 // this constructor is only for sample to register this header type
                 generator() { /*cout << "IoT_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
             protected:
-                header * generate() override {
+                std::unique_ptr<header> generate() override {
                     // cout << "IoT_ctrl_header generated" << '\n';
-                    return new IoT_ctrl_header;
+                    return std::unique_ptr<header>(new IoT_ctrl_header);
                 }
             public:
                 std::string type() override { return "IoT_ctrl_header";}
@@ -167,9 +168,9 @@ class AGG_ctrl_header : public header{
                 // this constructor is only for sample to register this header type
                 generator() { /*cout << "AGG_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
             protected:
-                header * generate() override {
+                std::unique_ptr<header> generate() override {
                     // cout << "AGG_ctrl_header generated" << '\n';
-                    return new AGG_ctrl_header;
+                    return std::unique_ptr<header>(new AGG_ctrl_header);
                 }
             public:
                 std::string type() override { return "AGG_ctrl_header";}
@@ -195,9 +196,9 @@ class DIS_ctrl_header : public header{
                 // this constructor is only for sample to register this header type
                 generator() { /*cout << "DIS_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
             protected:
-                header * generate() override {
+                std::unique_ptr<header> generate() override {
                     // cout << "DIS_ctrl_header generated" << '\n';
-                    return new DIS_ctrl_header;
+                    return std::unique_ptr<header>(new DIS_ctrl_header);
                 }
             public:
                 std::string type() override { return "DIS_ctrl_header";}
@@ -232,12 +233,12 @@ class payload {
                 // after you create a new payload type, please register the factory of this payload type by this function
                 void register_payload_type(generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your payload
-                virtual payload* generate() = 0;
+                virtual std::unique_ptr<payload> generate() = 0;
             public:
                 // you have to implement your own type() to return your header type
         	    virtual std::string type() = 0;
         	    // this function is used to generate any type of header derived
-        	    static payload * generate (const std::string &type) {
+        	    static std::unique_ptr<payload> generate (const std::string &type) {
             		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             			return prototypes[type]->generate(); // generate it!!
             		}
@@ -270,9 +271,9 @@ class IoT_data_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 generator() { /*cout << "IoT_data_payload registered" << '\n';*/ register_payload_type(&sample); }
             protected:
-                payload * generate() override {
+                std::unique_ptr<payload> generate() override {
                     // cout << "IoT_data_payload generated" << '\n';
-                    return new IoT_data_payload;
+                    return std::unique_ptr<payload>(new IoT_data_payload);
                 }
             public:
                 std::string type() override { return "IoT_data_payload";}
@@ -302,9 +303,9 @@ class IoT_ctrl_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 generator() { /*cout << "IoT_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
             protected:
-                payload * generate() override {
+                std::unique_ptr<payload> generate() override {
                     // cout << "IoT_ctrl_payload generated" << '\n';
-                    return new IoT_ctrl_payload;
+                    return std::unique_ptr<payload>(new IoT_ctrl_payload);
                 }
             public:
                 std::string type() override { return "IoT_ctrl_payload";}
@@ -334,9 +335,9 @@ class AGG_ctrl_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 generator() { /*cout << "AGG_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
             protected:
-                payload * generate() override {
+                std::unique_ptr<payload> generate() override {
                     // cout << "AGG_ctrl_payload generated" << '\n';
-                    return new AGG_ctrl_payload;
+                    return std::unique_ptr<payload>(new AGG_ctrl_payload);
                 }
             public:
                 std::string type() override { return "AGG_ctrl_payload";}
@@ -368,9 +369,9 @@ class DIS_ctrl_payload : public payload {
                 // this constructor is only for sample to register this payload type
                 generator() { /*cout << "DIS_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
             protected:
-                payload * generate() override {
+                std::unique_ptr<payload> generate() override {
                     // cout << "DIS_ctrl_payload generated" << '\n';
-                    return new DIS_ctrl_payload;
+                    return std::unique_ptr<payload>(new DIS_ctrl_payload);
                 }
             public:
                 std::string type() override { return "DIS_ctrl_payload";}
@@ -381,8 +382,8 @@ DIS_ctrl_payload::generator DIS_ctrl_payload::generator::sample;
 
 class packet{
         // a packet usually contains a header and a payload
-        header *hdr;
-        payload *pld;
+        std::shared_ptr<header> hdr;
+        std::shared_ptr<payload> pld;
         unsigned int p_id;
         static inline unsigned int last_packet_id ;
 
@@ -405,12 +406,6 @@ class packet{
     public:
         virtual ~packet(){
             // cout << "packet destructor begin" << '\n';
-            if (hdr != nullptr) {
-                delete hdr;
-            }
-            if (pld != nullptr) {
-                delete pld;
-            }
             live_packet_num --;
             // cout << "packet destructor end" << '\n';
         }
@@ -450,19 +445,19 @@ class packet{
                 // after you create a new packet type, please register the factory of this payload type by this function
                 void register_packet_type(generator *h) { prototypes[h->type()] = h; }
                 // you have to implement your own generate() to generate your payload
-                virtual packet* generate ( packet *p = nullptr) = 0;
+                virtual std::unique_ptr<packet> generate ( packet *p = nullptr) = 0;
             public:
                 // you have to implement your own type() to return your packet type
         	    virtual std::string type() = 0;
         	    // this function is used to generate any type of packet derived
-        	    static packet * generate (const std::string &type) {
+        	    static std::unique_ptr<packet> generate (const std::string &type) {
             		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
             			return prototypes[type]->generate(); // generate it!!
             		}
             		std::cerr << "no such packet type" << '\n'; // otherwise
             		return nullptr;
             	}
-            	static packet * replicate (packet *p) {
+            	static std::unique_ptr<packet> replicate (packet *p) {
             	    if(prototypes.find(p->type()) != prototypes.end()){ // if this type derived exists
             			return prototypes[p->type()]->generate(p); // generate it!!
             		}
@@ -503,13 +498,13 @@ class IoT_data_packet: public packet {
                 // this constructor is only for sample to register this packet type
                 generator() { /*cout << "IoT_data_packet registered" << '\n';*/ register_packet_type(&sample); }
             protected:
-                packet *generate (packet *p = nullptr) override {
+                std::unique_ptr<packet> generate (packet *p = nullptr) override {
                     // cout << "IoT_data_packet generated" << '\n';
                     if ( nullptr == p ) {
-                        return new IoT_data_packet("IoT_data_header","IoT_data_payload");
+                        return std::unique_ptr<packet>(new IoT_data_packet("IoT_data_header","IoT_data_payload"));
                     }
                     else {
-                        return new IoT_data_packet(p); // duplicate
+                        return std::unique_ptr<packet>(new IoT_data_packet(p)); // duplicate
                     }
                 }
             public:
