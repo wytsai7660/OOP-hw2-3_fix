@@ -2,6 +2,8 @@
 
 This repository attempts to modernize JJK's code.
 
+![UML](assets/UML.svg)
+
 ## Breaking Changes
 
 In order to improve on JJK's code, the following breaking changes have been made:
