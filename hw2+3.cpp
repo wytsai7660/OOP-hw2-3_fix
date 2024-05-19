@@ -51,6 +51,12 @@ class header {
         GET(nex_ID)
         virtual std::string type() = 0;
 
+        static void print () {
+            std::cout << "registered header types: " << '\n';
+            for (const auto &name: derived_class_names) {
+                std::cout << name << '\n';
+            }
+        }
         // factory concept: generate a header
         class generator {
                 // lock the copy constructor
@@ -86,6 +92,7 @@ class header {
 
     protected:
         header():src_ID(BROADCAST_ID),dst_ID(BROADCAST_ID),pre_ID(BROADCAST_ID),nex_ID(BROADCAST_ID){} // this constructor cannot be directly called by users
+        static inline std::vector<std::string> derived_class_names;
 
     private:
         unsigned int src_ID;
@@ -214,12 +221,20 @@ class payload {
 
     protected:
         payload() = default;
+        static inline std::vector<std::string> derived_class_names;
     public:
         virtual ~payload() = default;
         virtual std::string type() = 0;
 
         SET(msg)
         GET(msg)
+
+        static void print () {
+            std::cout << "registered payload types: " << '\n';
+            for (const auto &name: derived_class_names) {
+                std::cout << name << '\n';
+            }
+        }
 
         class generator {
                 // lock the copy constructor
@@ -402,6 +417,7 @@ class packet{
             pld = payload::generator::generate(_pld);
             live_packet_num ++;
         }
+        static inline std::vector<std::string> derived_class_names;
     public:
         virtual ~packet(){
             // cout << "packet destructor begin" << '\n';
@@ -438,6 +454,13 @@ class packet{
         virtual std::string addition_information () { return ""; }
 
         static int get_live_packet_num () { return live_packet_num; }
+
+        static void print () {
+            std::cout << "registered packet types: " << '\n';
+            for (const auto &name: derived_class_names) {
+                std::cout << name << '\n';
+            }
+        }
 
         class generator {
                 // lock the copy constructor
@@ -649,7 +672,6 @@ DIS_ctrl_packet::generator DIS_ctrl_packet::generator::sample;
 class node {
         // all nodes created in the program
         static inline std::map<unsigned int, node*> id_node_table;
-
         unsigned int id;
         std::map<unsigned int,bool> phy_neighbors;
 
@@ -657,6 +679,7 @@ class node {
         node(node&){} // this constructor should not be used
         node() = default; // this constructor should not be used
         explicit node(unsigned int _id): id(_id) { id_node_table[_id] = this; }
+        static inline std::vector<std::string> derived_class_names;
     public:
         virtual ~node() { // erase the node
             id_node_table.erase (id) ;
@@ -695,6 +718,13 @@ class node {
             }
         }
         static unsigned int get_node_num () { return id_node_table.size(); }
+
+        static void print () {
+            std::cout << "registered node types: " << '\n';
+            for (const auto &name: derived_class_names) {
+                std::cout << name << '\n';
+            }
+        }
 
         class generator {
                 // lock the copy constructor
@@ -890,7 +920,7 @@ class event {
 
     protected:
         unsigned int trigger_time;
-
+        static inline std::vector<std::string> derived_class_names;
         event() = default; // it should not be used
         explicit event(unsigned int _trigger_time): trigger_time(_trigger_time) {}
 
@@ -950,6 +980,13 @@ class event {
         // static void getEndTime(unsigned int _end_time) { end_time = _end_time; }
 
         virtual void print () const = 0; // the function is used to print the event information
+
+        static void print_registered_event_types () {
+            std::cout << "registered event types: " << '\n';
+            for (const auto &name: derived_class_names) {
+                std::cout << name << '\n';
+            }
+        }
 
         template <typename DataType>
         class generator{
@@ -1616,7 +1653,6 @@ DIS_ctrl_pkt_gen_event::generator DIS_ctrl_pkt_gen_event::generator::sample;
 class link {
         // all links created in the program
         static inline std::map< std::pair<unsigned int,unsigned int>, link*> id_id_link_table;
-
         unsigned int id1; // from
         unsigned int id2; // to
 
@@ -1624,6 +1660,7 @@ class link {
         link(link&){} // this constructor should not be used
         link() = default; // this constructor should not be used
         link(unsigned int _id1, unsigned int _id2): id1(_id1), id2(_id2) { id_id_link_table[std::pair<unsigned int,unsigned int>(id1,id2)] = this; }
+        static inline std::vector<std::string> derived_class_names;
 
     public:
         virtual ~link() {
@@ -1644,6 +1681,13 @@ class link {
         }
 
         static unsigned int get_link_num () { return id_id_link_table.size(); }
+
+        static void print () {
+            std::cout << "registered link types: " << '\n';
+            for (const auto &name: derived_class_names) {
+                std::cout << name << '\n';
+            }
+        }
 
         class generator {
                 // lock the copy constructor
