@@ -20,8 +20,8 @@
         static_assert(std::is_convertible_v<decltype(var_name), T>); \
         (var_name) = static_cast<decltype(var_name)>(_##var_name); \
     }
-#define GET(var_name) auto get_##var_name() const { return var_name; }
-#define GET_WITH_NAME(getter_name, var_name) auto getter_name() const { return var_name; }
+#define GET(var_name) const auto &get_##var_name() const { return var_name; }
+#define GET_WITH_NAME(getter_name, var_name) const auto &getter_name() const { return var_name; }
 
 class header;
 class payload;
@@ -961,7 +961,10 @@ class event {
                 // allow derived class to use it
                 generator() = default;
                 // after you create a new event type, please register the factory of this event type by this function
-                void register_event_type(generator *h) { prototypes[h->type()] = h; }
+                void register_event_type(generator *h) {
+                    prototypes[h->type()] = h;
+                    registered_event_names.push_back(h->type());
+                }
                 // you have to implement your own generate() to generate your event
                 virtual event* generate(unsigned int _trigger_time, const DataType &data) = 0;
             public:
@@ -979,12 +982,14 @@ class event {
             	}
             	static void print () {
             	    std::cout << "registered event types: " << '\n';
-            	    for (const auto &[_, generator]: prototypes) {
-            	        std::cout << generator->type() << '\n';
+            	    for (const auto &name: registered_event_names) {
+            	        std::cout << name << '\n';
                     }
             	}
             	virtual ~generator() = default;
         };
+    private:
+        static inline std::vector<std::string> registered_event_names;
 };
 
 bool mycomp::operator() (const event* lhs, const event* rhs) const  {
