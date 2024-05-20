@@ -686,15 +686,19 @@ class node {
         virtual void recv_handler(packet *p) = 0;
         void send_handler(packet *P);
 
-        static node * id_to_node (unsigned int _id) { return ((id_node_table.find(_id)!=id_node_table.end()) ? id_node_table[_id]: nullptr) ; }
+        static node * id_to_node (unsigned int _id) {
+            const auto it = id_node_table.find(_id);
+            return it != id_node_table.cend() ? it->second : nullptr;
+        }
         GET_WITH_NAME(get_node_ID, id)
 
         static void del_node (unsigned int _id) {
-            if (id_node_table.find(_id) != id_node_table.end()) {
-                id_node_table.erase(_id);
+            const auto it = id_node_table.find(_id);
+            if (it != id_node_table.cend()) {
+                id_node_table.erase(it);
             }
         }
-        static unsigned int get_node_num () { return id_node_table.size(); }
+        static auto get_node_num () { return id_node_table.size(); }
 
         class generator {
                 // lock the copy constructor
@@ -713,7 +717,7 @@ class node {
         	    virtual std::string type() = 0;
         	    // this function is used to generate any type of node derived
         	    static node * generate (const std::string &type, unsigned int _id) {
-        	        if(id_node_table.find(_id)!=id_node_table.end()){
+        	        if(id_node_table.contains(_id)){
         	            std::cerr << "duplicate node id" << '\n'; // node id is duplicated
         	            return nullptr;
         	        }
@@ -1631,19 +1635,20 @@ class link {
         }
 
         static link * id_id_to_link (unsigned int _id1, unsigned int _id2) {
-            return ((id_id_link_table.find(std::pair<unsigned int,unsigned int>(_id1, _id2)) != id_id_link_table.end()) ? id_id_link_table[std::pair<unsigned,unsigned>(_id1,_id2)] : nullptr);
+            const auto it = id_id_link_table.find({_id1, _id2});
+            return it != id_id_link_table.cend() ? it->second : nullptr;
         }
 
         virtual double get_latency() = 0; // you must implement your own latency
 
         static void del_link (unsigned int _id1, unsigned int _id2) {
-            std::pair<unsigned int, unsigned int> temp;
-            if (id_id_link_table.find(temp)!=id_id_link_table.end()) {
-                id_id_link_table.erase(temp);
+            const auto it = id_id_link_table.find({_id1, _id2});
+            if (it != id_id_link_table.cend()) {
+                id_id_link_table.erase(it);
             }
         }
 
-        static unsigned int get_link_num () { return id_id_link_table.size(); }
+        static auto get_link_num () { return id_id_link_table.size(); }
 
         class generator {
                 // lock the copy constructor
@@ -1662,7 +1667,7 @@ class link {
         	    virtual std::string type() = 0;
         	    // this function is used to generate any type of link derived
         	    static link * generate (const std::string &type, unsigned int _id1, unsigned int _id2) {
-        	        if(id_id_link_table.find(std::pair<unsigned int, unsigned int>(_id1, _id2)) != id_id_link_table.end()){
+        	        if(id_id_link_table.contains({_id1, _id2})){
         	            std::cerr << "duplicate link id" << '\n'; // link id is duplicated
         	            return nullptr;
         	        }
@@ -1689,8 +1694,8 @@ class link {
 
 void node::add_phy_neighbor (unsigned int _id, const std::string &link_type){
     if (id == _id) {return;} // if the two nodes are the same...
-    if (id_node_table.find(_id)==id_node_table.end()) {return;} // if this node does not exist
-    if (phy_neighbors.find(_id)!=phy_neighbors.end()) {return;} // if this neighbor has been added
+    if (!id_node_table.contains(_id)) {return;} // if this node does not exist
+    if (phy_neighbors.contains(_id)) {return;} // if this neighbor has been added
     phy_neighbors[_id] = true;
 
     link::generator::generate(link_type,id,_id);
