@@ -5,5 +5,5 @@ IndentWidth: 4
 InsertNewlineAtEOF: true
 # RemoveParentheses: ReturnStatement
 
-# QualifierAlignment: Custom
-# QualifierOrder: ["friend", "static", "inline", "constexpr", "const", "type"]
+QualifierAlignment: Custom
+QualifierOrder: ["friend", "static", "inline", "constexpr", "const", "type"]
