@@ -1,0 +1,9 @@
+Language: Cpp
+BasedOnStyle: LLVM
+ColumnLimit: 1000
+IndentWidth: 4
+InsertNewlineAtEOF: true
+# RemoveParentheses: ReturnStatement
+
+# QualifierAlignment: Custom
+# QualifierOrder: ["friend", "static", "inline", "constexpr", "const", "type"]
