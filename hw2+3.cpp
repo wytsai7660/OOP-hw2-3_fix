@@ -81,12 +81,6 @@ class header {
             		std::cerr << "no such header type" << '\n'; // otherwise
             		return nullptr;
             	}
-            	static void print () {
-            	    std::cout << "registered header types: " << '\n';
-            	    for (const auto &[_, generator]: prototypes) {
-            	        std::cout << generator->type() << '\n';
-                    }
-            	}
             	virtual ~generator() = default;
         };
 
@@ -258,12 +252,6 @@ class payload {
             		}
             		std::cerr << "no such payload type" << '\n'; // otherwise
             		return nullptr;
-            	}
-            	static void print () {
-            	    std::cout << "registered payload types: " << '\n';
-                    for (const auto &[_, generator]: prototypes) {
-            	        std::cout << generator->type() << '\n';
-                    }
             	}
             	virtual ~generator() = default;
         };
@@ -491,12 +479,6 @@ class packet{
             		}
             		std::cerr << "no such packet type" << '\n'; // otherwise
             		return nullptr;
-            	}
-            	static void print () {
-            	    std::cout << "registered packet types: " << '\n';
-            	    for (const auto &[_, generator]: prototypes) {
-            	        std::cout << generator->type() << '\n';
-                    }
             	}
             	virtual ~generator() = default;
         };
@@ -758,12 +740,6 @@ class node {
             		std::cerr << "no such node type" << '\n'; // otherwise
             		return nullptr;
             	}
-            	static void print () {
-            	    std::cout << "registered node types: " << '\n';
-            	    for (const auto &[_, generator]: prototypes) {
-            	        std::cout << generator->type() << '\n';
-                    }
-            	}
             	virtual ~generator() = default;
         };
 };
@@ -1016,12 +992,6 @@ class event {
             		}
             		std::cerr << "no such event type" << '\n'; // otherwise
             		return nullptr;
-            	}
-            	static void print () {
-            	    std::cout << "registered event types: " << '\n';
-            	    for (const auto &name: registered_event_names) {
-            	        std::cout << name << '\n';
-                    }
             	}
             	virtual ~generator() = default;
         };
@@ -1720,12 +1690,6 @@ class link {
             		}
             		std::cerr << "no such link type" << '\n'; // otherwise
             		return nullptr;
-            	}
-            	static void print () {
-            	    std::cout << "registered link types: " << '\n';
-            	    for (const auto &[_, generator]: prototypes) {
-            	        std::cout << generator->type() << '\n';
-                    }
             	}
             	virtual ~generator() = default;
         };
