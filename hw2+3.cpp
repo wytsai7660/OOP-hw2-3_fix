@@ -22,6 +22,14 @@
     }
 #define GET(var_name) const auto &get_##var_name() const { return var_name; }
 #define GET_WITH_NAME(getter_name, var_name) const auto &getter_name() const { return var_name; }
+#define STATIC_CONSTRUCTOR(body) \
+    class static_constructor { \
+        public: \
+            static_constructor() { \
+                body \
+            } \
+    }; \
+    static inline static_constructor static_constructor;
 
 class header;
 class payload;
@@ -52,7 +60,7 @@ class header {
         virtual std::string type() = 0;
 
         static void print () {
-            std::cout << "registered header types: " << '\n';
+            std::cout << "registered header types:\n";
             for (const auto &name: derived_class_names) {
                 std::cout << name << '\n';
             }
@@ -98,6 +106,9 @@ class header {
 
 class IoT_data_header : public header{
         IoT_data_header(IoT_data_header&){} // cannot be called by users
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("IoT_data_header");
+        )
 
     protected:
         IoT_data_header() = default; // this constructor cannot be directly called by users
@@ -126,6 +137,9 @@ IoT_data_header::generator IoT_data_header::generator::sample;
 
 class IoT_ctrl_header : public header{
         IoT_ctrl_header(IoT_ctrl_header&){} // cannot be called by users
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("IoT_ctrl_header");
+        )
 
     protected:
         IoT_ctrl_header() = default; // this constructor cannot be directly called by users
@@ -154,6 +168,9 @@ IoT_ctrl_header::generator IoT_ctrl_header::generator::sample;
 
 class AGG_ctrl_header : public header{
         AGG_ctrl_header(AGG_ctrl_header&){} // cannot be called by users
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("AGG_ctrl_header");
+        )
 
     protected:
         AGG_ctrl_header() = default; // this constructor cannot be directly called by users
@@ -182,6 +199,9 @@ AGG_ctrl_header::generator AGG_ctrl_header::generator::sample;
 
 class DIS_ctrl_header : public header{
         DIS_ctrl_header(DIS_ctrl_header&){} // cannot be called by users
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("DIS_ctrl_header");
+        )
 
     protected:
         DIS_ctrl_header() = default; // this constructor cannot be directly called by users
@@ -224,7 +244,7 @@ class payload {
         GET(msg)
 
         static void print () {
-            std::cout << "registered payload types: " << '\n';
+            std::cout << "registered payload types:\n";
             for (const auto &name: derived_class_names) {
                 std::cout << name << '\n';
             }
@@ -259,6 +279,9 @@ class payload {
 
 class IoT_data_payload : public payload {
         IoT_data_payload(IoT_data_payload&){}
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("IoT_data_payload");
+        )
 
     protected:
         IoT_data_payload() = default; // this constructor cannot be directly called by users
@@ -286,6 +309,9 @@ IoT_data_payload::generator IoT_data_payload::generator::sample;
 
 class IoT_ctrl_payload : public payload {
         IoT_ctrl_payload(IoT_ctrl_payload & s): counter (s.counter) {}
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("IoT_ctrl_payload");
+        )
 
         unsigned int counter ;
 
@@ -318,6 +344,9 @@ IoT_ctrl_payload::generator IoT_ctrl_payload::generator::sample;
 
 class AGG_ctrl_payload : public payload {
         AGG_ctrl_payload(AGG_ctrl_payload & s) {}
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("AGG_ctrl_payload");
+        )
 
         // unsigned int counter ;
 
@@ -350,6 +379,9 @@ AGG_ctrl_payload::generator AGG_ctrl_payload::generator::sample;
 
 class DIS_ctrl_payload : public payload {
         DIS_ctrl_payload(DIS_ctrl_payload & s): parent(s.parent) {}
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("DIS_ctrl_payload");
+        )
 
         // unsigned int counter ;
         unsigned int parent;
@@ -444,7 +476,7 @@ class packet{
         static int get_live_packet_num () { return live_packet_num; }
 
         static void print () {
-            std::cout << "registered packet types: " << '\n';
+            std::cout << "registered packet types:\n";
             for (const auto &name: derived_class_names) {
                 std::cout << name << '\n';
             }
@@ -487,6 +519,9 @@ class packet{
 // this packet is used to transmit the data
 class IoT_data_packet: public packet {
         IoT_data_packet(IoT_data_packet &) {}
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("IoT_data_packet");
+        )
 
     protected:
         IoT_data_packet() = default; // this constructor cannot be directly called by users
@@ -525,6 +560,9 @@ IoT_data_packet::generator IoT_data_packet::generator::sample;
 // this packet type is used to conduct distributed BFS
 class IoT_ctrl_packet: public packet {
         IoT_ctrl_packet(IoT_ctrl_packet &) {}
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("IoT_ctrl_packet");
+        )
 
     protected:
         IoT_ctrl_packet() = default; // this constructor cannot be directly called by users
@@ -568,6 +606,9 @@ IoT_ctrl_packet::generator IoT_ctrl_packet::generator::sample;
 // this packet type is used to transmit each device's nblist to the sink
 class AGG_ctrl_packet: public packet {
         AGG_ctrl_packet(AGG_ctrl_packet &) {}
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("AGG_ctrl_packet");
+        )
 
     protected:
         AGG_ctrl_packet() = default; // this constructor cannot be directly called by users
@@ -611,6 +652,9 @@ AGG_ctrl_packet::generator AGG_ctrl_packet::generator::sample;
 // this packet type is used to transmit the new parent to each device
 class DIS_ctrl_packet: public packet {
         DIS_ctrl_packet(DIS_ctrl_packet &) {}
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("DIS_ctrl_packet");
+        )
 
     protected:
         DIS_ctrl_packet() = default; // this constructor cannot be directly called by users
@@ -702,7 +746,7 @@ class node {
         static unsigned int get_node_num () { return id_node_table.size(); }
 
         static void print () {
-            std::cout << "registered node types: " << '\n';
+            std::cout << "registered node types:\n";
             for (const auto &name: derived_class_names) {
                 std::cout << name << '\n';
             }
@@ -746,6 +790,9 @@ class node {
 
 class IoT_device: public node {
         // map<unsigned int,bool> one_hop_neighbors; // you can use this variable to record the node's 1-hop neighbors
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("IoT_device");
+        )
 
         bool hi; // this is used for example; you can remove it when doing hw2
 
@@ -958,7 +1005,7 @@ class event {
         virtual void print () const = 0; // the function is used to print the event information
 
         static void print_registered_event_types () {
-            std::cout << "registered event types: " << '\n';
+            std::cout << "registered event types:\n";
             for (const auto &name: derived_class_names) {
                 std::cout << name << '\n';
             }
@@ -1023,6 +1070,9 @@ class recv_event: public event {
         unsigned int senderID; // the sender
         unsigned int receiverID; // the receiver; the packet will be given to the receiver
         packet *pkt; // the packet
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("recv_event");
+        )
 
     protected:
         // this constructor cannot be directly called by users; only by generator
@@ -1111,6 +1161,9 @@ class send_event: public event {
         unsigned int senderID; // the sender
         unsigned int receiverID; // the receiver
         packet *pkt; // the packet
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("send_event");
+        )
 
     protected:
         send_event (unsigned int _trigger_time, const send_data &data): event(_trigger_time), senderID(data.s_id), receiverID(data.r_id), pkt(data._pkt){}
@@ -1207,7 +1260,10 @@ class IoT_data_pkt_gen_event: public event {
         unsigned int src; // the src
         unsigned int dst; // the dst
         // packet *pkt; // the packet
-        std::string msg;   
+        std::string msg;
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("IoT_data_pkt_gen_event");
+        )
 
     protected:
         IoT_data_pkt_gen_event (unsigned int _trigger_time, const pkt_gen_data &data): event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg){}
@@ -1318,6 +1374,9 @@ class IoT_ctrl_pkt_gen_event: public event {
         // packet *pkt; // the packet
         std::string msg;
         // double per; // percentage
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("IoT_ctrl_pkt_gen_event");
+        )
 
     protected:
         IoT_ctrl_pkt_gen_event (unsigned int _trigger_time, const pkt_gen_data &data): event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg){}
@@ -1426,6 +1485,9 @@ class AGG_ctrl_pkt_gen_event: public event {
         // packet *pkt; // the packet
         std::string msg;
         // double per; // percentage
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("AGG_ctrl_pkt_gen_event");
+        )
 
     protected:
         AGG_ctrl_pkt_gen_event (unsigned int _trigger_time, const pkt_gen_data &data): event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg){}
@@ -1536,6 +1598,9 @@ class DIS_ctrl_pkt_gen_event: public event {
         std::string msg;
         // double per; // percentage
         unsigned int parent;
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("DIS_ctrl_pkt_gen_event");
+        )
 
     protected:
         DIS_ctrl_pkt_gen_event (unsigned int _trigger_time, const pkt_gen_data &data): event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg), parent(data.parent){}
@@ -1653,7 +1718,7 @@ class link {
         static unsigned int get_link_num () { return id_id_link_table.size(); }
 
         static void print () {
-            std::cout << "registered link types: " << '\n';
+            std::cout << "registered link types:\n";
             for (const auto &name: derived_class_names) {
                 std::cout << name << '\n';
             }
@@ -1705,6 +1770,10 @@ void node::add_phy_neighbor (unsigned int _id, const std::string &link_type){
 }
 
 class simple_link: public link {
+    private:
+        STATIC_CONSTRUCTOR (
+            derived_class_names.emplace_back("simple_link");
+        )
     protected:
         simple_link() = default; // it should not be used outside the class
         simple_link(simple_link&) {} // it should not be used
