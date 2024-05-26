@@ -222,6 +222,10 @@ class packet : protected packet_derived_classes_common_fields_holder {
         unsigned int p_id;
         using packet_derived_classes_common_fields_holder::last_packet_id;
         using packet_derived_classes_common_fields_holder::live_packet_num;
+    protected:
+        PayloadType &get_payload_non_const() {
+            return pld;
+        }
     public:
         packet(): p_id(last_packet_id++) {
             live_packet_num++;
@@ -326,6 +330,9 @@ class IoT_ctrl_packet: public packet<IoT_ctrl_header, IoT_ctrl_payload> {
             unsigned int counter = get_payload().get_counter();
             // cout << counter << '\n';
             return " counter " + std::to_string(counter);
+        }
+        void increase_payload_counter() {
+            get_payload_non_const().increase();
         }
 };
 
