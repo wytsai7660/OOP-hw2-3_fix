@@ -9,20 +9,29 @@
 #include <utility>
 #include <vector>
 
+// The double parentheses in decltype are significant.
 #define SET(var_name) \
     template <typename T> \
-    void set_##var_name(const T &_##var_name) { \
-        static_assert(std::is_convertible_v<decltype(var_name), T>); \
-        (var_name) = static_cast<decltype(var_name)>(_##var_name); \
+    void set_##var_name(T &&_##var_name) { \
+        static_assert(std::is_assignable_v<decltype((var_name)), T>); \
+        (var_name) = std::forward<T>(_##var_name); \
     }
+
 #define SET_WITH_NAME(setter_name, var_name) \
     template <typename T> \
-    void setter_name(const T &_##var_name) { \
-        static_assert(std::is_convertible_v<decltype(var_name), T>); \
-        (var_name) = static_cast<decltype(var_name)>(_##var_name); \
+    void setter_name(T &&_##var_name) { \
+        static_assert(std::is_assignable_v<decltype((var_name)), T>); \
+        (var_name) = std::forward<T>(_##var_name); \
     }
-#define GET(var_name) const auto &get_##var_name() const { return var_name; }
-#define GET_WITH_NAME(getter_name, var_name) const auto &getter_name() const { return var_name; }
+
+#define GET(var_name) \
+    const auto &get_##var_name() const & { return var_name; } \
+    auto get_##var_name() && { return std::move(var_name); }
+
+#define GET_WITH_NAME(getter_name, var_name) \
+    const auto &getter_name() const & { return var_name; } \
+    auto getter_name() && { return std::move(var_name); }
+
 #define STATIC_CONSTRUCTOR(body) \
     class static_constructor { \
         public: \
@@ -31,6 +40,7 @@
             } \
     }; \
     static inline static_constructor static_constructor;
+
 #define DEFAULTED_SPECIAL_MEMBERS(class_name) \
         virtual ~class_name() = default; \
         class_name() = default; \
@@ -246,7 +256,7 @@ class packet : protected packet_derived_classes_common_fields_holder {
             // cout << "packet destructor end" << '\n';
         }
         template <std::same_as<HeaderType> DeducedHeaderType, std::same_as<PayloadType> DeducedPayloadType>
-        packet(DeducedHeaderType &&_hdr, DeducedPayloadType &&_pld, bool rep = false, unsigned int rep_id = 0) : hdr(std::forward(_hdr)), pld(std::forward(_pld)) {
+        packet(DeducedHeaderType &&_hdr, DeducedPayloadType &&_pld, bool rep = false, unsigned int rep_id = 0) : hdr(std::forward<DeducedHeaderType>(_hdr)), pld(std::forward<DeducedPayloadType>(_pld)) {
             if (! rep )  { // a duplicated packet does not have a new packet id
                 p_id = last_packet_id ++;
             }
@@ -290,10 +300,10 @@ class IoT_data_packet: public packet<IoT_data_header, IoT_data_payload> {
 
     public:
         template <std::same_as<packet> DeducedPacketType>
-        explicit IoT_data_packet(DeducedPacketType &&other) : packet(std::forward(other).get_header(), std::forward(other).get_payload(), true, other.get_packet_ID()) {}
+        explicit IoT_data_packet(DeducedPacketType &&other) : packet(std::forward<DeducedPacketType>(other).get_header(), std::forward<DeducedPacketType>(other).get_payload(), true, other.get_packet_ID()) {}
         
         template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
-        IoT_data_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward(header), std::forward(payload)) {}
+        IoT_data_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward<DeducedHeaderType>(header), std::forward<DeducedPayloadType>(payload)) {}
         
         std::string type() override { return "IoT_data_packet"; }
 };
@@ -306,10 +316,10 @@ class IoT_ctrl_packet: public packet<IoT_ctrl_header, IoT_ctrl_payload> {
 
     public:
         template <std::same_as<packet> DeducedPacketType>
-        explicit IoT_ctrl_packet(DeducedPacketType &&other) : packet(std::forward(other).get_header(), std::forward(other).get_payload(), true, other.get_packet_ID()) {}
+        explicit IoT_ctrl_packet(DeducedPacketType &&other) : packet(std::forward<DeducedPacketType>(other).get_header(), std::forward<DeducedPacketType>(other).get_payload(), true, other.get_packet_ID()) {}
         
         template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
-        IoT_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward(header), std::forward(payload)) {}
+        IoT_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward<DeducedHeaderType>(header), std::forward<DeducedPayloadType>(payload)) {}
 
         std::string type() override { return "IoT_ctrl_packet"; }
         std::string addition_information() override {
@@ -327,10 +337,10 @@ class AGG_ctrl_packet: public packet<AGG_ctrl_header, AGG_ctrl_payload> {
 
     public:
         template <std::same_as<packet> DeducedPacketType>
-        explicit AGG_ctrl_packet(DeducedPacketType &&other) : packet(std::forward(other).get_header(), std::forward(other).get_payload(), true, other.get_packet_ID()) {}
+        explicit AGG_ctrl_packet(DeducedPacketType &&other) : packet(std::forward<DeducedPacketType>(other).get_header(), std::forward<DeducedPacketType>(other).get_payload(), true, other.get_packet_ID()) {}
         
         template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
-        AGG_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward(header), std::forward(payload)) {}
+        AGG_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward<DeducedHeaderType>(header), std::forward<DeducedPayloadType>(payload)) {}
 
         std::string type() override { return "AGG_ctrl_packet"; }
 
@@ -348,10 +358,10 @@ class DIS_ctrl_packet: public packet<DIS_ctrl_header, DIS_ctrl_payload> {
 
     public:
         template <std::same_as<packet> DeducedPacketType>
-        explicit DIS_ctrl_packet(DeducedPacketType &&other) : packet(std::forward(other).get_header(), std::forward(other).get_payload(), true, other.get_packet_ID()) {}
+        explicit DIS_ctrl_packet(DeducedPacketType &&other) : packet(std::forward<DeducedPacketType>(other).get_header(), std::forward<DeducedPacketType>(other).get_payload(), true, other.get_packet_ID()) {}
         
         template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
-        DIS_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward(header), std::forward(payload)) {}
+        DIS_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward<DeducedHeaderType>(header), std::forward<DeducedPayloadType>(payload)) {}
 
         std::string type() override { return "DIS_ctrl_packet"; }
         std::string addition_information() override {
