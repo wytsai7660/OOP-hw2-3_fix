@@ -1,4 +1,5 @@
 #include <climits>
+#include <concepts>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -30,10 +31,20 @@
             } \
     }; \
     static inline static_constructor static_constructor;
+#define DEFAULTED_SPECIAL_MEMBERS(class_name) \
+        virtual ~class_name() = default; \
+        class_name() = default; \
+        class_name(const class_name &other) = default; \
+        class_name(class_name &&other) = default; \
+        class_name &operator=(const class_name &other) = default; \
+        class_name &operator=(class_name &&other) = default;
 
 class header;
 class payload;
+
+template <std::derived_from<header> HeaderType, std::derived_from<payload> PayloadType>
 class packet;
+
 class node;
 class event;
 class link; // new
@@ -47,7 +58,7 @@ const unsigned int BROADCAST_ID = UINT_MAX;
 
 class header {
     public:
-        virtual ~header() = default;
+        DEFAULTED_SPECIAL_MEMBERS(header)
 
         SET(src_ID)
         SET(dst_ID)
@@ -65,179 +76,61 @@ class header {
                 std::cout << name << '\n';
             }
         }
-        // factory concept: generate a header
-        class generator {
-                // lock the copy constructor
-                generator(generator &) = default;
-                // store all possible types of header
-                static inline std::map<std::string,generator*> prototypes;
-            protected:
-                // allow derived class to use it
-                generator() = default;
-                // after you create a new header type, please register the factory of this header type by this function
-                void register_header_type(generator *h) { prototypes[h->type()] = h; }
-                // you have to implement your own generate() to generate your header
-                virtual header* generate() = 0 ;
-            public:
-                // you have to implement your own type() to return your header type
-        	    virtual std::string type() = 0 ;
-        	    // this function is used to generate any type of header derived
-        	    static header * generate (const std::string &type) {
-            		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
-            			return prototypes[type]->generate(); // generate it!!
-            		}
-            		std::cerr << "no such header type" << '\n'; // otherwise
-            		return nullptr;
-            	}
-            	virtual ~generator() = default;
-        };
 
     protected:
-        header():src_ID(BROADCAST_ID),dst_ID(BROADCAST_ID),pre_ID(BROADCAST_ID),nex_ID(BROADCAST_ID){} // this constructor cannot be directly called by users
         static inline std::vector<std::string> derived_class_names;
 
     private:
-        unsigned int src_ID;
-        unsigned int dst_ID;
-        unsigned int pre_ID;
-        unsigned int nex_ID;
-        header(header&){} // this constructor cannot be directly called by users
+        unsigned int src_ID = BROADCAST_ID;
+        unsigned int dst_ID = BROADCAST_ID;
+        unsigned int pre_ID = BROADCAST_ID;
+        unsigned int nex_ID = BROADCAST_ID;
 };
 
 class IoT_data_header : public header{
-        IoT_data_header(IoT_data_header&){} // cannot be called by users
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("IoT_data_header");
         )
 
-    protected:
-        IoT_data_header() = default; // this constructor cannot be directly called by users
-
     public:
-        ~IoT_data_header() override = default;
         std::string type() override { return "IoT_data_header"; }
-
-        // IoT_data_header::generator is derived from header::generator to generate a header
-        class generator : public header::generator{
-                static generator sample;
-                // this constructor is only for sample to register this header type
-                generator() { /*cout << "IoT_data_header registered" << '\n';*/ register_header_type(&sample); }
-            protected:
-                header * generate() override {
-                    // cout << "IoT_data_header generated" << '\n';
-                    return new IoT_data_header;
-                }
-            public:
-                std::string type() override { return "IoT_data_header";}
-                ~generator() override = default;
-
-        };
 };
-IoT_data_header::generator IoT_data_header::generator::sample;
 
 class IoT_ctrl_header : public header{
-        IoT_ctrl_header(IoT_ctrl_header&){} // cannot be called by users
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("IoT_ctrl_header");
         )
 
-    protected:
-        IoT_ctrl_header() = default; // this constructor cannot be directly called by users
-
     public:
-        ~IoT_ctrl_header() override = default;
         std::string type() override { return "IoT_ctrl_header"; }
-
-        // IoT_ctrl_header::generator is derived from header::generator to generate a header
-        class generator : public header::generator{
-                static generator sample;
-                // this constructor is only for sample to register this header type
-                generator() { /*cout << "IoT_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
-            protected:
-                header * generate() override {
-                    // cout << "IoT_ctrl_header generated" << '\n';
-                    return new IoT_ctrl_header;
-                }
-            public:
-                std::string type() override { return "IoT_ctrl_header";}
-                ~generator() override = default;
-
-        };
 };
-IoT_ctrl_header::generator IoT_ctrl_header::generator::sample;
 
 class AGG_ctrl_header : public header{
-        AGG_ctrl_header(AGG_ctrl_header&){} // cannot be called by users
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("AGG_ctrl_header");
         )
 
-    protected:
-        AGG_ctrl_header() = default; // this constructor cannot be directly called by users
-
     public:
-        ~AGG_ctrl_header() override = default;
         std::string type() override { return "AGG_ctrl_header"; }
-
-        // AGG_ctrl_header::generator is derived from header::generator to generate a header
-        class generator : public header::generator{
-                static generator sample;
-                // this constructor is only for sample to register this header type
-                generator() { /*cout << "AGG_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
-            protected:
-                header * generate() override {
-                    // cout << "AGG_ctrl_header generated" << '\n';
-                    return new AGG_ctrl_header;
-                }
-            public:
-                std::string type() override { return "AGG_ctrl_header";}
-                ~generator() override = default;
-
-        };
 };
-AGG_ctrl_header::generator AGG_ctrl_header::generator::sample;
 
 class DIS_ctrl_header : public header{
-        DIS_ctrl_header(DIS_ctrl_header&){} // cannot be called by users
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("DIS_ctrl_header");
         )
 
-    protected:
-        DIS_ctrl_header() = default; // this constructor cannot be directly called by users
-
     public:
-        ~DIS_ctrl_header() override = default;
         std::string type() override { return "DIS_ctrl_header"; }
-
-        // DIS_ctrl_header::generator is derived from header::generator to generate a header
-        class generator : public header::generator{
-                static generator sample;
-                // this constructor is only for sample to register this header type
-                generator() { /*cout << "DIS_ctrl_header registered" << '\n';*/ register_header_type(&sample); }
-            protected:
-                header * generate() override {
-                    // cout << "DIS_ctrl_header generated" << '\n';
-                    return new DIS_ctrl_header;
-                }
-            public:
-                std::string type() override { return "DIS_ctrl_header";}
-                ~generator() override = default;
-
-        };
 };
-DIS_ctrl_header::generator DIS_ctrl_header::generator::sample;
 
 class payload {
-        payload(payload&){} // this constructor cannot be directly called by users
-
         std::string msg;
 
     protected:
-        payload() = default;
         static inline std::vector<std::string> derived_class_names;
     public:
-        virtual ~payload() = default;
+        DEFAULTED_SPECIAL_MEMBERS(payload)
+
         virtual std::string type() = 0;
 
         SET(msg)
@@ -249,231 +142,137 @@ class payload {
                 std::cout << name << '\n';
             }
         }
-
-        class generator {
-                // lock the copy constructor
-                generator(generator &) = default;
-                // store all possible types of header
-                static inline std::map<std::string,generator*> prototypes;
-            protected:
-                // allow derived class to use it
-                generator() = default;
-                // after you create a new payload type, please register the factory of this payload type by this function
-                void register_payload_type(generator *h) { prototypes[h->type()] = h; }
-                // you have to implement your own generate() to generate your payload
-                virtual payload* generate() = 0;
-            public:
-                // you have to implement your own type() to return your header type
-        	    virtual std::string type() = 0;
-        	    // this function is used to generate any type of header derived
-        	    static payload * generate (const std::string &type) {
-            		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
-            			return prototypes[type]->generate(); // generate it!!
-            		}
-            		std::cerr << "no such payload type" << '\n'; // otherwise
-            		return nullptr;
-            	}
-            	virtual ~generator() = default;
-        };
 };
 
 class IoT_data_payload : public payload {
-        IoT_data_payload(IoT_data_payload&){}
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("IoT_data_payload");
         )
 
-    protected:
-        IoT_data_payload() = default; // this constructor cannot be directly called by users
     public:
-        ~IoT_data_payload() override = default;
-
         std::string type() override { return "IoT_data_payload"; }
-
-        // IoT_data_payload::generator is derived from payload::generator to generate a payload
-        class generator : public payload::generator{
-                static generator sample;
-                // this constructor is only for sample to register this payload type
-                generator() { /*cout << "IoT_data_payload registered" << '\n';*/ register_payload_type(&sample); }
-            protected:
-                payload * generate() override {
-                    // cout << "IoT_data_payload generated" << '\n';
-                    return new IoT_data_payload;
-                }
-            public:
-                std::string type() override { return "IoT_data_payload";}
-                ~generator() override = default;
-        };
 };
-IoT_data_payload::generator IoT_data_payload::generator::sample;
 
 class IoT_ctrl_payload : public payload {
-        IoT_ctrl_payload(IoT_ctrl_payload & s): counter (s.counter) {}
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("IoT_ctrl_payload");
         )
 
-        unsigned int counter ;
-
-    protected:
-        IoT_ctrl_payload(): counter (0) {} // this constructor cannot be directly called by users
+        unsigned int counter = 0;
     public:
-        ~IoT_ctrl_payload() override = default;
-
         void increase() { counter ++; } // used to increase the counter
         GET(counter) // used to get the value of counter
 
         std::string type() override { return "IoT_ctrl_payload"; }
-
-        // IoT_ctrl_payload::generator is derived from payload::generator to generate a payload
-        class generator : public payload::generator{
-                static generator sample;
-                // this constructor is only for sample to register this payload type
-                generator() { /*cout << "IoT_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
-            protected:
-                payload * generate() override {
-                    // cout << "IoT_ctrl_payload generated" << '\n';
-                    return new IoT_ctrl_payload;
-                }
-            public:
-                std::string type() override { return "IoT_ctrl_payload";}
-                ~generator() override = default;
-        };
 };
-IoT_ctrl_payload::generator IoT_ctrl_payload::generator::sample;
 
 class AGG_ctrl_payload : public payload {
-        AGG_ctrl_payload(AGG_ctrl_payload & s) {}
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("AGG_ctrl_payload");
         )
 
         // unsigned int counter ;
 
-    protected:
-        AGG_ctrl_payload() = default; // this constructor cannot be directly called by users
     public:
-        ~AGG_ctrl_payload() override = default;
-
         // void increase() { counter ++; } // used to increase the counter
         // GET(getCounter,unsigned int,counter); // used to get the value of counter
 
         std::string type() override { return "AGG_ctrl_payload"; }
-
-        // AGG_ctrl_payload::generator is derived from payload::generator to generate a payload
-        class generator : public payload::generator{
-                static generator sample;
-                // this constructor is only for sample to register this payload type
-                generator() { /*cout << "AGG_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
-            protected:
-                payload * generate() override {
-                    // cout << "AGG_ctrl_payload generated" << '\n';
-                    return new AGG_ctrl_payload;
-                }
-            public:
-                std::string type() override { return "AGG_ctrl_payload";}
-                ~generator() override = default;
-        };
 };
-AGG_ctrl_payload::generator AGG_ctrl_payload::generator::sample;
 
 class DIS_ctrl_payload : public payload {
-        DIS_ctrl_payload(DIS_ctrl_payload & s): parent(s.parent) {}
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("DIS_ctrl_payload");
         )
 
         // unsigned int counter ;
-        unsigned int parent;
+        unsigned int parent = 0;
 
-    protected:
-        explicit DIS_ctrl_payload(int _parent=0): parent (_parent) {} // this constructor cannot be directly called by users
     public:
-        ~DIS_ctrl_payload() override = default;
-
         // void increase() { counter ++; } // used to increase the counter
         SET(parent)
         GET(parent) // used to get the value of counter
 
+        explicit DIS_ctrl_payload(unsigned int _parent = 0): parent (_parent) {}
         std::string type() override { return "DIS_ctrl_payload"; }
-
-        // DIS_ctrl_payload::generator is derived from payload::generator to generate a payload
-        class generator : public payload::generator{
-                static generator sample;
-                // this constructor is only for sample to register this payload type
-                generator() { /*cout << "DIS_ctrl_payload registered" << '\n';*/ register_payload_type(&sample); }
-            protected:
-                payload * generate() override {
-                    // cout << "DIS_ctrl_payload generated" << '\n';
-                    return new DIS_ctrl_payload;
-                }
-            public:
-                std::string type() override { return "DIS_ctrl_payload";}
-                ~generator() override = default;
-        };
 };
-DIS_ctrl_payload::generator DIS_ctrl_payload::generator::sample;
 
-class packet{
-        // a packet usually contains a header and a payload
-        header *hdr;
-        payload *pld;
-        unsigned int p_id;
-        static inline unsigned int last_packet_id ;
-
-        packet(packet &) {}
-        static inline int live_packet_num ;
+class packet_derived_classes_common_fields_holder {
     protected:
-        // these constructors cannot be directly called by users
-        packet(): hdr(nullptr), pld(nullptr) { p_id=last_packet_id++; live_packet_num ++; }
-        packet(const std::string &_hdr, const std::string &_pld, bool rep = false, unsigned int rep_id = 0) {
+        static inline std::vector<std::string> derived_class_names;
+        static inline unsigned int last_packet_id;
+        static inline unsigned int live_packet_num;
+};
+
+template <std::derived_from<header> HeaderType, std::derived_from<payload> PayloadType>
+class packet : protected packet_derived_classes_common_fields_holder {
+        // a packet usually contains a header and a payload
+        HeaderType hdr;
+        PayloadType pld;
+        unsigned int p_id;
+        using packet_derived_classes_common_fields_holder::last_packet_id;
+        using packet_derived_classes_common_fields_holder::live_packet_num;
+    public:
+        packet(): p_id(last_packet_id++) {
+            live_packet_num++;
+        }
+        packet(const packet &other) : hdr(other.hdr), pld(other.pld), p_id(last_packet_id++) {
+            live_packet_num++;
+        }
+        /*
+        The move operations does the same thing as the copy operations.
+
+        The reason why the move operations also increment live_packet_num,
+        unlike shared_ptr, is because shared_ptr is thread-safe, so incrementing
+        and decrementing the reference count is time-consuming, but here,
+        live_packet_num isn't thread-safe in the first place, so it becomes
+        pointless to do so.
+        */
+        packet(packet &&other) noexcept : hdr(std::move(other.hdr)), pld(std::move(other.pld)), p_id(last_packet_id++) {
+            live_packet_num++;
+        }
+        packet &operator=(const packet &other) {
+            packet temp(other);
+            swap(*this, temp);
+            return *this;
+        }
+        packet &operator=(packet &&other) noexcept {
+            swap(*this, other);
+            return *this;
+        }
+        virtual ~packet(){
+            // cout << "packet destructor begin" << '\n';
+            live_packet_num --;
+            // cout << "packet destructor end" << '\n';
+        }
+        template <std::same_as<HeaderType> DeducedHeaderType, std::same_as<PayloadType> DeducedPayloadType>
+        packet(DeducedHeaderType &&_hdr, DeducedPayloadType &&_pld, bool rep = false, unsigned int rep_id = 0) : hdr(std::forward(_hdr)), pld(std::forward(_pld)) {
             if (! rep )  { // a duplicated packet does not have a new packet id
                 p_id = last_packet_id ++;
             }
             else {
                 p_id = rep_id;
             }
-            hdr = header::generator::generate(_hdr);
-            pld = payload::generator::generate(_pld);
             live_packet_num ++;
         }
-        static inline std::vector<std::string> derived_class_names;
-    public:
-        virtual ~packet(){
-            // cout << "packet destructor begin" << '\n';
-            if (hdr != nullptr) {
-                delete hdr;
-            }
-            if (pld != nullptr) {
-                delete pld;
-            }
-            live_packet_num --;
-            // cout << "packet destructor end" << '\n';
+        friend void swap(packet &first, packet &second) noexcept {
+            using std::swap;
+            swap(first.hdr, second.hdr);
+            swap(first.pld, second.pld);
+            swap(first.p_id, second.p_id);
         }
-
         SET_WITH_NAME(set_header, hdr)
         GET_WITH_NAME(get_header, hdr)
         SET_WITH_NAME(set_payload, pld)
         GET_WITH_NAME(get_payload, pld)
         GET_WITH_NAME(get_packet_ID, p_id)
 
-        static void discard ( packet* &p ) {
-            // cout << "checking" << '\n';
-            if (p != nullptr) {
-                // cout << "discarding" << '\n';
-                // cout << p->type() << '\n';
-                delete p;
-                // cout << "discarded" << '\n';
-            }
-            p = nullptr;
-            // cout << "checked" << '\n';
-        }
         virtual std::string type () = 0;
         // you can define your own packet's addition_information
         // to print more information for recv_event and send_event
         virtual std::string addition_information () { return ""; }
 
-        static int get_live_packet_num () { return live_packet_num; }
+        static unsigned int get_live_packet_num () { return live_packet_num; }
 
         static void print () {
             std::cout << "registered packet types:\n";
@@ -481,219 +280,86 @@ class packet{
                 std::cout << name << '\n';
             }
         }
-
-        class generator {
-                // lock the copy constructor
-                generator(generator &) = default;
-                // store all possible types of packet
-                static inline std::map<std::string,generator*> prototypes;
-            protected:
-                // allow derived class to use it
-                generator() = default;
-                // after you create a new packet type, please register the factory of this payload type by this function
-                void register_packet_type(generator *h) { prototypes[h->type()] = h; }
-                // you have to implement your own generate() to generate your payload
-                virtual packet* generate ( packet *p = nullptr) = 0;
-            public:
-                // you have to implement your own type() to return your packet type
-        	    virtual std::string type() = 0;
-        	    // this function is used to generate any type of packet derived
-        	    static packet * generate (const std::string &type) {
-            		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
-            			return prototypes[type]->generate(); // generate it!!
-            		}
-            		std::cerr << "no such packet type" << '\n'; // otherwise
-            		return nullptr;
-            	}
-            	static packet * replicate (packet *p) {
-            	    if(prototypes.find(p->type()) != prototypes.end()){ // if this type derived exists
-            			return prototypes[p->type()]->generate(p); // generate it!!
-            		}
-            		std::cerr << "no such packet type" << '\n'; // otherwise
-            		return nullptr;
-            	}
-            	virtual ~generator() = default;
-        };
 };
 
 // this packet is used to transmit the data
-class IoT_data_packet: public packet {
-        IoT_data_packet(IoT_data_packet &) {}
+class IoT_data_packet: public packet<IoT_data_header, IoT_data_payload> {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("IoT_data_packet");
         )
 
-    protected:
-        IoT_data_packet() = default; // this constructor cannot be directly called by users
-        explicit IoT_data_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
-            *(dynamic_cast<IoT_data_header*>(this->get_header())) = *(dynamic_cast<IoT_data_header*> (p->get_header()));
-            *(dynamic_cast<IoT_data_payload*>(this->get_payload())) = *(dynamic_cast<IoT_data_payload*> (p->get_payload()));
-            //DFS_path = (dynamic_cast<IoT_data_header*>(p))->DFS_path;
-            //isVisited = (dynamic_cast<IoT_data_header*>(p))->isVisited;
-        } // for duplicate
-        IoT_data_packet(const std::string &_h, const std::string &_p): packet(_h, _p) {}
-
     public:
-        ~IoT_data_packet() override = default;
+        template <std::same_as<packet> DeducedPacketType>
+        explicit IoT_data_packet(DeducedPacketType &&other) : packet(std::forward(other).get_header(), std::forward(other).get_payload(), true, other.get_packet_ID()) {}
+        
+        template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
+        IoT_data_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward(header), std::forward(payload)) {}
+        
         std::string type() override { return "IoT_data_packet"; }
-
-        // IoT_data_packet::generator is derived from packet::generator to generate a pub packet
-        class generator : public packet::generator{
-                static generator sample;
-                // this constructor is only for sample to register this packet type
-                generator() { /*cout << "IoT_data_packet registered" << '\n';*/ register_packet_type(&sample); }
-            protected:
-                packet *generate (packet *p = nullptr) override {
-                    // cout << "IoT_data_packet generated" << '\n';
-                    if ( nullptr == p ) {
-                        return new IoT_data_packet("IoT_data_header","IoT_data_payload");
-                    }
-                    return new IoT_data_packet(p); // duplicate
-                }
-            public:
-                std::string type() override { return "IoT_data_packet";}
-                ~generator() override = default;
-        };
 };
-IoT_data_packet::generator IoT_data_packet::generator::sample;
 
 // this packet type is used to conduct distributed BFS
-class IoT_ctrl_packet: public packet {
-        IoT_ctrl_packet(IoT_ctrl_packet &) {}
+class IoT_ctrl_packet: public packet<IoT_ctrl_header, IoT_ctrl_payload> {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("IoT_ctrl_packet");
         )
 
-    protected:
-        IoT_ctrl_packet() = default; // this constructor cannot be directly called by users
-        explicit IoT_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
-            *(dynamic_cast<IoT_ctrl_header*>(this->get_header())) = *(dynamic_cast<IoT_ctrl_header*> (p->get_header()));
-            *(dynamic_cast<IoT_ctrl_payload*>(this->get_payload())) = *(dynamic_cast<IoT_ctrl_payload*> (p->get_payload()));
-            //DFS_path = (dynamic_cast<IoT_ctrl_header*>(p))->DFS_path;
-            //isVisited = (dynamic_cast<IoT_ctrl_header*>(p))->isVisited;
-        } // for duplicate
-        IoT_ctrl_packet(const std::string &_h, const std::string &_p): packet(_h, _p) {}
-
     public:
-        ~IoT_ctrl_packet() override = default;
+        template <std::same_as<packet> DeducedPacketType>
+        explicit IoT_ctrl_packet(DeducedPacketType &&other) : packet(std::forward(other).get_header(), std::forward(other).get_payload(), true, other.get_packet_ID()) {}
+        
+        template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
+        IoT_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward(header), std::forward(payload)) {}
+
         std::string type() override { return "IoT_ctrl_packet"; }
         std::string addition_information() override {
-            unsigned int counter = (dynamic_cast<IoT_ctrl_payload*>(this->get_payload()))->get_counter();
+            unsigned int counter = get_payload().get_counter();
             // cout << counter << '\n';
             return " counter " + std::to_string(counter);
         }
-
-        // IoT_ctrl_packet::generator is derived from packet::generator to generate a pub packet
-        class generator : public packet::generator{
-                static generator sample;
-                // this constructor is only for sample to register this packet type
-                generator() { /*cout << "IoT_ctrl_packet registered" << '\n';*/ register_packet_type(&sample); }
-            protected:
-                packet *generate (packet *p = nullptr) override {
-                    // cout << "IoT_ctrl_packet generated" << '\n';
-                    if ( nullptr == p ) {
-                        return new IoT_ctrl_packet("IoT_ctrl_header","IoT_ctrl_payload");
-                    }
-                    return new IoT_ctrl_packet(p); // duplicate
-                }
-            public:
-                std::string type() override { return "IoT_ctrl_packet";}
-                ~generator() override = default;
-        };
 };
-IoT_ctrl_packet::generator IoT_ctrl_packet::generator::sample;
 
 // this packet type is used to transmit each device's nblist to the sink
-class AGG_ctrl_packet: public packet {
-        AGG_ctrl_packet(AGG_ctrl_packet &) {}
+class AGG_ctrl_packet: public packet<AGG_ctrl_header, AGG_ctrl_payload> {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("AGG_ctrl_packet");
         )
 
-    protected:
-        AGG_ctrl_packet() = default; // this constructor cannot be directly called by users
-        explicit AGG_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
-            *(dynamic_cast<AGG_ctrl_header*>(this->get_header())) = *(dynamic_cast<AGG_ctrl_header*> (p->get_header()));
-            *(dynamic_cast<AGG_ctrl_payload*>(this->get_payload())) = *(dynamic_cast<AGG_ctrl_payload*> (p->get_payload()));
-            //DFS_path = (dynamic_cast<AGG_ctrl_header*>(p))->DFS_path;
-            //isVisited = (dynamic_cast<AGG_ctrl_header*>(p))->isVisited;
-        } // for duplicate
-        AGG_ctrl_packet(const std::string &_h, const std::string &_p): packet(_h, _p) {}
-
     public:
-        ~AGG_ctrl_packet() override = default;
+        template <std::same_as<packet> DeducedPacketType>
+        explicit AGG_ctrl_packet(DeducedPacketType &&other) : packet(std::forward(other).get_header(), std::forward(other).get_payload(), true, other.get_packet_ID()) {}
+        
+        template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
+        AGG_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward(header), std::forward(payload)) {}
+
         std::string type() override { return "AGG_ctrl_packet"; }
 
         // virtual string addition_information() {
         //     string msg = (dynamic_cast<AGG_ctrl_payload*>(this->get_payload()))->getMsg();
         //     return " msg " + msg;
         // }
-
-        // AGG_ctrl_packet::generator is derived from packet::generator to generate a pub packet
-        class generator : public packet::generator{
-                static generator sample;
-                // this constructor is only for sample to register this packet type
-                generator() { /*cout << "AGG_ctrl_packet registered" << '\n';*/ register_packet_type(&sample); }
-            protected:
-                packet *generate (packet *p = nullptr) override {
-                    // cout << "AGG_ctrl_packet generated" << '\n';
-                    if ( nullptr == p ) {
-                        return new AGG_ctrl_packet("AGG_ctrl_header","AGG_ctrl_payload");
-                    }
-                    return new AGG_ctrl_packet(p); // duplicate
-                }
-            public:
-                std::string type() override { return "AGG_ctrl_packet";}
-                ~generator() override = default;
-        };
 };
-AGG_ctrl_packet::generator AGG_ctrl_packet::generator::sample;
 
 // this packet type is used to transmit the new parent to each device
-class DIS_ctrl_packet: public packet {
-        DIS_ctrl_packet(DIS_ctrl_packet &) {}
+class DIS_ctrl_packet: public packet<DIS_ctrl_header, DIS_ctrl_payload> {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("DIS_ctrl_packet");
         )
 
-    protected:
-        DIS_ctrl_packet() = default; // this constructor cannot be directly called by users
-        explicit DIS_ctrl_packet(packet*p): packet(p->get_header()->type(), p->get_payload()->type(), true, p->get_packet_ID()) {
-            *(dynamic_cast<DIS_ctrl_header*>(this->get_header())) = *(dynamic_cast<DIS_ctrl_header*> (p->get_header()));
-            *(dynamic_cast<DIS_ctrl_payload*>(this->get_payload())) = *(dynamic_cast<DIS_ctrl_payload*> (p->get_payload()));
-            //DFS_path = (dynamic_cast<DIS_ctrl_header*>(p))->DFS_path;
-            //isVisited = (dynamic_cast<DIS_ctrl_header*>(p))->isVisited;
-        } // for duplicate
-        DIS_ctrl_packet(const std::string &_h, const std::string &_p): packet(_h, _p) {}
-
     public:
-        ~DIS_ctrl_packet() override = default;
+        template <std::same_as<packet> DeducedPacketType>
+        explicit DIS_ctrl_packet(DeducedPacketType &&other) : packet(std::forward(other).get_header(), std::forward(other).get_payload(), true, other.get_packet_ID()) {}
+        
+        template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
+        DIS_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward(header), std::forward(payload)) {}
+
         std::string type() override { return "DIS_ctrl_packet"; }
         std::string addition_information() override {
-            unsigned int parent = (dynamic_cast<DIS_ctrl_payload*>(this->get_payload()))->get_parent();
+            unsigned int parent = get_payload().get_parent();
             // cout << counter << '\n';
             return " parent " + std::to_string(parent);
         }
-
-        // DIS_ctrl_packet::generator is derived from packet::generator to generate a pub packet
-        class generator : public packet::generator{
-                static generator sample;
-                // this constructor is only for sample to register this packet type
-                generator() { /*cout << "DIS_ctrl_packet registered" << '\n';*/ register_packet_type(&sample); }
-            protected:
-                packet *generate (packet *p = nullptr) override {
-                    // cout << "DIS_ctrl_packet generated" << '\n';
-                    if ( nullptr == p ) {
-                        return new DIS_ctrl_packet("DIS_ctrl_header","DIS_ctrl_payload");
-                    }
-                    return new DIS_ctrl_packet(p); // duplicate
-                }
-            public:
-                std::string type() override { return "DIS_ctrl_packet";}
-                ~generator() override = default;
-        };
 };
-DIS_ctrl_packet::generator DIS_ctrl_packet::generator::sample;
 
 class node {
         // all nodes created in the program
