@@ -294,6 +294,22 @@ class packet : protected packet_derived_classes_common_fields_holder {
                 std::cout << name << '\n';
             }
         }
+
+        void set_src_ID(unsigned int id) {
+            hdr.set_src_ID(id);
+        }
+
+        void set_dst_ID(unsigned int id) {
+            hdr.set_dst_ID(id);
+        }
+
+        void set_pre_ID(unsigned int id) {
+            hdr.set_pre_ID(id);
+        }
+
+        void set_nex_ID(unsigned int id) {
+            hdr.set_nex_ID(id);
+        }
 };
 
 // this packet is used to transmit the data

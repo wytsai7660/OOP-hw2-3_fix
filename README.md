@@ -20,3 +20,5 @@ In order to improve on JJK's code, the following breaking changes have been made
 This is a major revamp of JJK's code, so there are some features that you need to access in a different way. The following list tries to list all of them.
 
 - Instead of calling `IoT_ctrl_payload::increase` directly, call `IoT_ctrl_packet::increase_payload_counter`.
+
+- Since all accessors now return const references, so you can't directly call a non-const function on the return value of a accessors. Instead, there are usually alternative functions that you can call to achieve the same effect. For example, to change the src/dst/pre/nex IDs of a packet, instead of calling the getter for the header on the packet and then setting them, call the `set_src_ID`/`set_dst_ID`/`set_pre_ID`/`set_nex_ID` functions on the packet directly.
