@@ -28,4 +28,5 @@ This is a major revamp of JJK's code, so there are some features that you need t
   
   - Call the default constructor of the packet type you want to generate instead of `packet::packet_generator::generate`.
   - Call the copy/move constructor of the packet type you want to replicate instead of `packet::packet_generator::replicate`.
-  - Use the variant type `node::PacketTypes` and `std::visit` instead of `packet *` and downcasting.
+
+- Use the variant type `node::PacketTypes` and `std::visit` instead of `packet *` and downcasting.
