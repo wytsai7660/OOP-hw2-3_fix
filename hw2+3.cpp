@@ -33,14 +33,24 @@
     const auto &getter_name() const & { return var_name; } \
     auto getter_name() && { return std::move(var_name); }
 
-#define STATIC_CONSTRUCTOR(body) \
-    class static_constructor { \
+/*
+This is unreliable. The static constructor seems to only be called in
+non-template classes, including non-template subclasses of template classes.
+Even then, the standard doesn't even guarantee that it will be called in a
+non-template classes.
+*/
+#define STATIC_CONSTRUCTOR(body) STATIC_CONSTRUCTOR_IMPL1(body, __COUNTER__)
+
+#define STATIC_CONSTRUCTOR_IMPL1(body, counter) STATIC_CONSTRUCTOR_IMPL2(body, counter) // Expands __COUNTER__
+
+#define STATIC_CONSTRUCTOR_IMPL2(body, counter) \
+    class static_constructor##counter { \
         public: \
-            static_constructor() { \
+            static_constructor##counter() { \
                 body \
             } \
     }; \
-    static inline static_constructor static_constructor;
+    static inline static_constructor##counter static_constructor;
 
 #define DEFAULTED_SPECIAL_MEMBERS(class_name) \
         virtual ~class_name() = default; \
