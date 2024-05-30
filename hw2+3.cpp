@@ -66,7 +66,7 @@ struct overloaded : Ts... { using Ts::operator()...; };
 class header;
 class payload;
 
-template <std::derived_from<header> HeaderType, std::derived_from<payload> PayloadType>
+template <std::derived_from<header> HeaderType, std::derived_from<payload> PayloadType, typename Derived>
 class packet;
 
 class node;
@@ -228,7 +228,7 @@ class packet_derived_classes_common_fields_holder {
         static inline unsigned int live_packet_num;
 };
 
-template <std::derived_from<header> HeaderType, std::derived_from<payload> PayloadType>
+template <std::derived_from<header> HeaderType, std::derived_from<payload> PayloadType, typename Derived>
 class packet : protected packet_derived_classes_common_fields_holder {
         // a packet usually contains a header and a payload
         HeaderType hdr;
@@ -256,15 +256,19 @@ class packet : protected packet_derived_classes_common_fields_holder {
         live_packet_num isn't thread-safe in the first place, so it becomes
         pointless to do so.
         */
-        packet(packet &&other) noexcept : hdr(std::move(other.hdr)), pld(std::move(other.pld)), p_id(std::move(other.pid)) {
+        packet(packet &&other) noexcept : hdr(std::move(other.hdr)), pld(std::move(other.pld)), p_id(std::move(other.p_id)) {
             live_packet_num++;
         }
         packet &operator=(const packet &other) {
-            packet temp(other);
+            if (this == &other) {
+                return *this;
+            }
+            Derived temp(*static_cast<const Derived *>(&other)); // Derived must be a subclass so static_cast will do.
             swap(*this, temp);
             return *this;
         }
         packet &operator=(packet &&other) noexcept {
+            (void)std::move(other); // Silences "not moved from" warning
             swap(*this, other);
             return *this;
         }
@@ -283,6 +287,7 @@ class packet : protected packet_derived_classes_common_fields_holder {
             }
             live_packet_num ++;
         }
+        // This is friend so that ADL can find it.
         friend void swap(packet &first, packet &second) noexcept {
             using std::swap;
             swap(first.hdr, second.hdr);
@@ -331,7 +336,7 @@ class packet : protected packet_derived_classes_common_fields_holder {
 };
 
 // this packet is used to transmit the data
-class IoT_data_packet: public packet<IoT_data_header, IoT_data_payload> {
+class IoT_data_packet: public packet<IoT_data_header, IoT_data_payload, IoT_data_packet> {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("IoT_data_packet");
         )
@@ -349,7 +354,7 @@ class IoT_data_packet: public packet<IoT_data_header, IoT_data_payload> {
 };
 
 // this packet type is used to conduct distributed BFS
-class IoT_ctrl_packet: public packet<IoT_ctrl_header, IoT_ctrl_payload> {
+class IoT_ctrl_packet: public packet<IoT_ctrl_header, IoT_ctrl_payload, IoT_ctrl_packet> {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("IoT_ctrl_packet");
         )
@@ -375,7 +380,7 @@ class IoT_ctrl_packet: public packet<IoT_ctrl_header, IoT_ctrl_payload> {
 };
 
 // this packet type is used to transmit each device's nblist to the sink
-class AGG_ctrl_packet: public packet<AGG_ctrl_header, AGG_ctrl_payload> {
+class AGG_ctrl_packet: public packet<AGG_ctrl_header, AGG_ctrl_payload, AGG_ctrl_packet> {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("AGG_ctrl_packet");
         )
@@ -398,7 +403,7 @@ class AGG_ctrl_packet: public packet<AGG_ctrl_header, AGG_ctrl_payload> {
 };
 
 // this packet type is used to transmit the new parent to each device
-class DIS_ctrl_packet: public packet<DIS_ctrl_header, DIS_ctrl_payload> {
+class DIS_ctrl_packet: public packet<DIS_ctrl_header, DIS_ctrl_payload, DIS_ctrl_packet> {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("DIS_ctrl_packet");
         )
