@@ -447,8 +447,8 @@ class node {
                 throw std::invalid_argument("BROADCAST_ID cannot be used");
             }
         }
-        static void register_node(unsigned int id, const std::shared_ptr<node> &node) {
-            id_node_table[id] = node;
+        static void register_node(const std::shared_ptr<node> &node) {
+            id_node_table[node->id] = node;
         }
 
     public:
@@ -471,7 +471,7 @@ class node {
         }
         virtual std::string type() = 0; // please define it in your derived node class
 
-        void add_phy_neighbor (unsigned int _id, const std::string &link_type = "simple_link"); // we only add a directed link from id to _id
+        void add_phy_neighbor (unsigned int _id); // we only add a directed link from id to _id
         void del_phy_neighbor (unsigned int _id) { // we only delete a directed link from id to _id
             phy_neighbors.erase(_id);
         }
@@ -523,9 +523,11 @@ class IoT_device: public node {
 
         explicit IoT_device(unsigned int _id): node(_id), hi(false) {}
     public:
-        static void generate(unsigned int _id) {
+        static std::shared_ptr<IoT_device> generate(unsigned int _id) {
             try {
-                register_node(_id, std::shared_ptr<IoT_device>(new IoT_device(_id)));
+                std::shared_ptr<IoT_device> device(new IoT_device(_id));
+                register_node(device);
+                return device;
             }
             catch (...) {
                 throw;
@@ -1348,23 +1350,40 @@ DIS_ctrl_pkt_gen_event::generator DIS_ctrl_pkt_gen_event::generator::sample;
 
 class link {
         // all links created in the program
-        static inline std::map< std::pair<unsigned int,unsigned int>, link*> id_id_link_table;
+        static inline std::map<std::pair<unsigned int, unsigned int>, std::shared_ptr<link>> id_id_link_table;
         unsigned int id1; // from
         unsigned int id2; // to
 
     protected:
-        link(link&){} // this constructor should not be used
-        link() = default; // this constructor should not be used
-        link(unsigned int _id1, unsigned int _id2): id1(_id1), id2(_id2) { id_id_link_table[std::pair<unsigned int,unsigned int>(id1,id2)] = this; }
+        link(unsigned int _id1, unsigned int _id2): id1(_id1), id2(_id2) {
+            if(id_id_link_table.find({_id1, _id2}) != id_id_link_table.end()){
+                throw std::invalid_argument("Duplicate link id");
+            }
+            if ( BROADCAST_ID == _id1 || BROADCAST_ID == _id2 ) {
+                throw std::invalid_argument("BROADCAST_ID cannot be used");
+            }
+        }
+        static void register_link(const std::shared_ptr<link> &link) {
+            id_id_link_table[{link->id1, link->id2}] = link;
+        }
         static inline std::vector<std::string> derived_class_names;
 
     public:
+        /*
+        For the same reason as node, the special members are deleted. See node's
+        comment above its special members for more details.
+        */
+        link() = delete;
+        link(const link &other) = delete;
+        link(link &&other) = delete;
+        link &operator=(const link &other) = delete;
+        link &operator=(link &&other) = delete;
         virtual ~link() {
             id_id_link_table.erase (std::pair<unsigned int,unsigned int>(id1,id2)); // erase the link
         }
 
-        static link * id_id_to_link (unsigned int _id1, unsigned int _id2) {
-            return ((id_id_link_table.find(std::pair<unsigned int,unsigned int>(_id1, _id2)) != id_id_link_table.end()) ? id_id_link_table[std::pair<unsigned,unsigned>(_id1,_id2)] : nullptr);
+        static std::shared_ptr<link> id_id_to_link (unsigned int _id1, unsigned int _id2) {
+            return ((id_id_link_table.find({_id1, _id2}) != id_id_link_table.end()) ? id_id_link_table[{_id1, _id2}] : nullptr);
         }
 
         virtual double get_latency() = 0; // you must implement your own latency
@@ -1384,51 +1403,7 @@ class link {
                 std::cout << name << '\n';
             }
         }
-
-        class generator {
-                // lock the copy constructor
-                generator(generator &) = default;
-                // store all possible types of link
-                static inline std::map<std::string, generator*> prototypes;
-            protected:
-                // allow derived class to use it
-                generator() = default;
-                // after you create a new link type, please register the factory of this link type by this function
-                void register_link_type(generator *h) { prototypes[h->type()] = h; }
-                // you have to implement your own generate() to generate your link
-                virtual link* generate(unsigned int _id1, unsigned int _id2) = 0;
-            public:
-                // you have to implement your own type() to return your link type
-        	    virtual std::string type() = 0;
-        	    // this function is used to generate any type of link derived
-        	    static link * generate (const std::string &type, unsigned int _id1, unsigned int _id2) {
-        	        if(id_id_link_table.find(std::pair<unsigned int, unsigned int>(_id1, _id2)) != id_id_link_table.end()){
-        	            std::cerr << "duplicate link id" << '\n'; // link id is duplicated
-        	            return nullptr;
-        	        }
-        	        if ( BROADCAST_ID == _id1 || BROADCAST_ID == _id2 ) {
-        	            std::cerr << "BROADCAST_ID cannot be used" << '\n';
-        	            return nullptr;
-        	        }
-            		if (prototypes.find(type) != prototypes.end()){ // if this type derived exists
-            		    link * created_link = prototypes[type]->generate(_id1,_id2);
-            			return created_link; // generate it!!
-            		}
-            		std::cerr << "no such link type" << '\n'; // otherwise
-            		return nullptr;
-            	}
-            	virtual ~generator() = default;
-        };
 };
-
-void node::add_phy_neighbor (unsigned int _id, const std::string &link_type){
-    if (id == _id) {return;} // if the two nodes are the same...
-    if (id_node_table.find(_id)==id_node_table.end()) {return;} // if this node does not exist
-    if (phy_neighbors.find(_id)!=phy_neighbors.end()) {return;} // if this neighbor has been added
-    phy_neighbors[_id] = true;
-
-    link::generator::generate(link_type,id,_id);
-}
 
 class simple_link: public link {
     private:
@@ -1436,30 +1411,30 @@ class simple_link: public link {
             derived_class_names.emplace_back("simple_link");
         )
     protected:
-        simple_link() = default; // it should not be used outside the class
-        simple_link(simple_link&) {} // it should not be used
         simple_link(unsigned int _id1, unsigned int _id2): link (_id1,_id2){} // this constructor cannot be directly called by users
 
     public:
-        ~simple_link() override = default;
+        static std::shared_ptr<simple_link> generate(unsigned int _id1, unsigned int _id2) {
+            try {
+                std::shared_ptr<simple_link> link(new simple_link(_id1, _id2));
+                register_link(link);
+                return link;
+            }
+            catch (...) {
+                throw;
+            }
+        }
         double get_latency() override { return ONE_HOP_DELAY; } // you can implement your own latency
-
-        // simple_link::generator is derived from link::generator to generate a link
-        class generator : public link::generator {
-                static generator sample;
-                // this constructor is only for sample to register this link type
-                generator() { /*cout << "simple_link registered" << '\n';*/ register_link_type(&sample); }
-            protected:
-                link * generate(unsigned int _id1, unsigned int _id2) override
-                { /*cout << "simple_link generated" << '\n';*/ return new simple_link(_id1,_id2); }
-            public:
-                std::string type() override { return "simple_link"; }
-                ~generator() override = default;
-        };
 };
 
-simple_link::generator simple_link::generator::sample;
+void node::add_phy_neighbor (unsigned int _id){
+    if (id == _id) {return;} // if the two nodes are the same...
+    if (id_node_table.find(_id)==id_node_table.end()) {return;} // if this node does not exist
+    if (phy_neighbors.find(_id)!=phy_neighbors.end()) {return;} // if this neighbor has been added
+    phy_neighbors[_id] = true;
 
+    simple_link::generate(id, _id);
+}
 
 // the IoT_data_packet_event function is used to add an initial event
 void IoT_data_packet_event (unsigned int src, unsigned int dst=0, unsigned int t = 0, std::string msg = "default"){
