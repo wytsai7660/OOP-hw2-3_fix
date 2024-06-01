@@ -30,3 +30,5 @@ This is a major revamp of JJK's code, so there are some features that you need t
   - Call the copy/move constructor of the packet type you want to replicate instead of `packet::packet_generator::replicate`.
 
 - Use the variant type `node::PacketTypes` and `std::visit` instead of `packet *` and downcasting.
+
+- Instead of calling `node::generator::generate`, call `IoT_device::generate`.

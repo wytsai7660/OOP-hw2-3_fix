@@ -4,7 +4,9 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <queue>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <variant>
@@ -431,16 +433,39 @@ class DIS_ctrl_packet: public packet<DIS_ctrl_header, DIS_ctrl_payload, DIS_ctrl
 
 class node {
         // all nodes created in the program
-        static inline std::map<unsigned int, node*> id_node_table;
+        static inline std::map<unsigned int, std::shared_ptr<node>> id_node_table;
         unsigned int id;
         std::map<unsigned int,bool> phy_neighbors;
 
     protected:
-        node(node&){} // this constructor should not be used
-        node() = default; // this constructor should not be used
-        explicit node(unsigned int _id): id(_id) { id_node_table[_id] = this; }
         static inline std::vector<std::string> derived_class_names;
+        explicit node(unsigned int _id): id(_id) {
+            if(id_node_table.find(_id) != id_node_table.end()){
+                throw std::invalid_argument("Duplicate node id");
+            }
+            if ( BROADCAST_ID == _id ) {
+                throw std::invalid_argument("BROADCAST_ID cannot be used");
+            }
+        }
+        static void register_node(unsigned int id, const std::shared_ptr<node> &node) {
+            id_node_table[id] = node;
+        }
+
     public:
+        /*
+        When a node destructs, it removes itself from id_node_table, so it will
+        be troublesome if a node is copyable because it will then try to remove
+        itself twice.
+
+        Although technically move operations are possible to implement, it
+        wasn't used in the original program, so they are also deleted for
+        simplicity.
+        */
+        node() = delete;
+        node(const node &other) = delete;
+        node(node &&other) = delete;
+        node &operator=(const node &other) = delete;
+        node &operator=(node &&other) = delete;
         virtual ~node() { // erase the node
             id_node_table.erase (id) ;
         }
@@ -468,7 +493,9 @@ class node {
         virtual void recv_handler(PacketTypes &p) = 0;
         void send_handler(PacketTypes &p);
 
-        static node * id_to_node (unsigned int _id) { return ((id_node_table.find(_id)!=id_node_table.end()) ? id_node_table[_id]: nullptr) ; }
+        static std::shared_ptr<node> id_to_node (unsigned int _id) {
+            return ((id_node_table.find(_id) != id_node_table.end()) ? id_node_table[_id] : nullptr);
+        }
         GET_WITH_NAME(get_node_ID, id)
 
         static void del_node (unsigned int _id) {
@@ -484,41 +511,6 @@ class node {
                 std::cout << name << '\n';
             }
         }
-
-        class generator {
-                // lock the copy constructor
-                generator(generator &) = default;
-                // store all possible types of node
-                static inline std::map<std::string, generator*> prototypes;
-            protected:
-                // allow derived class to use it
-                generator() = default;
-                // after you create a new node type, please register the factory of this node type by this function
-                void register_node_type(generator *h) { prototypes[h->type()] = h; }
-                // you have to implement your own generate() to generate your node
-                virtual node* generate(unsigned int _id) = 0;
-            public:
-                // you have to implement your own type() to return your node type
-        	    virtual std::string type() = 0;
-        	    // this function is used to generate any type of node derived
-        	    static node * generate (const std::string &type, unsigned int _id) {
-        	        if(id_node_table.find(_id)!=id_node_table.end()){
-        	            std::cerr << "duplicate node id" << '\n'; // node id is duplicated
-        	            return nullptr;
-        	        }
-        	        if ( BROADCAST_ID == _id ) {
-        	            std::cerr << "BROADCAST_ID cannot be used" << '\n';
-        	            return nullptr;
-        	        }
-            		if(prototypes.find(type) != prototypes.end()){ // if this type derived exists
-            		    node * created_node = prototypes[type]->generate(_id);
-            			return created_node; // generate it!!
-            		}
-            		std::cerr << "no such node type" << '\n'; // otherwise
-            		return nullptr;
-            	}
-            	virtual ~generator() = default;
-        };
 };
 
 class IoT_device: public node {
@@ -529,13 +521,16 @@ class IoT_device: public node {
 
         bool hi; // this is used for example; you can remove it when doing hw2
 
-    protected:
-        IoT_device() = default; // it should not be used
-        IoT_device(IoT_device&) {} // it should not be used
-        explicit IoT_device(unsigned int _id): node(_id), hi(false) {} // this constructor cannot be directly called by users
-
+        explicit IoT_device(unsigned int _id): node(_id), hi(false) {}
     public:
-        ~IoT_device() override = default;
+        static void generate(unsigned int _id) {
+            try {
+                register_node(_id, std::shared_ptr<IoT_device>(new IoT_device(_id)));
+            }
+            catch (...) {
+                throw;
+            }
+        }
         std::string type() override { return "IoT_device"; }
 
         // please define recv_handler function to deal with the incoming packet
@@ -624,18 +619,7 @@ class IoT_device: public node {
         // unsigned int get_one_hop_neighbor_num () { return one_hop_neighbors.size(); }
 
         // IoT_device::generator is derived from node::generator to generate a node
-        class generator : public node::generator{
-                static generator sample;
-                // this constructor is only for sample to register this node type
-                generator() { /*cout << "IoT_device registered" << '\n';*/ register_node_type(&sample); }
-            protected:
-                node * generate(unsigned int _id) override { /*cout << "IoT_device generated" << '\n';*/ return new IoT_device(_id); }
-            public:
-                std::string type() override { return "IoT_device";}
-                ~generator() override = default;
-        };
 };
-IoT_device::generator IoT_device::generator::sample;
 
 class mycomp {
     bool reverse;
@@ -1608,9 +1592,7 @@ int main()
 
     // read the input and generate devices
     for (unsigned int id = 0; id < 5; id ++){
-
-        node::generator::generate("IoT_device",id);
-
+        IoT_device::generate(id);
     }
 
     // please generate the sink by yourself
