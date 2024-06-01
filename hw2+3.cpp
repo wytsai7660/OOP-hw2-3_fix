@@ -466,9 +466,7 @@ class node {
         node(node &&other) = delete;
         node &operator=(const node &other) = delete;
         node &operator=(node &&other) = delete;
-        virtual ~node() { // erase the node
-            id_node_table.erase (id) ;
-        }
+        virtual ~node() = default; // erase the node
         virtual std::string type() = 0; // please define it in your derived node class
 
         void add_phy_neighbor (unsigned int _id); // we only add a directed link from id to _id
@@ -1251,9 +1249,7 @@ class link {
         link(link &&other) = delete;
         link &operator=(const link &other) = delete;
         link &operator=(link &&other) = delete;
-        virtual ~link() {
-            id_id_link_table.erase (std::pair<unsigned int,unsigned int>(id1,id2)); // erase the link
-        }
+        virtual ~link() = default;
 
         static std::shared_ptr<link> id_id_to_link (unsigned int _id1, unsigned int _id2) {
             return ((id_id_link_table.find({_id1, _id2}) != id_id_link_table.end()) ? id_id_link_table[{_id1, _id2}] : nullptr);
