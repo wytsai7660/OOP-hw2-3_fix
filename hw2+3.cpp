@@ -628,7 +628,7 @@ class mycomp {
 
     public:
         explicit mycomp(const bool& revparam = false) { reverse=revparam ; }
-        bool operator() (const event* lhs, const event* rhs) const;
+        bool operator() (const std::unique_ptr<event> &lhs, const std::unique_ptr<event> &rhs) const;
 };
 
 class event {
@@ -722,7 +722,7 @@ class event {
 };
 std::priority_queue<std::unique_ptr<event>, std::vector<std::unique_ptr<event>>, mycomp> event::events;
 
-bool mycomp::operator() (const event* lhs, const event* rhs) const  {
+bool mycomp::operator() (const std::unique_ptr<event> &lhs, const std::unique_ptr<event> &rhs) const  {
     // cout << lhs->get_trigger_time() << ", " << rhs->get_trigger_time() << '\n';
     // cout << lhs->type() << ", " << rhs->type() << '\n';
     unsigned int lhs_pri = lhs->event_priority();
