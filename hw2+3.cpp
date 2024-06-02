@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <queue>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -441,7 +442,7 @@ class node {
         // all nodes created in the program
         static inline std::map<unsigned int, std::shared_ptr<node>> id_node_table;
         unsigned int id;
-        std::map<unsigned int,bool> phy_neighbors;
+        std::set<unsigned int> phy_neighbors;
 
     protected:
         static inline std::vector<std::string> derived_class_names;
@@ -482,7 +483,7 @@ class node {
 
     // you can use the function to get the node's neighbors at this time
     // but in the project 3, you are not allowed to use this function
-    const std::map<unsigned int, bool> &get_phy_neighbors() { return phy_neighbors; }
+    const std::set<unsigned int> &get_phy_neighbors() { return phy_neighbors; }
 
         using PacketTypes = std::variant<std::monostate, IoT_ctrl_packet, IoT_data_packet, AGG_ctrl_packet, DIS_ctrl_packet>;
 
@@ -1302,15 +1303,18 @@ class simple_link: public link {
 
 void node::add_phy_neighbor (unsigned int _id){
     if (id == _id) {
+        std::cerr << "Failed to add phy_neighbor: the two nodes are the same" << '\n';
         return;
-    } // if the two nodes are the same...
+    }
     if (!id_node_table.contains(_id)) {
+        std::cerr << "Failed to add phy_neighbor: node " << _id << " does not exist" << '\n';
         return;
-    } // if this node does not exist
+    }
     if (phy_neighbors.contains(_id)) {
+        std::cerr << "Failed to add phy_neighbor: node " << _id << " has been added" << '\n';
         return;
-    } // if this neighbor has been added
-    phy_neighbors[_id] = true;
+    }
+    phy_neighbors.insert(_id);
 
     simple_link::generate(id, _id);
 }
@@ -1411,7 +1415,7 @@ void node::send(PacketTypes &p){ // this function is called by event; not for th
         [](std::monostate) { return 114514U; }
         
     }, p);
-    for (const auto &[nb_id, _]: phy_neighbors) { // neighbor id
+    for (const auto &nb_id: phy_neighbors) { // neighbor id
         if (nb_id != _nexID && BROADCAST_ID != _nexID) {continue;} // this neighbor will not receive the packet
 
         unsigned int trigger_time = event::get_cur_time() + static_cast<unsigned int>(link::id_id_to_link(id, nb_id)->get_latency()); // we simply assume that the delay is fixed
