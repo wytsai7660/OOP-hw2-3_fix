@@ -734,10 +734,8 @@ bool mycomp::operator() (const std::unique_ptr<event> &lhs, const std::unique_pt
     // cout << "lhs hash = " << lhs_pri << '\n';
     // cout << "rhs hash = " << rhs_pri << '\n';
 
-    if (reverse) {
-        return ((lhs->get_trigger_time()) == (rhs->get_trigger_time())) ? (lhs_pri < rhs_pri) : ((lhs->get_trigger_time()) < (rhs->get_trigger_time()));
-    }
-    return ((lhs->get_trigger_time()) == (rhs->get_trigger_time())) ? (lhs_pri > rhs_pri) : ((lhs->get_trigger_time()) > (rhs->get_trigger_time()));
+    bool result = lhs->get_trigger_time() == rhs->get_trigger_time() ? lhs_pri > rhs_pri : lhs->get_trigger_time() > rhs->get_trigger_time();
+    return result ^ reverse;
 }
 
 class recv_event : public event {
