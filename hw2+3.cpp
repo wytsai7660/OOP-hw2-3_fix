@@ -165,8 +165,8 @@ class payload {
 
         virtual std::string type() = 0;
 
-    SET(msg)
-    GET(msg)
+        SET(msg)
+        GET(msg)
 
         static void print () {
             std::cout << "registered payload types:\n";
@@ -671,11 +671,11 @@ class event {
         virtual void trigger()=0;
         virtual ~event() = default;
 
-    virtual size_t event_priority() const = 0;
-    static size_t get_hash_value(const std::string &string_for_hash) {
-        size_t priority = event_seq(string_for_hash);
-        return priority;
-    }
+        virtual size_t event_priority() const = 0;
+        static size_t get_hash_value(const std::string &string_for_hash) {
+            size_t priority = event_seq(string_for_hash);
+            return priority;
+        }
 
         static void flush_events () { // only for debug
             std::cout << "**flush begin" << '\n';
@@ -686,7 +686,7 @@ class event {
             std::cout << "**flush end" << '\n';
         }
 
-    GET(trigger_time)
+        GET(trigger_time)
 
         static void start_simulate( unsigned int _end_time ) { // the function is used to start the simulation
             end_time = _end_time;
@@ -710,12 +710,12 @@ class event {
             // cout << "no more event" << '\n';
         }
 
-    static unsigned int get_cur_time() { return cur_time; }
-    static void get_cur_time(unsigned int _cur_time) { cur_time = _cur_time; }
-    // static unsigned int getEndTime() { return end_time ; }
-    // static void getEndTime(unsigned int _end_time) { end_time = _end_time; }
+        static unsigned int get_cur_time() { return cur_time; }
+        static void get_cur_time(unsigned int _cur_time) { cur_time = _cur_time; }
+        // static unsigned int getEndTime() { return end_time ; }
+        // static void getEndTime(unsigned int _end_time) { end_time = _end_time; }
 
-    virtual void print() const = 0; // the function is used to print the event information
+        virtual void print() const = 0; // the function is used to print the event information
 
         static void print_registered_event_types () {
             std::cout << "registered event types:\n";
@@ -741,8 +741,8 @@ bool mycomp::operator() (const std::unique_ptr<event> &lhs, const std::unique_pt
 }
 
 class recv_event : public event {
-  public:
-    class recv_data; // forward declaration
+    public:
+        class recv_data; // forward declaration
 
     private:
         unsigned int senderID; // the sender
@@ -821,8 +821,8 @@ class recv_event : public event {
 };
 
 class send_event : public event {
-  public:
-    class send_data; // forward declaration
+    public:
+        class send_data; // forward declaration
 
     private:
         // this constructor cannot be directly called by users; only by generator
@@ -902,17 +902,17 @@ class send_event : public event {
 ////////////////////////////////////////////////////////////////////////////////
 
 class IoT_data_pkt_gen_event : public event {
-  public:
-    class gen_data; // forward declaration
+    public:
+        class gen_data; // forward declaration
 
     // this class is used to initialize the IoT_data_pkt_gen_event
-    class pkt_gen_data {
-      public:
-        unsigned int src_id = 0;
-        unsigned int dst_id = 0;
-        std::string msg;
-        // packet *_pkt;
-    };
+        class pkt_gen_data {
+            public:
+                unsigned int src_id = 0;
+                unsigned int dst_id = 0;
+                std::string msg;
+                // packet *_pkt;
+        };
 
     private:
         // this constructor cannot be directly called by users; only by generator
@@ -950,10 +950,10 @@ class IoT_data_pkt_gen_event : public event {
 
             pkt.set_msg(msg);
 
-        recv_event::recv_data e_data;
-        e_data.s_id = src;
-        e_data.r_id = src; // to make the packet start from the src
-        e_data._pkt = pkt;
+            recv_event::recv_data e_data;
+            e_data.s_id = src;
+            e_data.r_id = src; // to make the packet start from the src
+            e_data._pkt = pkt;
 
             recv_event::generate(get_trigger_time(), e_data);
         }
@@ -979,19 +979,19 @@ class IoT_data_pkt_gen_event : public event {
 };
 
 class IoT_ctrl_pkt_gen_event : public event {
-  public:
-    class gen_data; // forward declaration
+    public:
+        class gen_data; // forward declaration
 
     // this class is used to initialize the IoT_ctrl_pkt_gen_event
-    class pkt_gen_data {
-      public:
-        unsigned int src_id = 0; // the sink
-        unsigned int dst_id = 0; // the node that should update its rule
-        // unsigned int mat_id; // the target of the rule
-        // unsigned int act_id; // the next hop toward the target recorded in the rule
-        std::string msg;
-        // double per; // the percentage
-        // packet *_pkt;
+        class pkt_gen_data {
+            public:
+                unsigned int src_id = 0; // the sink
+                unsigned int dst_id = 0; // the node that should update its rule
+                // unsigned int mat_id; // the target of the rule
+                // unsigned int act_id; // the next hop toward the target recorded in the rule
+                std::string msg;
+                // double per; // the percentage
+                // packet *_pkt;
     };
 
     private:
@@ -1028,10 +1028,10 @@ class IoT_ctrl_pkt_gen_event : public event {
             // pld->setActID(act);
             // pld->setPer(per);
 
-        recv_event::recv_data e_data;
-        e_data.s_id = src;
-        e_data.r_id = src;
-        e_data._pkt = pkt;
+            recv_event::recv_data e_data;
+            e_data.s_id = src;
+            e_data.r_id = src;
+            e_data._pkt = pkt;
 
             recv_event::generate(get_trigger_time(), e_data);
         }
@@ -1060,19 +1060,19 @@ class IoT_ctrl_pkt_gen_event : public event {
 };
 
 class AGG_ctrl_pkt_gen_event : public event {
-  public:
-    class gen_data; // forward declaration
+    public:
+        class gen_data; // forward declaration
 
     // this class is used to initialize the AGG_ctrl_pkt_gen_event
-    class pkt_gen_data {
-      public:
-        unsigned int src_id = 0; // the sink
-        unsigned int dst_id = 0; // the node that should update its rule
-        // unsigned int mat_id; // the target of the rule
-        // unsigned int act_id; // the next hop toward the target recorded in the rule
-        std::string msg;
-        // double per; // the percentage
-        // packet *_pkt;
+        class pkt_gen_data {
+            public:
+                unsigned int src_id = 0; // the sink
+                unsigned int dst_id = 0; // the node that should update its rule
+                // unsigned int mat_id; // the target of the rule
+                // unsigned int act_id; // the next hop toward the target recorded in the rule
+                std::string msg;
+                // double per; // the percentage
+                // packet *_pkt;
     };
 
     private:
@@ -1108,10 +1108,10 @@ class AGG_ctrl_pkt_gen_event : public event {
             // pld->setActID(act);
             // pld->setPer(per);
 
-        recv_event::recv_data e_data;
-        e_data.s_id = src;
-        e_data.r_id = src;
-        e_data._pkt = pkt;
+            recv_event::recv_data e_data;
+            e_data.s_id = src;
+            e_data.r_id = src;
+            e_data._pkt = pkt;
 
             recv_event::generate(get_trigger_time(), e_data);
         }
@@ -1140,20 +1140,20 @@ class AGG_ctrl_pkt_gen_event : public event {
 };
 
 class DIS_ctrl_pkt_gen_event : public event {
-  public:
-    class gen_data; // forward declaration
+    public:
+        class gen_data; // forward declaration
 
     // this class is used to initialize the DIS_ctrl_pkt_gen_event
-    class pkt_gen_data {
-      public:
-        unsigned int src_id = 0; // the sink
-        unsigned int dst_id = 0; // the node that should update its rule
-        // unsigned int mat_id; // the target of the rule
-        // unsigned int act_id; // the next hop toward the target recorded in the rule
-        unsigned int parent = 0;
-        std::string msg;
-        // double per; // the percentage
-        // packet *_pkt;
+        class pkt_gen_data {
+            public:
+                unsigned int src_id = 0; // the sink
+                unsigned int dst_id = 0; // the node that should update its rule
+                // unsigned int mat_id; // the target of the rule
+                // unsigned int act_id; // the next hop toward the target recorded in the rule
+                unsigned int parent = 0;
+                std::string msg;
+                // double per; // the percentage
+                // packet *_pkt;
     };
 
     private:
@@ -1192,10 +1192,10 @@ class DIS_ctrl_pkt_gen_event : public event {
             // pld->setActID(act);
             // pld->setPer(per);
 
-        recv_event::recv_data e_data;
-        e_data.s_id = src;
-        e_data.r_id = src;
-        e_data._pkt = pkt;
+            recv_event::recv_data e_data;
+            e_data.s_id = src;
+            e_data.r_id = src;
+            e_data._pkt = pkt;
 
             recv_event::generate(get_trigger_time(), e_data);
         }
