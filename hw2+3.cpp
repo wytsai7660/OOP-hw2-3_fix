@@ -672,10 +672,10 @@ class event {
         virtual void trigger()=0;
         virtual ~event() = default;
 
-        virtual size_t event_priority() const = 0;
-        static size_t get_hash_value(const std::string &string_for_hash) {
+        virtual unsigned int event_priority() const = 0;
+        static unsigned int get_hash_value(const std::string &string_for_hash) {
             size_t priority = event_seq(string_for_hash);
-            return priority;
+            return static_cast<unsigned int>(priority);
         }
 
         static void flush_events () { // only for debug
@@ -764,8 +764,7 @@ class recv_event : public event {
             node::id_to_node(receiverID)->recv(pkt);
         }
 
-        size_t event_priority() const override
-        {
+        unsigned int event_priority() const override {
             std::string string_for_hash;
             string_for_hash = std::to_string(get_trigger_time()) +
                 std::to_string(senderID) +
@@ -843,7 +842,7 @@ class send_event : public event {
             node::id_to_node(senderID)->send(pkt);
         }
 
-        size_t event_priority() const override {
+        unsigned int event_priority() const override {
             std::string string_for_hash;
             string_for_hash = std::to_string(get_trigger_time()) +
                 std::to_string(senderID) +
@@ -957,7 +956,7 @@ class IoT_data_pkt_gen_event : public event {
             recv_event::generate(get_trigger_time(), e_data);
         }
 
-        size_t event_priority() const override {
+        unsigned int event_priority() const override {
             std::string string_for_hash;
             string_for_hash = std::to_string(get_trigger_time()) + std::to_string(src) + std::to_string (dst) ; //to_string (pkt->get_packet_ID());
             return get_hash_value(string_for_hash);
@@ -1035,7 +1034,7 @@ class IoT_ctrl_pkt_gen_event : public event {
             recv_event::generate(get_trigger_time(), e_data);
         }
 
-        size_t event_priority() const override {
+        unsigned int event_priority() const override {
             std::string string_for_hash;
             // string_for_hash = to_string(get_trigger_time()) + to_string(src) + to_string(dst) + to_string(mat) + to_string(act); //to_string (pkt->get_packet_ID());
             string_for_hash = std::to_string(get_trigger_time()) + std::to_string(src) + std::to_string(dst) ; //to_string (pkt->get_packet_ID());
@@ -1115,7 +1114,7 @@ class AGG_ctrl_pkt_gen_event : public event {
             recv_event::generate(get_trigger_time(), e_data);
         }
 
-        size_t event_priority() const override {
+        unsigned int event_priority() const override {
             std::string string_for_hash;
             // string_for_hash = to_string(get_trigger_time()) + to_string(src) + to_string(dst) + to_string(mat) + to_string(act); //to_string (pkt->get_packet_ID());
             string_for_hash = std::to_string(get_trigger_time()) + std::to_string(src) + std::to_string(dst) ; //to_string (pkt->get_packet_ID());
@@ -1199,7 +1198,7 @@ class DIS_ctrl_pkt_gen_event : public event {
             recv_event::generate(get_trigger_time(), e_data);
         }
 
-        size_t event_priority() const override {
+        unsigned int event_priority() const override {
             std::string string_for_hash;
             // string_for_hash = to_string(get_trigger_time()) + to_string(src) + to_string(dst) + to_string(mat) + to_string(act); //to_string (pkt->get_packet_ID());
             string_for_hash = std::to_string(get_trigger_time()) + std::to_string(src) + std::to_string(dst) ; //to_string (pkt->get_packet_ID());
