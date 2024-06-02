@@ -62,7 +62,7 @@ non-template classes.
         class_name &operator=(const class_name &other) = default; \
         class_name &operator=(class_name &&other) = default;
 
-template<class... Ts>
+template<typename... Ts>
 struct overloaded : Ts... { using Ts::operator()...; };
 
 class header;
@@ -480,7 +480,7 @@ class node {
             return phy_neighbors;
         }
 
-        using PacketTypes = std::variant<IoT_ctrl_packet, IoT_data_packet, AGG_ctrl_packet, DIS_ctrl_packet>;
+        using PacketTypes = std::variant<std::monostate, IoT_ctrl_packet, IoT_data_packet, AGG_ctrl_packet, DIS_ctrl_packet>;
 
         void recv (PacketTypes &p) {
             recv_handler(p);
@@ -566,7 +566,8 @@ class IoT_device: public node {
                     },
                     [&](DIS_ctrl_packet &packet) {
                         // cout << "node id = " << getNodeID() << ", parent = "  << l3->get_parent() << '\n';
-                    }
+                    },
+                    [](std::monostate) {}
                 },
                 p
             );
@@ -767,7 +768,10 @@ class recv_event: public event {
             string_for_hash = std::to_string(get_trigger_time()) +
                 std::to_string(senderID) +
                 std::to_string (receiverID) +
-                std::to_string (std::visit([](auto &&packet){ return packet.get_packet_ID(); }, pkt));
+                std::to_string (std::visit(overloaded {
+                    [](auto &&packet) { return packet.get_packet_ID(); },
+                    [](std::monostate) { return 114514U; }
+                }, pkt));
             return get_hash_value(string_for_hash);
         }
 
@@ -785,16 +789,19 @@ class recv_event: public event {
 
         // the recv_event::print() function is used for log file
         void print () const override {
-            std::visit([&](auto &&packet) {
-                std::cout << "time "    << std::setw(11) << event::get_cur_time()
-                    << "   recID"       << std::setw(11) << receiverID
-                    << "   pktID"       << std::setw(11) << packet.get_packet_ID()
-                    << "   srcID"       << std::setw(11) << packet.get_header().get_src_ID()
-                    << "   dstID"       << std::setw(11) << packet.get_header().get_dst_ID()
-                    << "   preID"       << std::setw(11) << packet.get_header().get_pre_ID()
-                    << "   nexID"       << std::setw(11) << packet.get_header().get_nex_ID()
-                    << "   "            << packet.type()
-                    << packet.addition_information();
+            std::visit(overloaded {
+                [&](auto &&packet) {
+                    std::cout << "time "    << std::setw(11) << event::get_cur_time()
+                        << "   recID"       << std::setw(11) << receiverID
+                        << "   pktID"       << std::setw(11) << packet.get_packet_ID()
+                        << "   srcID"       << std::setw(11) << packet.get_header().get_src_ID()
+                        << "   dstID"       << std::setw(11) << packet.get_header().get_dst_ID()
+                        << "   preID"       << std::setw(11) << packet.get_header().get_pre_ID()
+                        << "   nexID"       << std::setw(11) << packet.get_header().get_nex_ID()
+                        << "   "            << packet.type()
+                        << packet.addition_information();
+                },
+                [](std::monostate) {}
             }, pkt);
             //  if ( pkt->type() == "IoT_ctrl_packet" ) cout << "   " << ((IoT_ctrl_payload*)pkt->get_payload())->getCounter();
             std::cout << '\n';
@@ -841,7 +848,10 @@ class send_event: public event {
             string_for_hash = std::to_string(get_trigger_time()) +
                 std::to_string(senderID) +
                 std::to_string (receiverID) +
-                std::to_string (std::visit([](auto &&packet){ return packet.get_packet_ID(); }, pkt));
+                std::to_string (std::visit(overloaded {
+                    [](auto &&packet) { return packet.get_packet_ID(); },
+                    [](std::monostate) { return 114514U; }
+                }, pkt));
             return get_hash_value(string_for_hash);
         }
 
@@ -859,18 +869,21 @@ class send_event: public event {
         };
 
         void print () const override { // the send_event::print() function is used for log file
-            std::visit([&](auto &&packet) {
-                std::cout << "time "     << std::setw(11) << event::get_cur_time()
-                    << "   senID"       << std::setw(11) << senderID
-                    << "   pktID"       << std::setw(11) << packet.get_packet_ID()
-                    << "   srcID"       << std::setw(11) << packet.get_header().get_src_ID()
-                    << "   dstID"       << std::setw(11) << packet.get_header().get_dst_ID()
-                    << "   preID"       << std::setw(11) << packet.get_header().get_pre_ID()
-                    << "   nexID"       << std::setw(11) << packet.get_header().get_nex_ID()
-                    << "   "            << packet.type()
-                    << packet.addition_information()
-                    // << "   msg"         << setw(11) << dynamic_cast<IoT_data_payload*>(pkt->get_payload())->getMsg()
-                    << '\n';
+            std::visit(overloaded {
+                [&](auto &&packet) {
+                    std::cout << "time "     << std::setw(11) << event::get_cur_time()
+                        << "   senID"       << std::setw(11) << senderID
+                        << "   pktID"       << std::setw(11) << packet.get_packet_ID()
+                        << "   srcID"       << std::setw(11) << packet.get_header().get_src_ID()
+                        << "   dstID"       << std::setw(11) << packet.get_header().get_dst_ID()
+                        << "   preID"       << std::setw(11) << packet.get_header().get_pre_ID()
+                        << "   nexID"       << std::setw(11) << packet.get_header().get_nex_ID()
+                        << "   "            << packet.type()
+                        << packet.addition_information()
+                        // << "   msg"         << setw(11) << dynamic_cast<IoT_data_payload*>(pkt->get_payload())->getMsg()
+                        << '\n';
+                },
+                [](std::monostate) {}
             }, pkt);
             
             // cout << pkt->type()
@@ -1383,14 +1396,24 @@ void DIS_ctrl_packet_event (unsigned int sink_id = 0, unsigned int t = event::ge
 void node::send_handler(PacketTypes &p){
     PacketTypes _p = p; // Copying is replicating
     send_event::send_data e_data;
-    e_data.s_id = std::visit([](auto &&packet){ return packet.get_header().get_pre_ID(); }, _p);
-    e_data.r_id =  std::visit([](auto &&packet){ return packet.get_header().get_nex_ID(); }, _p);
+    e_data.s_id = std::visit(overloaded {
+        [](auto &&packet){ return packet.get_header().get_pre_ID(); },
+        [](std::monostate) { return 114514U; }
+    }, _p);
+    e_data.r_id = std::visit(overloaded {
+        [](auto &&packet){ return packet.get_header().get_nex_ID(); },
+        [](std::monostate) { return 114514U; }
+    }, _p);
     e_data._pkt = _p;
     send_event::generate(event::get_cur_time(), e_data);
 }
 
 void node::send(PacketTypes &p){ // this function is called by event; not for the user
-    unsigned int _nexID = std::visit([](auto &&packet){ return packet.get_header().get_nex_ID(); }, p);
+    unsigned int _nexID = std::visit(overloaded {
+        [](auto &&packet){ return packet.get_header().get_nex_ID(); },
+        [](std::monostate) { return 114514U; }
+        
+    }, p);
     for (const auto &[nb_id, _]: phy_neighbors) { // neighbor id
         if (nb_id != _nexID && BROADCAST_ID != _nexID) {continue;} // this neighbor will not receive the packet
 
