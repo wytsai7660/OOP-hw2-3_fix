@@ -692,7 +692,7 @@ class event {
         static void start_simulate( unsigned int _end_time ) { // the function is used to start the simulation
             end_time = _end_time;
             std::unique_ptr<event> e = get_next_event();
-            while ( e != nullptr && e->trigger_time <= end_time ) {
+            while (e && e->trigger_time <= end_time ) {
                 if ( cur_time <= e->trigger_time ) {
                     cur_time = e->trigger_time;
                 }
@@ -757,7 +757,7 @@ class recv_event : public event {
     public:
         // recv_event will trigger the recv function
         void trigger() override {
-            if (node::id_to_node(receiverID) == nullptr){
+            if (!node::id_to_node(receiverID)){
                 std::cerr << "recv_event error: no node " << receiverID << "!" << '\n';
                 return ;
             }
@@ -835,7 +835,7 @@ class send_event : public event {
     public:
         // send_event will trigger the send function
         void trigger() override {
-            if (node::id_to_node(senderID) == nullptr){
+            if (!node::id_to_node(senderID)){
                 std::cerr << "send_event error: no node " << senderID << "!" << '\n';
                 return ;
             }
@@ -930,11 +930,11 @@ class IoT_data_pkt_gen_event : public event {
 
         // IoT_data_pkt_gen_event will trigger the packet gen function
         void trigger() override {
-            if (node::id_to_node(src) == nullptr){
+            if (!node::id_to_node(src)){
                 std::cerr << "IoT_data_pkt_gen_event error: no node " << src << "!" << '\n';
                 return ;
             }
-            if ( dst != BROADCAST_ID && node::id_to_node(dst) == nullptr ) {
+            if ( dst != BROADCAST_ID && !node::id_to_node(dst)) {
                 std::cerr << "IoT_data_pkt_gen_event error: no node " << dst << "!" << '\n';
                 return;
             }
@@ -1320,8 +1320,12 @@ void node::add_phy_neighbor (unsigned int _id){
 
 // the IoT_data_packet_event function is used to add an initial event
 void IoT_data_packet_event(unsigned int src, unsigned int dst = 0, unsigned int t = 0, const std::string &msg = "default") {
-    if (node::id_to_node(src) == nullptr || (dst != BROADCAST_ID && node::id_to_node(dst) == nullptr)) {
-        std::cerr << "src or dst is incorrect" << '\n';
+    if (!node::id_to_node(src)) {
+        std::cerr << "src " << src << ": no such node registered\n";
+        return;
+    }
+    if (dst != BROADCAST_ID && !node::id_to_node(dst)) {
+        std::cerr << "dst " << dst << ": no such node registered\n";
         return;
     }
 
@@ -1340,8 +1344,8 @@ void IoT_ctrl_packet_event(unsigned int src = 0, unsigned int t = event::get_cur
     // 1st parameter: the source; the destination that want to broadcast a msg with counter 0 (i.e., match ID)
     // 2nd parameter: time (optional)
     // 3rd parameter: msg (optional)
-    if (node::id_to_node(src) == nullptr) {
-        std::cerr << "id is incorrect" << '\n';
+    if (!node::id_to_node(src)) {
+        std::cerr << "src " << src << ": no such node registered\n";
         return;
     }
 
@@ -1359,8 +1363,12 @@ void IoT_ctrl_packet_event(unsigned int src = 0, unsigned int t = event::get_cur
 
 // the AGG_ctrl_packet_event function is used to add an initial event
 void AGG_ctrl_packet_event(unsigned int src, unsigned int dst = 0, unsigned int t = event::get_cur_time(), const std::string &msg = "default") {
-    if (node::id_to_node(src) == nullptr || (dst != BROADCAST_ID && node::id_to_node(dst) == nullptr)) {
-        std::cerr << "src or dst is incorrect" << '\n';
+    if (!node::id_to_node(src)) {
+        std::cerr << "src " << src << ": no such node registered\n";
+        return;
+    }
+    if (dst != BROADCAST_ID && !node::id_to_node(dst)) {
+        std::cerr << "dst " << dst << ": no such node registered\n";
         return;
     }
 
@@ -1375,7 +1383,7 @@ void AGG_ctrl_packet_event(unsigned int src, unsigned int dst = 0, unsigned int 
 
 // the DIS_ctrl_packet_event function is used to add an initial event
 void DIS_ctrl_packet_event(unsigned int sink_id = 0, unsigned int t = event::get_cur_time(), const std::string &msg = "default") {
-    if (node::id_to_node(sink_id) == nullptr) {
+    if (!node::id_to_node(sink_id)) {
         std::cerr << "sink_id or id is incorrect" << '\n';
         return;
     }
