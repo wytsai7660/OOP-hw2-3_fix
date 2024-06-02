@@ -1,5 +1,6 @@
 #include <climits>
 #include <concepts>
+#include <cstddef>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -492,7 +493,7 @@ class node {
 
         // receive the packet and do something; this is a pure virtual function
         virtual void recv_handler(PacketTypes &p) = 0;
-        void send_handler(PacketTypes &p);
+        static void send_handler(PacketTypes &p);
 
         static std::shared_ptr<node> id_to_node (unsigned int _id) {
             const auto it = id_node_table.find(_id);
@@ -522,9 +523,9 @@ class IoT_device: public node {
             derived_class_names.emplace_back("IoT_device");
         )
 
-    bool hi; // this is used for example; you can remove it when doing hw2
+    bool hi = false; // this is used for example; you can remove it when doing hw2
 
-        explicit IoT_device(unsigned int _id): node(_id), hi(false) {}
+        explicit IoT_device(unsigned int _id): node(_id) {}
     public:
         static std::shared_ptr<IoT_device> generate(unsigned int _id) {
             try {
@@ -564,12 +565,15 @@ class IoT_device: public node {
                     // string msg = l3->getMsg(); // get the msg
                     },
                     [&](IoT_data_packet &packet) { // the device receives a packet
+                        (void)packet;
                         // cout << "node " << getNodeID() << " send the packet" << '\n';
                     },
                     [&](AGG_ctrl_packet &packet) {
+                        (void)packet;
                         // cout << "node id = " << getNodeID() << ", msg = "  << l3->getMsg() << '\n';
                     },
                     [&](DIS_ctrl_packet &packet) {
+                        (void)packet;
                         // cout << "node id = " << getNodeID() << ", parent = "  << l3->get_parent() << '\n';
                     },
                     [](std::monostate) {}
@@ -630,7 +634,7 @@ class mycomp {
     bool reverse;
 
     public:
-        explicit mycomp(const bool& revparam = false) { reverse=revparam ; }
+        explicit mycomp(bool revparam = false) : reverse(revparam) {}
         bool operator() (const std::unique_ptr<event> &lhs, const std::unique_ptr<event> &rhs) const;
 };
 
@@ -651,9 +655,10 @@ class event {
             return e;
         }
         static inline std::hash<std::string> event_seq;
+        unsigned int trigger_time = 0;
 
     protected:
-        unsigned int trigger_time;
+        SET(trigger_time)
         static inline std::vector<std::string> derived_class_names;
         explicit event(unsigned int _trigger_time): trigger_time(_trigger_time) {}
         event() = default;
@@ -666,9 +671,9 @@ class event {
         virtual void trigger()=0;
         virtual ~event() = default;
 
-    virtual unsigned int event_priority() const = 0;
-    unsigned int get_hash_value(const std::string &string_for_hash) const {
-        unsigned int priority = event_seq(string_for_hash);
+    virtual size_t event_priority() const = 0;
+    static size_t get_hash_value(const std::string &string_for_hash) {
+        size_t priority = event_seq(string_for_hash);
         return priority;
     }
 
@@ -684,10 +689,6 @@ class event {
     GET(trigger_time)
 
         static void start_simulate( unsigned int _end_time ) { // the function is used to start the simulation
-            if (_end_time<0) {
-                std::cerr << "you should give a positive value of _end_time" << '\n';
-                return;
-            }
             end_time = _end_time;
             std::unique_ptr<event> e = get_next_event();
             while ( e != nullptr && e->trigger_time <= end_time ) {
@@ -728,8 +729,8 @@ std::priority_queue<std::unique_ptr<event>, std::vector<std::unique_ptr<event>>,
 bool mycomp::operator() (const std::unique_ptr<event> &lhs, const std::unique_ptr<event> &rhs) const  {
     // cout << lhs->get_trigger_time() << ", " << rhs->get_trigger_time() << '\n';
     // cout << lhs->type() << ", " << rhs->type() << '\n';
-    unsigned int lhs_pri = lhs->event_priority();
-    unsigned int rhs_pri = rhs->event_priority();
+    size_t lhs_pri = lhs->event_priority();
+    size_t rhs_pri = rhs->event_priority();
     // cout << "lhs hash = " << lhs_pri << '\n';
     // cout << "rhs hash = " << rhs_pri << '\n';
 
@@ -764,7 +765,7 @@ class recv_event : public event {
             node::id_to_node(receiverID)->recv(pkt);
         }
 
-        unsigned int event_priority() const override
+        size_t event_priority() const override
         {
             std::string string_for_hash;
             string_for_hash = std::to_string(get_trigger_time()) +
@@ -784,8 +785,8 @@ class recv_event : public event {
         // this class is used to initialize the recv_event
         class recv_data{
             public:
-                unsigned int s_id;
-                unsigned int r_id;
+                unsigned int s_id = 0;
+                unsigned int r_id = 0;
                 node::PacketTypes _pkt;
         };
 
@@ -843,7 +844,7 @@ class send_event : public event {
             node::id_to_node(senderID)->send(pkt);
         }
 
-        unsigned int event_priority() const override {
+        size_t event_priority() const override {
             std::string string_for_hash;
             string_for_hash = std::to_string(get_trigger_time()) +
                 std::to_string(senderID) +
@@ -862,10 +863,10 @@ class send_event : public event {
         // this class is used to initialize the send_event
         class send_data{
             public:
-                unsigned int s_id;
-                unsigned int r_id;
+                unsigned int s_id = 0;
+                unsigned int r_id = 0;
                 node::PacketTypes _pkt;
-                unsigned int t;
+                unsigned int t = 0;
         };
 
         void print () const override { // the send_event::print() function is used for log file
@@ -907,8 +908,8 @@ class IoT_data_pkt_gen_event : public event {
     // this class is used to initialize the IoT_data_pkt_gen_event
     class pkt_gen_data {
       public:
-        unsigned int src_id;
-        unsigned int dst_id;
+        unsigned int src_id = 0;
+        unsigned int dst_id = 0;
         std::string msg;
         // packet *_pkt;
     };
@@ -954,10 +955,10 @@ class IoT_data_pkt_gen_event : public event {
         e_data.r_id = src; // to make the packet start from the src
         e_data._pkt = pkt;
 
-            recv_event::generate(trigger_time, e_data);
+            recv_event::generate(get_trigger_time(), e_data);
         }
 
-        unsigned int event_priority() const override {
+        size_t event_priority() const override {
             std::string string_for_hash;
             string_for_hash = std::to_string(get_trigger_time()) + std::to_string(src) + std::to_string (dst) ; //to_string (pkt->get_packet_ID());
             return get_hash_value(string_for_hash);
@@ -984,8 +985,8 @@ class IoT_ctrl_pkt_gen_event : public event {
     // this class is used to initialize the IoT_ctrl_pkt_gen_event
     class pkt_gen_data {
       public:
-        unsigned int src_id; // the sink
-        unsigned int dst_id; // the node that should update its rule
+        unsigned int src_id = 0; // the sink
+        unsigned int dst_id = 0; // the node that should update its rule
         // unsigned int mat_id; // the target of the rule
         // unsigned int act_id; // the next hop toward the target recorded in the rule
         std::string msg;
@@ -1032,10 +1033,10 @@ class IoT_ctrl_pkt_gen_event : public event {
         e_data.r_id = src;
         e_data._pkt = pkt;
 
-            recv_event::generate(trigger_time, e_data);
+            recv_event::generate(get_trigger_time(), e_data);
         }
 
-        unsigned int event_priority() const override {
+        size_t event_priority() const override {
             std::string string_for_hash;
             // string_for_hash = to_string(get_trigger_time()) + to_string(src) + to_string(dst) + to_string(mat) + to_string(act); //to_string (pkt->get_packet_ID());
             string_for_hash = std::to_string(get_trigger_time()) + std::to_string(src) + std::to_string(dst) ; //to_string (pkt->get_packet_ID());
@@ -1065,8 +1066,8 @@ class AGG_ctrl_pkt_gen_event : public event {
     // this class is used to initialize the AGG_ctrl_pkt_gen_event
     class pkt_gen_data {
       public:
-        unsigned int src_id; // the sink
-        unsigned int dst_id; // the node that should update its rule
+        unsigned int src_id = 0; // the sink
+        unsigned int dst_id = 0; // the node that should update its rule
         // unsigned int mat_id; // the target of the rule
         // unsigned int act_id; // the next hop toward the target recorded in the rule
         std::string msg;
@@ -1112,10 +1113,10 @@ class AGG_ctrl_pkt_gen_event : public event {
         e_data.r_id = src;
         e_data._pkt = pkt;
 
-            recv_event::generate(trigger_time, e_data);
+            recv_event::generate(get_trigger_time(), e_data);
         }
 
-        unsigned int event_priority() const override {
+        size_t event_priority() const override {
             std::string string_for_hash;
             // string_for_hash = to_string(get_trigger_time()) + to_string(src) + to_string(dst) + to_string(mat) + to_string(act); //to_string (pkt->get_packet_ID());
             string_for_hash = std::to_string(get_trigger_time()) + std::to_string(src) + std::to_string(dst) ; //to_string (pkt->get_packet_ID());
@@ -1145,11 +1146,11 @@ class DIS_ctrl_pkt_gen_event : public event {
     // this class is used to initialize the DIS_ctrl_pkt_gen_event
     class pkt_gen_data {
       public:
-        unsigned int src_id; // the sink
-        unsigned int dst_id; // the node that should update its rule
+        unsigned int src_id = 0; // the sink
+        unsigned int dst_id = 0; // the node that should update its rule
         // unsigned int mat_id; // the target of the rule
         // unsigned int act_id; // the next hop toward the target recorded in the rule
-        unsigned int parent;
+        unsigned int parent = 0;
         std::string msg;
         // double per; // the percentage
         // packet *_pkt;
@@ -1196,10 +1197,10 @@ class DIS_ctrl_pkt_gen_event : public event {
         e_data.r_id = src;
         e_data._pkt = pkt;
 
-            recv_event::generate(trigger_time, e_data);
+            recv_event::generate(get_trigger_time(), e_data);
         }
 
-        unsigned int event_priority() const override {
+        size_t event_priority() const override {
             std::string string_for_hash;
             // string_for_hash = to_string(get_trigger_time()) + to_string(src) + to_string(dst) + to_string(mat) + to_string(act); //to_string (pkt->get_packet_ID());
             string_for_hash = std::to_string(get_trigger_time()) + std::to_string(src) + std::to_string(dst) ; //to_string (pkt->get_packet_ID());
@@ -1317,7 +1318,7 @@ void node::add_phy_neighbor (unsigned int _id){
 }
 
 // the IoT_data_packet_event function is used to add an initial event
-void IoT_data_packet_event(unsigned int src, unsigned int dst = 0, unsigned int t = 0, std::string msg = "default") {
+void IoT_data_packet_event(unsigned int src, unsigned int dst = 0, unsigned int t = 0, const std::string &msg = "default") {
     if (node::id_to_node(src) == nullptr || (dst != BROADCAST_ID && node::id_to_node(dst) == nullptr)) {
         std::cerr << "src or dst is incorrect" << '\n';
         return;
@@ -1334,7 +1335,7 @@ void IoT_data_packet_event(unsigned int src, unsigned int dst = 0, unsigned int 
 
 // the IoT_ctrl_packet_event function is used to add an initial event
 
-void IoT_ctrl_packet_event(unsigned int src = 0, unsigned int t = event::get_cur_time(), std::string msg = "default") {
+void IoT_ctrl_packet_event(unsigned int src = 0, unsigned int t = event::get_cur_time(), const std::string &msg = "default") {
     // 1st parameter: the source; the destination that want to broadcast a msg with counter 0 (i.e., match ID)
     // 2nd parameter: time (optional)
     // 3rd parameter: msg (optional)
@@ -1356,7 +1357,7 @@ void IoT_ctrl_packet_event(unsigned int src = 0, unsigned int t = event::get_cur
 }
 
 // the AGG_ctrl_packet_event function is used to add an initial event
-void AGG_ctrl_packet_event(unsigned int src, unsigned int dst = 0, unsigned int t = event::get_cur_time(), std::string msg = "default") {
+void AGG_ctrl_packet_event(unsigned int src, unsigned int dst = 0, unsigned int t = event::get_cur_time(), const std::string &msg = "default") {
     if (node::id_to_node(src) == nullptr || (dst != BROADCAST_ID && node::id_to_node(dst) == nullptr)) {
         std::cerr << "src or dst is incorrect" << '\n';
         return;
@@ -1415,14 +1416,13 @@ void node::send(PacketTypes &p){ // this function is called by event; not for th
     for (const auto &[nb_id, _]: phy_neighbors) { // neighbor id
         if (nb_id != _nexID && BROADCAST_ID != _nexID) {continue;} // this neighbor will not receive the packet
 
-        unsigned int trigger_time = event::get_cur_time() + link::id_id_to_link(id, nb_id)->get_latency(); // we simply assume that the delay is fixed
+        unsigned int trigger_time = event::get_cur_time() + static_cast<unsigned int>(link::id_id_to_link(id, nb_id)->get_latency()); // we simply assume that the delay is fixed
         // cout << "node " << id << " send to node " <<  nb_id << '\n';
         recv_event::recv_data e_data;
         e_data.s_id = id;    // set the sender   (i.e., preID)
         e_data.r_id = nb_id; // set the receiver (i.e., nexID)
 
-        PacketTypes p2 = p;
-        e_data._pkt = p2;
+        e_data._pkt = p;
 
         recv_event::generate(trigger_time, e_data);
     }

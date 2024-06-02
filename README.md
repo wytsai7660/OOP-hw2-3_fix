@@ -34,3 +34,4 @@ This is a major revamp of JJK's code, so there are some features that you need t
 - Instead of calling `node::generator::generate`, call `IoT_device::generate`.
 - Instead of calling `link::generator::generate`, call `simple_link::generate`.
 - Instead of calling `event::generator::generate`, call `<event-type>::generate`.
+- Instead of accessing `event::trigger_time` directly, call `get_trigger_time`/`set_trigger_time`.
