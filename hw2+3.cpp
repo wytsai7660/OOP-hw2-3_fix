@@ -693,13 +693,12 @@ class event {
             end_time = _end_time;
             std::unique_ptr<event> e = get_next_event();
             while (e && e->trigger_time <= end_time ) {
-                if ( cur_time <= e->trigger_time ) {
-                    cur_time = e->trigger_time;
-                }
-                else {
+                if ( cur_time > e->trigger_time ) {
                     std::cerr << "cur_time = " << cur_time << ", event trigger_time = " << e->trigger_time << '\n';
                     break;
+                    
                 }
+                cur_time = e->trigger_time;
 
                 // cout << "event trigger_time = " << e->trigger_time << '\n';
                 e->print(); // for log
