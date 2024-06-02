@@ -55,12 +55,15 @@ non-template classes.
     static inline static_constructor##counter static_constructor;
 
 #define DEFAULTED_SPECIAL_MEMBERS(class_name) \
-        virtual ~class_name() = default; \
-        class_name() = default; \
-        class_name(const class_name &other) = default; \
-        class_name(class_name &&other) = default; \
-        class_name &operator=(const class_name &other) = default; \
-        class_name &operator=(class_name &&other) = default;
+    virtual ~class_name() = default; \
+    DEFAULTED_SPECIAL_MEMBERS_WITHOUT_DESTRUCTOR(class_name)
+
+#define DEFAULTED_SPECIAL_MEMBERS_WITHOUT_DESTRUCTOR(class_name) \
+    class_name() = default; \
+    class_name(const class_name &other) = default; \
+    class_name(class_name &&other) = default; \
+    class_name &operator=(const class_name &other) = default; \
+    class_name &operator=(class_name &&other) = default;
 
 template<typename... Ts>
 struct overloaded : Ts... { using Ts::operator()...; };
@@ -84,16 +87,16 @@ const unsigned int BROADCAST_ID = UINT_MAX;
 
 class header {
     public:
-        DEFAULTED_SPECIAL_MEMBERS(header)
+        virtual ~header() = default;
 
-    SET(src_ID)
-    SET(dst_ID)
-    SET(pre_ID)
-    SET(nex_ID)
-    GET(src_ID)
-    GET(dst_ID)
-    GET(pre_ID)
-    GET(nex_ID)
+        SET(src_ID)
+        SET(dst_ID)
+        SET(pre_ID)
+        SET(nex_ID)
+        GET(src_ID)
+        GET(dst_ID)
+        GET(pre_ID)
+        GET(nex_ID)
     virtual std::string type() = 0;
 
         static void print () {
@@ -104,6 +107,7 @@ class header {
         }
 
     protected:
+        DEFAULTED_SPECIAL_MEMBERS_WITHOUT_DESTRUCTOR(header)
         static inline std::vector<std::string> derived_class_names;
 
     private:
@@ -153,9 +157,10 @@ class payload {
         std::string msg;
 
     protected:
+        DEFAULTED_SPECIAL_MEMBERS_WITHOUT_DESTRUCTOR(payload)
         static inline std::vector<std::string> derived_class_names;
     public:
-        DEFAULTED_SPECIAL_MEMBERS(payload)
+        virtual ~payload() = default;
 
         virtual std::string type() = 0;
 
@@ -242,7 +247,6 @@ class packet : protected packet_derived_classes_common_fields_holder {
         PayloadType &get_payload_non_const() {
             return pld;
         }
-    public:
         packet(): p_id(last_packet_id++) {
             live_packet_num++;
         }
@@ -274,11 +278,6 @@ class packet : protected packet_derived_classes_common_fields_holder {
             swap(*this, other);
             return *this;
         }
-        virtual ~packet(){
-            // cout << "packet destructor begin" << '\n';
-            live_packet_num --;
-            // cout << "packet destructor end" << '\n';
-        }
         template <std::same_as<HeaderType> DeducedHeaderType, std::same_as<PayloadType> DeducedPayloadType>
         packet(DeducedHeaderType &&_hdr, DeducedPayloadType &&_pld, bool rep = false, unsigned int rep_id = 0) : hdr(std::forward<DeducedHeaderType>(_hdr)), pld(std::forward<DeducedPayloadType>(_pld)) {
             if (! rep )  { // a duplicated packet does not have a new packet id
@@ -288,6 +287,12 @@ class packet : protected packet_derived_classes_common_fields_holder {
                 p_id = rep_id;
             }
             live_packet_num ++;
+        }
+    public:
+        virtual ~packet(){
+            // cout << "packet destructor begin" << '\n';
+            live_packet_num --;
+            // cout << "packet destructor end" << '\n';
         }
         // This is friend so that ADL can find it.
         friend void swap(packet &first, packet &second) noexcept {
@@ -745,11 +750,9 @@ class recv_event : public event {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("recv_event");
         )
-
-  protected:
-    // this constructor cannot be directly called by users; only by generator
-    // the packet will be given to the receiver
-    recv_event(unsigned int _trigger_time, const recv_data &data) : event(_trigger_time), senderID(data.s_id), receiverID(data.r_id), pkt(data._pkt) {}
+        // this constructor cannot be directly called by users; only by generator
+        // the packet will be given to the receiver
+        recv_event(unsigned int _trigger_time, const recv_data &data) : event(_trigger_time), senderID(data.s_id), receiverID(data.r_id), pkt(data._pkt) {}
 
     public:
         // recv_event will trigger the recv function
@@ -828,9 +831,7 @@ class send_event : public event {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("send_event");
         )
-
-  protected:
-    send_event(unsigned int _trigger_time, const send_data &data) : event(_trigger_time), senderID(data.s_id), receiverID(data.r_id), pkt(data._pkt) {}
+        send_event(unsigned int _trigger_time, const send_data &data) : event(_trigger_time), senderID(data.s_id), receiverID(data.r_id), pkt(data._pkt) {}
 
     public:
         // send_event will trigger the send function
@@ -921,9 +922,7 @@ class IoT_data_pkt_gen_event : public event {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("IoT_data_pkt_gen_event");
         )
-
-  protected:
-    IoT_data_pkt_gen_event(unsigned int _trigger_time, const pkt_gen_data &data) : event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg) {}
+        IoT_data_pkt_gen_event(unsigned int _trigger_time, const pkt_gen_data &data) : event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg) {}
 
     public:
         static void generate(unsigned int _trigger_time, const pkt_gen_data &data) {
@@ -1006,9 +1005,7 @@ class IoT_ctrl_pkt_gen_event : public event {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("IoT_ctrl_pkt_gen_event");
         )
-
-  protected:
-    IoT_ctrl_pkt_gen_event(unsigned int _trigger_time, const pkt_gen_data &data) : event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg) {}
+        IoT_ctrl_pkt_gen_event(unsigned int _trigger_time, const pkt_gen_data &data) : event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg) {}
 
     public:
         static void generate(unsigned int _trigger_time, const pkt_gen_data &data) {
@@ -1089,9 +1086,7 @@ class AGG_ctrl_pkt_gen_event : public event {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("AGG_ctrl_pkt_gen_event");
         )
-
-  protected:
-    AGG_ctrl_pkt_gen_event(unsigned int _trigger_time, const pkt_gen_data &data) : event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg) {}
+        AGG_ctrl_pkt_gen_event(unsigned int _trigger_time, const pkt_gen_data &data) : event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg) {}
 
     public:
         static void generate(unsigned int _trigger_time, const pkt_gen_data &data) {
@@ -1173,9 +1168,7 @@ class DIS_ctrl_pkt_gen_event : public event {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("DIS_ctrl_pkt_gen_event");
         )
-
-  protected:
-    DIS_ctrl_pkt_gen_event(unsigned int _trigger_time, const pkt_gen_data &data) : event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg), parent(data.parent) {}
+        DIS_ctrl_pkt_gen_event(unsigned int _trigger_time, const pkt_gen_data &data) : event(_trigger_time), src(data.src_id), dst(data.dst_id), msg(data.msg), parent(data.parent) {}
 
     public:
         static void generate(unsigned int _trigger_time, const pkt_gen_data &data) {
@@ -1292,7 +1285,6 @@ class simple_link: public link {
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("simple_link");
         )
-    protected:
         simple_link(unsigned int _id1, unsigned int _id2): link (_id1,_id2){} // this constructor cannot be directly called by users
 
     public:
