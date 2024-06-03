@@ -10,6 +10,7 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -268,9 +269,6 @@ class packet : protected packet_derived_classes_common_fields_holder {
             live_packet_num++;
         }
         packet &operator=(const packet &other) {
-            if (this == &other) {
-                return *this;
-            }
             Derived temp(*static_cast<const Derived *>(&other)); // Derived must be a subclass so static_cast will do.
             swap(*this, temp);
             return *this;
@@ -280,7 +278,9 @@ class packet : protected packet_derived_classes_common_fields_holder {
             swap(*this, other);
             return *this;
         }
-        template <std::same_as<HeaderType> DeducedHeaderType, std::same_as<PayloadType> DeducedPayloadType>
+        template <typename DeducedHeaderType, typename DeducedPayloadType>
+        requires std::same_as<std::remove_cvref_t<DeducedHeaderType>, HeaderType> &&
+            std::same_as<std::remove_cvref_t<DeducedPayloadType>, PayloadType>
         packet(DeducedHeaderType &&_hdr, DeducedPayloadType &&_pld, bool rep = false, unsigned int rep_id = 0) : hdr(std::forward<DeducedHeaderType>(_hdr)), pld(std::forward<DeducedPayloadType>(_pld)) {
             if (! rep )  { // a duplicated packet does not have a new packet id
                 p_id = last_packet_id ++;
@@ -353,10 +353,13 @@ class IoT_data_packet: public packet<IoT_data_header, IoT_data_payload, IoT_data
     public:
         IoT_data_packet() = default;
         
-        template <std::same_as<packet> DeducedPacketType>
+        template <typename DeducedPacketType>
+        requires std::same_as<std::remove_cvref_t<DeducedPacketType>, packet>
         explicit IoT_data_packet(DeducedPacketType &&other) : packet(std::forward<DeducedPacketType>(other).get_header(), std::forward<DeducedPacketType>(other).get_payload(), true, other.get_packet_ID()) {}
         
-        template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
+        template <typename DeducedHeaderType, typename DeducedPayloadType>
+        requires std::same_as<std::remove_cvref_t<DeducedHeaderType>, IoT_data_header> &&
+            std::same_as<std::remove_cvref_t<DeducedPayloadType>, IoT_data_payload>
         IoT_data_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward<DeducedHeaderType>(header), std::forward<DeducedPayloadType>(payload)) {}
         
         std::string type() const override { return "IoT_data_packet"; }
@@ -371,10 +374,13 @@ class IoT_ctrl_packet: public packet<IoT_ctrl_header, IoT_ctrl_payload, IoT_ctrl
     public:
         IoT_ctrl_packet() = default;
         
-        template <std::same_as<packet> DeducedPacketType>
+        template <typename DeducedPacketType>
+        requires std::same_as<std::remove_cvref_t<DeducedPacketType>, packet>
         explicit IoT_ctrl_packet(DeducedPacketType &&other) : packet(std::forward<DeducedPacketType>(other).get_header(), std::forward<DeducedPacketType>(other).get_payload(), true, other.get_packet_ID()) {}
         
-        template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
+        template <typename DeducedHeaderType, typename DeducedPayloadType>
+        requires std::same_as<std::remove_cvref_t<DeducedHeaderType>, IoT_ctrl_header> &&
+            std::same_as<std::remove_cvref_t<DeducedPayloadType>, IoT_ctrl_payload>
         IoT_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward<DeducedHeaderType>(header), std::forward<DeducedPayloadType>(payload)) {}
 
         std::string type() const override { return "IoT_ctrl_packet"; }
@@ -397,10 +403,13 @@ class AGG_ctrl_packet: public packet<AGG_ctrl_header, AGG_ctrl_payload, AGG_ctrl
     public:
         AGG_ctrl_packet() = default;
         
-        template <std::same_as<packet> DeducedPacketType>
+        template <typename DeducedPacketType>
+        requires std::same_as<std::remove_cvref_t<DeducedPacketType>, packet>
         explicit AGG_ctrl_packet(DeducedPacketType &&other) : packet(std::forward<DeducedPacketType>(other).get_header(), std::forward<DeducedPacketType>(other).get_payload(), true, other.get_packet_ID()) {}
         
-        template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
+        template <typename DeducedHeaderType, typename DeducedPayloadType>
+        requires std::same_as<std::remove_cvref_t<DeducedHeaderType>, AGG_ctrl_header> &&
+            std::same_as<std::remove_cvref_t<DeducedPayloadType>, AGG_ctrl_payload>
         AGG_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward<DeducedHeaderType>(header), std::forward<DeducedPayloadType>(payload)) {}
 
         std::string type() const override { return "AGG_ctrl_packet"; }
@@ -420,10 +429,13 @@ class DIS_ctrl_packet: public packet<DIS_ctrl_header, DIS_ctrl_payload, DIS_ctrl
     public:
         DIS_ctrl_packet() = default;
         
-        template <std::same_as<packet> DeducedPacketType>
+        template <typename DeducedPacketType>
+        requires std::same_as<std::remove_cvref_t<DeducedPacketType>, packet>
         explicit DIS_ctrl_packet(DeducedPacketType &&other) : packet(std::forward<DeducedPacketType>(other).get_header(), std::forward<DeducedPacketType>(other).get_payload(), true, other.get_packet_ID()) {}
         
-        template <std::same_as<IoT_data_header> DeducedHeaderType, std::same_as<IoT_data_payload> DeducedPayloadType>
+        template <typename DeducedHeaderType, typename DeducedPayloadType>
+        requires std::same_as<std::remove_cvref_t<DeducedHeaderType>, DIS_ctrl_header> &&
+            std::same_as<std::remove_cvref_t<DeducedPayloadType>, DIS_ctrl_payload>
         DIS_ctrl_packet(DeducedHeaderType &&header, DeducedPayloadType &&payload) : packet(std::forward<DeducedHeaderType>(header), std::forward<DeducedPayloadType>(payload)) {}
 
         std::string type() const override { return "DIS_ctrl_packet"; }
@@ -518,16 +530,28 @@ class node {
         }
 };
 
-class IoT_device: public node {
+class has_parent {
+    public:
+        virtual unsigned int get_parent_id() = 0;
+        virtual ~has_parent() = default;
+    protected:
+        DEFAULTED_SPECIAL_MEMBERS_WITHOUT_DESTRUCTOR(has_parent)
+};
+
+class IoT_device: public node, public has_parent {
         // map<unsigned int,bool> one_hop_neighbors; // you can use this variable to record the node's 1-hop neighbors
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("IoT_device");
         )
 
-    bool hi = false; // this is used for example; you can remove it when doing hw2
+        bool hi = false; // this is used for example; you can remove it when doing hw2
+        unsigned int parent_id = 0;
 
         explicit IoT_device(unsigned int _id): node(_id) {}
     public:
+        unsigned int get_parent_id() override {
+            return parent_id;
+        }
         static std::shared_ptr<IoT_device> generate(unsigned int _id) {
             try {
                 std::shared_ptr<IoT_device> device(new IoT_device(_id));
@@ -650,7 +674,7 @@ class event {
                 return nullptr;
             }
             // This is safe and the only way to move a unique_ptr out of a priority_queue. The elements are never actually const.
-            std::unique_ptr<event> e = std::move(const_cast<std::unique_ptr<event> &>(events.top())); // NOLINT
+            std::unique_ptr<event> e = std::move(const_cast<std::unique_ptr<event> &>(events.top())); // NOLINT(cppcoreguidelines-pro-type-const-cast)
             events.pop();
             // cout << events.size() << " events remains" << '\n';
             return e;
