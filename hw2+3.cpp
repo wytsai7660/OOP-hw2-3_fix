@@ -493,9 +493,9 @@ class node {
             phy_neighbors.erase(_id);
         }
 
-    // you can use the function to get the node's neighbors at this time
-    // but in the project 3, you are not allowed to use this function
-    const std::set<unsigned int> &get_phy_neighbors() { return phy_neighbors; }
+        // you can use the function to get the node's neighbors at this time
+        // but in the project 3, you are not allowed to use this function
+        const std::set<unsigned int> &get_phy_neighbors() { return phy_neighbors; }
 
         using PacketTypes = std::variant<std::monostate, IoT_ctrl_packet, IoT_data_packet, AGG_ctrl_packet, DIS_ctrl_packet>;
 
