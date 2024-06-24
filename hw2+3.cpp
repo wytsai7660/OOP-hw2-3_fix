@@ -532,7 +532,7 @@ class node {
 
 class has_parent {
     public:
-        virtual unsigned int get_parent_id() = 0;
+        virtual unsigned int get_parent_id() const = 0;
         virtual ~has_parent() = default;
     protected:
         DEFAULTED_SPECIAL_MEMBERS_WITHOUT_DESTRUCTOR(has_parent)
@@ -549,7 +549,7 @@ class IoT_device: public node, public has_parent {
 
         explicit IoT_device(unsigned int _id): node(_id) {}
     public:
-        unsigned int get_parent_id() override {
+        unsigned int get_parent_id() const override {
             return parent_id;
         }
         static std::shared_ptr<IoT_device> generate(unsigned int _id) {
