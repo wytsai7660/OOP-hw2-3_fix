@@ -553,14 +553,9 @@ class IoT_device: public node, public has_parent {
             return parent_id;
         }
         static std::shared_ptr<IoT_device> generate(unsigned int _id) {
-            try {
-                std::shared_ptr<IoT_device> device(new IoT_device(_id));
-                register_node(device);
-                return device;
-            }
-            catch (...) {
-                throw;
-            }
+            std::shared_ptr<IoT_device> device(new IoT_device(_id));
+            register_node(device);
+            return device;
         }
         std::string type() override { return "IoT_device"; }
 
@@ -1311,14 +1306,9 @@ class simple_link: public link {
 
     public:
         static std::shared_ptr<simple_link> generate(unsigned int _id1, unsigned int _id2) {
-            try {
-                std::shared_ptr<simple_link> link(new simple_link(_id1, _id2));
-                register_link(link);
-                return link;
-            }
-            catch (...) {
-                throw;
-            }
+            std::shared_ptr<simple_link> link(new simple_link(_id1, _id2));
+            register_link(link);
+            return link;
         }
         double get_latency() override { return ONE_HOP_DELAY; } // you can implement your own latency
 };
