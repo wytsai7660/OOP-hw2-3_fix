@@ -794,7 +794,7 @@ class recv_event : public event {
                 std::to_string (receiverID) +
                 std::to_string (std::visit(overloaded {
                     [](auto &&packet) { return packet.get_packet_ID(); },
-                    [](std::monostate) { return 114514U; }
+                    [](std::monostate) -> unsigned { throw std::domain_error("The packet has not been assigned any specific packet type"); }
                 }, pkt));
             return get_hash_value(string_for_hash);
         }
@@ -872,7 +872,7 @@ class send_event : public event {
                 std::to_string (receiverID) +
                 std::to_string (std::visit(overloaded {
                     [](auto &&packet) { return packet.get_packet_ID(); },
-                    [](std::monostate) { return 114514U; }
+                    [](std::monostate) -> unsigned { throw std::domain_error("The packet has not been assigned any specific packet type"); }
                 }, pkt));
             return get_hash_value(string_for_hash);
         }
@@ -1429,11 +1429,11 @@ void node::send_handler(PacketTypes &p){
     send_event::send_data e_data;
     e_data.s_id = std::visit(overloaded {
         [](auto &&packet){ return packet.get_header().get_pre_ID(); },
-        [](std::monostate) { return 114514U; }
+        [](std::monostate) -> unsigned { throw std::domain_error("The packet has not been assigned any specific packet type"); }
     }, _p);
     e_data.r_id = std::visit(overloaded {
         [](auto &&packet){ return packet.get_header().get_nex_ID(); },
-        [](std::monostate) { return 114514U; }
+        [](std::monostate) -> unsigned { throw std::domain_error("The packet has not been assigned any specific packet type"); }
     }, _p);
     e_data._pkt = _p;
     send_event::generate(event::get_cur_time(), e_data);
@@ -1442,8 +1442,7 @@ void node::send_handler(PacketTypes &p){
 void node::send(PacketTypes &p){ // this function is called by event; not for the user
     unsigned int _nexID = std::visit(overloaded {
         [](auto &&packet){ return packet.get_header().get_nex_ID(); },
-        [](std::monostate) { return 114514U; }
-        
+        [](std::monostate) -> unsigned { throw std::domain_error("The packet has not been assigned any specific packet type"); }
     }, p);
     for (const auto &nb_id: phy_neighbors) { // neighbor id
         if (nb_id != _nexID && BROADCAST_ID != _nexID) {continue;} // this neighbor will not receive the packet
