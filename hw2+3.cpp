@@ -762,31 +762,31 @@ class recv_event : public event {
         class recv_data; // forward declaration
 
     private:
-        unsigned int senderID; // the sender
-        unsigned int receiverID; // the receiver; the packet will be given to the receiver
+        unsigned int sender_id; // the sender
+        unsigned int receiver_id; // the receiver; the packet will be given to the receiver
         node::PacketTypes pkt; // the packet
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("recv_event");
         )
         // this constructor cannot be directly called by users; only by generator
         // the packet will be given to the receiver
-        recv_event(unsigned int _trigger_time, const recv_data &data) : event(_trigger_time), senderID(data.s_id), receiverID(data.r_id), pkt(data._pkt) {}
+        recv_event(unsigned int _trigger_time, const recv_data &data) : event(_trigger_time), sender_id(data.s_id), receiver_id(data.r_id), pkt(data._pkt) {}
 
     public:
         // recv_event will trigger the recv function
         void trigger() override {
-            if (!node::id_to_node(receiverID)){
-                std::cerr << "recv_event error: no node " << receiverID << "!" << '\n';
+            if (!node::id_to_node(receiver_id)){
+                std::cerr << "recv_event error: no node " << receiver_id << "!" << '\n';
                 return ;
             }
-            node::id_to_node(receiverID)->recv(pkt);
+            node::id_to_node(receiver_id)->recv(pkt);
         }
 
         unsigned int event_priority() const override {
             std::string string_for_hash;
             string_for_hash = std::to_string(get_trigger_time()) +
-                std::to_string(senderID) +
-                std::to_string (receiverID) +
+                std::to_string(sender_id) +
+                std::to_string (receiver_id) +
                 std::to_string (std::visit(overloaded {
                     [](auto &&packet) { return packet.get_packet_ID(); },
                     [](std::monostate) -> unsigned { throw std::domain_error("The packet has not been assigned any specific packet type"); }
@@ -811,7 +811,7 @@ class recv_event : public event {
             std::visit(overloaded {
                 [&](auto &&packet) {
                     std::cout << "time "    << std::setw(11) << event::get_cur_time()
-                        << "   recID"       << std::setw(11) << receiverID
+                        << "   recID"       << std::setw(11) << receiver_id
                         << "   pktID"       << std::setw(11) << packet.get_packet_ID()
                         << "   srcID"       << std::setw(11) << packet.get_header().get_src_ID()
                         << "   dstID"       << std::setw(11) << packet.get_header().get_dst_ID()
@@ -826,7 +826,7 @@ class recv_event : public event {
             std::cout << '\n';
             // cout << pkt->type()
             //      << "   time "       << setw(11) << event::getCurTime()
-            //      << "   recID "      << setw(11) << receiverID
+            //      << "   recID "      << setw(11) << receiver_id
             //      << "   pktID"       << setw(11) << pkt->get_packet_ID()
             //      << "   srcID "      << setw(11) << pkt->get_header()->get_src_ID()
             //      << "   dstID"       << setw(11) << pkt->get_header()->get_dst_ID()
@@ -842,29 +842,29 @@ class send_event : public event {
 
     private:
         // this constructor cannot be directly called by users; only by generator
-        unsigned int senderID; // the sender
-        unsigned int receiverID; // the receiver
+        unsigned int sender_id; // the sender
+        unsigned int receiver_id; // the receiver
         node::PacketTypes pkt; // the packet
         STATIC_CONSTRUCTOR (
             derived_class_names.emplace_back("send_event");
         )
-        send_event(unsigned int _trigger_time, const send_data &data) : event(_trigger_time), senderID(data.s_id), receiverID(data.r_id), pkt(data._pkt) {}
+        send_event(unsigned int _trigger_time, const send_data &data) : event(_trigger_time), sender_id(data.s_id), receiver_id(data.r_id), pkt(data._pkt) {}
 
     public:
         // send_event will trigger the send function
         void trigger() override {
-            if (!node::id_to_node(senderID)){
-                std::cerr << "send_event error: no node " << senderID << "!" << '\n';
+            if (!node::id_to_node(sender_id)){
+                std::cerr << "send_event error: no node " << sender_id << "!" << '\n';
                 return ;
             }
-            node::id_to_node(senderID)->send(pkt);
+            node::id_to_node(sender_id)->send(pkt);
         }
 
         unsigned int event_priority() const override {
             std::string string_for_hash;
             string_for_hash = std::to_string(get_trigger_time()) +
-                std::to_string(senderID) +
-                std::to_string (receiverID) +
+                std::to_string(sender_id) +
+                std::to_string (receiver_id) +
                 std::to_string (std::visit(overloaded {
                     [](auto &&packet) { return packet.get_packet_ID(); },
                     [](std::monostate) -> unsigned { throw std::domain_error("The packet has not been assigned any specific packet type"); }
@@ -889,7 +889,7 @@ class send_event : public event {
             std::visit(overloaded {
                 [&](auto &&packet) {
                     std::cout << "time "     << std::setw(11) << event::get_cur_time()
-                        << "   senID"       << std::setw(11) << senderID
+                        << "   senID"       << std::setw(11) << sender_id
                         << "   pktID"       << std::setw(11) << packet.get_packet_ID()
                         << "   srcID"       << std::setw(11) << packet.get_header().get_src_ID()
                         << "   dstID"       << std::setw(11) << packet.get_header().get_dst_ID()
@@ -905,7 +905,7 @@ class send_event : public event {
             
             // cout << pkt->type()
             //      << "   time "       << setw(11) << event::getCurTime()
-            //      << "   senID "      << setw(11) << senderID
+            //      << "   senID "      << setw(11) << sender_id
             //      << "   pktID"       << setw(11) << pkt->get_packet_ID()
             //      << "   srcID "      << setw(11) << pkt->get_header()->get_src_ID()
             //      << "   dstID"       << setw(11) << pkt->get_header()->get_dst_ID()
