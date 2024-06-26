@@ -502,11 +502,11 @@ class node {
         void recv (PacketTypes &p) {
             recv_handler(p);
         } // the packet will be directly deleted after the handler
-        void send (PacketTypes &p);
+        void send (const PacketTypes &p);
 
         // receive the packet and do something; this is a pure virtual function
         virtual void recv_handler(PacketTypes &p) = 0;
-        static void send_handler(PacketTypes &p);
+        static void send_handler(const PacketTypes &p);
 
         static std::shared_ptr<node> id_to_node (unsigned int _id) {
             const auto it = id_node_table.find(_id);
@@ -1414,22 +1414,21 @@ void DIS_ctrl_packet_event(unsigned int sink_id = 0, unsigned int t = event::get
 // send_handler function is used to transmit packet p based on the information in the header
 // Note that the packet p will not be discard after send_handler ()
 
-void node::send_handler(PacketTypes &p){
-    PacketTypes _p = p; // Copying is replicating
+void node::send_handler(const PacketTypes &p){
     send_event::send_data e_data;
     e_data.s_id = std::visit(overloaded {
         [](auto &&packet){ return packet.get_header().get_pre_ID(); },
         [](std::monostate) -> unsigned { throw std::domain_error("The packet has not been assigned any specific packet type"); }
-    }, _p);
+    }, p);
     e_data.r_id = std::visit(overloaded {
         [](auto &&packet){ return packet.get_header().get_nex_ID(); },
         [](std::monostate) -> unsigned { throw std::domain_error("The packet has not been assigned any specific packet type"); }
-    }, _p);
-    e_data._pkt = _p;
+    }, p);
+    e_data._pkt = p;
     send_event::generate(event::get_cur_time(), e_data);
 }
 
-void node::send(PacketTypes &p){ // this function is called by event; not for the user
+void node::send(const PacketTypes &p){ // this function is called by event; not for the user
     unsigned int _nexID = std::visit(overloaded {
         [](auto &&packet){ return packet.get_header().get_nex_ID(); },
         [](std::monostate) -> unsigned { throw std::domain_error("The packet has not been assigned any specific packet type"); }
